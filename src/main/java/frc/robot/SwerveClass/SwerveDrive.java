@@ -4,8 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import org.graalvm.compiler.core.common.type.ArithmeticOpTable.UnaryOp.Sqrt;
-
 import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -13,13 +11,13 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-//This code use Ether's calculations to perform the inverse kinamatics equations for swerve drive
-//https://www.chiefdelphi.com/t/paper-4-wheel-independent-drive-independent-steering-swerve/107383
+//This code use Ether's calculations to perform the inverse kinamatics equations for swerve RPM
+//https://www.chiefdelphi.com/t/paper-4-wheel-independent-RPM-independent-steering-swerve/107383
 
 
 
 @SuppressWarnings("unused")
-public class SwerveDrive implements MotorSafety {
+public class SwerveRPM implements MotorSafety {
 
 
 	//Variables to be used are set to private
@@ -43,7 +41,7 @@ public class SwerveDrive implements MotorSafety {
 	private String motorName[] = {"FrontRight","FrontLeft","BackLeft","BackRight"};
 
 	private double[] oldAngle = {0,0,0,0};
-	private double maxDrive = 1.0;
+	private double maxRPM = 1.0;
 	private double maxTurn = 1.0;
 
 	private int deadBand = 1; //
@@ -57,15 +55,15 @@ public class SwerveDrive implements MotorSafety {
 	private RollingAverage yavg;
 	private RollingAverage zavg;	
 	
-	public  SwerveDrive(SwervePOD FrontRightPOD, SwervePOD FrontLeftPOD, SwervePOD BackLeftPOD,SwervePOD BackRightPOD,
+	public  SwerveRPM(SwervePOD FrontRightPOD, SwervePOD FrontLeftPOD, SwervePOD BackLeftPOD,SwervePOD BackRightPOD,
 			int avgSize) {
 		
 		SwervePOD[0] = FrontRightPOD;
 		SwervePOD[1]  = FrontLeftPOD;
 		SwervePOD[2]   = BackLeftPOD;
 		SwervePOD[3]  = BackRightPOD;
-		/*Set the Current Limit of the Drive Motors	 */
-		setDriveCurrentLimit(10, 200, 20);
+		/*Set the Current Limit of the RPM Motors	 */
+		setRPMCurrentLimit(10, 200, 20);
 		
 		// Initializes the _avg variables to size avgSize
 		xavg = new RollingAverage(avgSize);
@@ -74,20 +72,20 @@ public class SwerveDrive implements MotorSafety {
 		
 	}
 	 /**
-	   * Drive method for Swerve wheeled robots.
+	   * RPM method for Swerve wheeled robots.
 	   *	  
 	   *
-	   * <p>This is designed to be directly driven by joystick axes.
+	   * <p>This is designed to be directly RPMn by joystick axes.
 	   *
-	   * @param AxisX         	The speed that the robot should drive in the X direction. [-1.0..1.0]
-	   * @param AxisY         	The speed that the robot should drive in the Y direction. This input is
+	   * @param AxisX         	The speed that the robot should RPM in the X direction. [-1.0..1.0]
+	   * @param AxisY         	The speed that the robot should RPM in the Y direction. This input is
 	   *                  		inverted to match the forward == -1.0 that joysticks produce. [-1.0..1.0]
 	   * @param rotation  		The rate of rotation for the robot that is completely independent of the
 	   *                  		translation. [-1.0..1.0]
 	   * @param gyroAngle 		The current angle reading from the gyro. Use this to implement field-oriented
 	   *                  		controls.
 	   */
-	public void drive(double AxisX, double AxisY, double rotation, double gyroAngle){
+	public void RPM(double AxisX, double AxisY, double rotation, double gyroAngle){
 		xavg.add(AxisX);
 		yavg.add(AxisY);
 		zavg.add(rotation);
@@ -144,7 +142,7 @@ public class SwerveDrive implements MotorSafety {
 
 			    if(Math.abs(angleJoyStickDiff[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
 			    	//reverse translational motors 
-			    	SwervePOD[i].drive(maxDrive*wheelSpeeds[i]*4800*4096/600);
+			    	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
 			    	
 			    	//find new angle
 			    	wheelAngles[i] -= 180.0; //subtract 180 degrees
@@ -158,7 +156,7 @@ public class SwerveDrive implements MotorSafety {
 			    
 			    else
 			    {
-			    	SwervePOD[i].drive(-maxDrive*wheelSpeeds[i]*4800*4096/600);
+			    	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 			    }
 				//Turn Motors
 			    if(wheelSpeeds[i]>0.1){
@@ -201,10 +199,10 @@ public class SwerveDrive implements MotorSafety {
 	    }
 	}
 	
-	public void turnMotorsDrive(double angle_CMD , double speed){
+	public void turnMotorsRPM(double angle_CMD , double speed){
 	    for(int i=0;i<4;i++){
 	    	pidTurnController[i].setSetpoint(angle_CMD);
-	    	SwervePOD[i].set(ControlMode.Velocity, -maxDrive*speed*4800*4096/600);
+	    	SwervePOD[i].setSpeed(-maxRPM*speed);
 	    }
 		
 	}
@@ -295,8 +293,8 @@ public class SwerveDrive implements MotorSafety {
 	
 	public void getAmps() {
 		for(int i=0 ; i<4; i++) {
-		   SmartDashboard.putNumber("DriveAmps_"+motorName[i], SwervePOD[i].getAmps);
-		   SmartDashboard.putNumber("DriveVolts_"+motorName[i], S);
+		   SmartDashboard.putNumber("RPMAmps_"+motorName[i], SwervePOD[i].getAmps);
+		   SmartDashboard.putNumber("RPMVolts_"+motorName[i], S);
 		}
 	}
 	
@@ -306,8 +304,8 @@ public class SwerveDrive implements MotorSafety {
 		return speed;
 	}
 
-	public void setMaxDrive(double set){
-		this.maxDrive = set;
+	public void setMaxRPM(double maxRPM){
+		this.maxRPM = maxRPM;
 	}
 	
 	public double getLR() {
@@ -326,7 +324,7 @@ public class SwerveDrive implements MotorSafety {
 		this.L = length;
 	}
 	
-	public void setDriveCurrentLimit(int peakAmps, int durationMs, int continousAmps) {
+	public void setRPMCurrentLimit(int peakAmps, int durationMs, int continousAmps) {
 	/* Peak Current and Duration must be exceeded before current limit is activated.
 	When activated, current will be limited to Continuous Current.
 	Set Peak Current params to 0 if desired behavior is to immediately current-limit. */

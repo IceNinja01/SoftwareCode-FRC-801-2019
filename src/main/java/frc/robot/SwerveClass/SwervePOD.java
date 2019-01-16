@@ -5,9 +5,11 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANEncoder;
@@ -18,12 +20,10 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
 
 public class SwervePOD {
-	
-	private static final String kHallSensor = null;
+
+
 	private CANSparkMax driveMotor;
 	private CANSparkMax turnMotor;
-	private PIDSource pidTurnSource;
-	private PIDController pidTurnController;
 	private MotorName motorName;
 	private CANEncoder driveMotorEnc;
 	private CANEncoder turnMotorEnc;
@@ -31,13 +31,14 @@ public class SwervePOD {
 	private CANPIDController turnPID;
 	private double k_drive_P, k_drive_I, k_drive_D, k_drive_Iz, k_drive_FF, kMinRPM, kMaxRPM;
 	private double k_turn_P, k_turn_I, k_turn_D, k_turn_Iz, k_turn_FF, kMinAngle, kMaxAngle;
+	private double angle;
 	/**
 	 * 
 	 * @param Drive Motor Number on PDB for the Drive motor on SwervePOD
 	 * @param Turn	Motor Number on PDB for the Turn motor on SwervePOD
 	 * @param PODName EnumType for POD Name: RightFront(0), LeftFront(1), LeftBack(2), RightBack(3).
 	 */
-	
+
 	public SwervePOD(int Drive, int Turn, int PODName) {
 //		Initialize motors
 		driveMotor  = new CANSparkMax(Drive, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -50,7 +51,6 @@ public class SwervePOD {
 		motorName.value = PODName;
 	}
 	
-		
 	public enum MotorName{
 		RightFront(0),
 		LeftFront(1),
@@ -65,39 +65,25 @@ public class SwervePOD {
 	}
 	
 	public void initialize() {
-		
-
-	
-	/*the sensor and motor must be
-	in-phase. This means that the sensor position must move in a positive direction as the motor
-	controller drives positive motor output. To test this, first drive the motor manually (using
-	gamepad axis for example). Watch the sensor position either in the roboRIO Web-based
-	Configuration Self-Test, or by calling GetSelectedSensorPosition() and printing it to console.
-	If the Sensor Position moves in a negative direction while Talon SRX motor output is positive
-	(blinking green), then use the setSensorPhase() routine/VI to multiply the sensor position by (-
-	1). Then retest to confirm Sensor Position moves in a positive direction with positive motor
-	drive.**/
-	turnMotor.setSensorPhase(false); 
-
-
-	driveMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-	/* set the peak and nominal outputs, 12V means full */
-	driveMotor.configNominalOutputForward(0, 10);
-	driveMotor.configNominalOutputReverse(0, 10);
-	driveMotor.configPeakOutputForward(11.0, 10);
-	driveMotor.configPeakOutputReverse(-11.0, 10);
-	driveMotor.enableVoltageCompensation(true); 
-	driveMotor.configNeutralDeadband(0.01, 10);
-	driveMotor.configAllowableClosedloopError(0, 0, 10);		
-	/* Set the motors PIDF constants**/
-	//index 0
-	driveMotor.config_kF(0, .026, 10);
-	driveMotor.config_kP(0, .051, 10);
-	driveMotor.config_kI(0, 0.0, 10);
-	driveMotor.config_kD(0, 0.5, 10);
-	driveMotor.setSelectedSensorPosition(0, 0, 10);
 	}
-	
+	/**
+	 * Pos and velocity close loops are calc’d as:
+	 *	err = target - posOrVel
+	 *	iErr += err
+	 *	if IZone != 0 and abs(err) > IZone:
+     *		ClearIaccum()
+	 *	output = P * err + I * iErr + D * dErr + F * target
+	 *	dErr = err - lastErr
+	 *	
+	 * @param kP proportional constant for PID control
+	 * @param kI intergral constant for PID control
+	 * @param kD derivative constant for PID control
+	 * @param kIz I Zone is specified in the same units as sensor position (ADC units or quadrature edges). If pos/vel error is outside of this value, the integrated error will auto-clear:
+	 *				if IZone != 0 and abs(err) > IZone:ClearIaccum()
+	 * @param kFF feedforward constant for PID control
+	 * @param kMinOutput the minimum percentage to write to the output, -1 min
+	 * @param kMaxOutput the maximum percentage to write to the output, 1 max
+	 */
 	public void configPIDTurn(double kP, double kI, double kD, double kIz, double kFF, double kMinOutput, double kMaxOutput) {
 	    // set PID coefficients for turn motor
 		turnPID.setP(kP);
@@ -108,25 +94,31 @@ public class SwervePOD {
 		turnPID.setOutputRange(kMinOutput, kMaxOutput);
 					
 	}
-
-	public void configTurnEnconder(){
-		turnMotor.setParameter(ConfigParameter.kMotorL, kMotorL );
-	// pidTurnController = new PIDController(kP, kI, kD, pidTurnSource, turnMotor);
-	// pidTurnController.setAbsoluteTolerance(deadBand);
-	// pidTurnController.setInputRange(0, 360);
-	// pidTurnController.setContinuous(true);
-	// pidTurnController.setOutputRange(-maxTurnVoltage, maxTurnVoltage);
-	// pidTurnController.enable();
-	
+	/**
+	 * @param kP proportional constant for PID control
+	 * @param kI intergral constant for PID control
+	 * @param kD derivative constant for PID control
+	 * @param kIz I Zone is specified in the same units as sensor position (ADC units or quadrature edges). If pos/vel error is outside of this value, the integrated error will auto-clear:
+	 *				if IZone != 0 and abs(err) > IZone:ClearIaccum()
+	 * @param kFF feedforward constant for PID control
+	 * @param kMinOutput the minimum percentage to write to the output, -1 min
+	 * @param kMaxOutput the maximum percentage to write to the output, 1 max
+	 */
+	public void configPIDDrive(double kP, double kI, double kD, double kIz, double kFF, double kMinOutput, double kMaxOutput) {
+	    // set PID coefficients for turn motor
+		drivePID.setP(kP);
+		drivePID.setI(kI);
+		drivePID.setD(kD);
+		drivePID.setIZone(kIz);
+		drivePID.setFF(kFF);
+		drivePID.setOutputRange(kMinOutput, kMaxOutput);
+					
 	}
-	
+
 	public double getAngle() {
-		   int motorNumber = turnMotor.getDeviceID();
-		   // Convert timeUs Pulse to angle
-		   /* get the period in us, rise-to-rise in microseconds */
-		   double timeUs = turnMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
-		   // Convert timeUs Pulse to angle	   
-		   double degrees = turnMotor.getSensorCollection().getPulseWidthRiseToFallUs()*(360.0/timeUs);
+		   int motorNumber = turnMotor.getDeviceId();
+		   // Convert rotations to degrees	   
+		   double degrees = turnMotorEnc.getPosition(); //will need to add gear ratio here
 		   SmartDashboard.putNumber("RawAngle_"+motorName.name(), degrees);
 		   degrees = Utils.wrapAngle0To360Deg(degrees) - Constants.AngleBias[motorName.value];
 		   degrees = Utils.wrapAngle0To360Deg(degrees);
@@ -135,45 +127,44 @@ public class SwervePOD {
 	}
 	
 	public void setSpeed(double speed) {
-		drivePID.setReference(speed*4800*4096/600 , ControlType.kVelocity);
+		drivePID.setReference(speed, ControlType.kVelocity);
 	}
 	
-	public void turn(double angle) {
-		pidTurnController.setSetpoint(angle);
+	public void setAngle(double angle) {
+		this.angle = angle * Constants.rotations_per_deg;
+		turnPID.setReference(angle, ControlType.kPosition);
 	}
 	
-	public void stop() {
-		drivePID.setReference(0 , ControlType.kVelocity);
-		driveMotor.stopMotor();
-		pidTurnController.disable();
-		turnMotor.set(ControlMode.PercentOutput, 0.0);
+	public void setDriveEncoder(int counts_per_rev){
+		driveMotor.setParameter(CANSparkMaxLowLevel.ConfigParameter.kEncoderCountsPerRev, counts_per_rev);
 	}
-	
-	public void brakeOn() {
-		driveMotor.setIdleMode(IdleMode.kBrake);
-	  	pidTurnController.disable();
+
+	public void setTurnEncoder(int counts_per_rev){
+		turnMotor.setParameter(CANSparkMaxLowLevel.ConfigParameter.kEncoderCountsPerRev, counts_per_rev);
+	}
+	/**
+	 * @param stallLimit The current limit in Amps at 0 RPM.
+	 * @param freeLimit The current limit at free speed (5700RPM for NEO).
+	 */
+	public void setDriveCurrentLimit(int stallLimit, int freeLimit) {
+		driveMotor.setSmartCurrentLimit(stallLimit, freeLimit);
 
 	}
-	
-	public void brakeOff() {
-		driveMotor.setIdleMode(IdleMode.kCoast);
-		drivePID.setReference(0 , ControlType.kVelocity);
-	  	pidTurnController.enable();
+	/**
+	 * @param stallLimit The current limit in Amps at 0 RPM.
+	 * @param freeLimit The current limit at free speed (5700RPM for NEO).
+	 */
+	public void setTurnCurrentLimit(int stallLimit, int freeLimit) {
+		turnMotor.setSmartCurrentLimit(stallLimit, freeLimit);
+
 	}
-	
+
 	public double getAmps() {
 		return driveMotor.getOutputCurrent();
 	}
 	
 	public double getVoltage() {
-		return driveMotor.getMotorOutputVoltage();
-	}
-	
-	public void setDriveCurrentLimit(int peakAmps, int durationMs, int continousAmps) {
-		driveMotor.configPeakCurrentLimit(peakAmps, 10); /* 35 A */
-		driveMotor.configPeakCurrentDuration(durationMs, 10); /* 200ms */
-		driveMotor.configContinuousCurrentLimit(continousAmps, 10); /* 30A */
-		driveMotor.enableCurrentLimit(true); /* turn it on */
+		return driveMotor.getBusVoltage();
 	}
 
 	public double getSpeed(){
@@ -185,4 +176,24 @@ public class SwervePOD {
 	public int getPosition(){
 		return (int) driveMotorEnc.getPosition();
 	}
+
+	public void stop() {
+		drivePID.setReference(0 , ControlType.kVelocity);
+		driveMotor.stopMotor();
+		turnMotor.stopMotor();
+	}
+	
+	public void brakeOn() {
+		driveMotor.setIdleMode(IdleMode.kBrake);
+		turnMotor.setIdleMode(IdleMode.kBrake);
+	}
+	
+	public void brakeOff() {
+		driveMotor.setIdleMode(IdleMode.kCoast);
+		drivePID.setReference(0 , ControlType.kVelocity);
+		turnMotor.setIdleMode(IdleMode.kCoast);
+		
+	}
+
+
 }
