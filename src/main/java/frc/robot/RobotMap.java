@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import frc.robot.SwerveClass.SwervePOD;
+
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
  * to a variable name. This provides flexibility changing wiring, makes checking
@@ -23,4 +25,10 @@ public class RobotMap {
   // number and the module. For example you with a rangefinder:
   // public static int rangefinderPort = 1;
   // public static int rangefinderModule = 1;
+
+  public static SwervePOD frontRight = new SwervePOD(0, 1, 0);
+  public static SwervePOD frontLeft = new SwervePOD(2, 3, 1);
+  public static SwervePOD backLeft = new SwervePOD(4, 5, 2);
+  public static SwervePOD backRight = new SwervePOD(6, 7, 3);
+
 }

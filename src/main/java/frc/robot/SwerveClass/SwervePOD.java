@@ -110,7 +110,7 @@ public class SwervePOD {
 	}
 
 	public void configTurnEnconder(){
-		turnMotor.setParameter(ConfigParameter.kMotorL, );
+		turnMotor.setParameter(ConfigParameter.kMotorL, kMotorL );
 	// pidTurnController = new PIDController(kP, kI, kD, pidTurnSource, turnMotor);
 	// pidTurnController.setAbsoluteTolerance(deadBand);
 	// pidTurnController.setInputRange(0, 360);
@@ -134,7 +134,7 @@ public class SwervePOD {
 		   return degrees;
 	}
 	
-	public void drive(double speed) {
+	public void setSpeed(double speed) {
 		drivePID.setReference(speed*4800*4096/600 , ControlType.kVelocity);
 	}
 	
@@ -179,6 +179,10 @@ public class SwervePOD {
 	public double getSpeed(){
 		//Add the following constants to make proper speed calculations
 		//(kMaxRPM  / 600) * (kSensorUnitsPerRotation / kGearRatio)
-		return driveMotor.getSelectedSensorVelocity(); 
+		return driveMotorEnc.getVelocity(); 
+	}
+
+	public int getPosition(){
+		return (int) driveMotorEnc.getPosition();
 	}
 }
