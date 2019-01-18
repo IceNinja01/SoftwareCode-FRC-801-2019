@@ -105,10 +105,10 @@ public class PathDrive extends Command {
     RobotMap.backRight.setSpeed(blOutput);
     RobotMap.backLeft.setSpeed(brOutput);
     //turn SwervePODs
-    RobotMap.frontRight.turn(frHeading);
-    RobotMap.frontLeft.turn(flHeading);
-    RobotMap.backRight.turn(blHeading);
-    RobotMap.backLeft.turn(brHeading);
+    RobotMap.frontRight.setAngle(frHeading);
+    RobotMap.frontLeft.setAngle(flHeading);
+    RobotMap.backRight.setAngle(blHeading);
+    RobotMap.backLeft.setAngle(brHeading);
   
 
   }

@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -208,8 +207,8 @@ public class SwervePOD {
 		return driveMotorEnc.getVelocity(); 
 	}
 
-	public double getPosition(){
-		return driveMotorEnc.getPosition();
+	public int getPosition(){
+		return (int) driveMotorEnc.getPosition();
 	}
 
 	public void stop() {

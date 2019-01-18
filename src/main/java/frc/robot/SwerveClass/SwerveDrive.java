@@ -16,10 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 
-@SuppressWarnings("unused")
-public class SwerveDrive implements MotorSafety {
-
-
+public class SwerveDrive extends MotorSafety {
 	//Variables to be used are set to private
 	
 	private MotorSafety m_safetyHelper;
@@ -197,29 +194,6 @@ public class SwerveDrive implements MotorSafety {
 	    	SwervePOD[i].setAngle(angle_CMD);
 	    	SwervePOD[i].setSpeed(-maxRPM*speed);
 	    }
-		
-	}
-	
-	public void brakeOn() {
-		for(int i=0;i>4;i++){
-		    if (SwervePOD[i] != null) {
-			  SwervePOD[i].brakeOn();
-		    }
-		}
-	    if (m_safetyHelper != null) {
-	      m_safetyHelper.feed();
-	    }
-	}
-
-	public void brakeOff() {
-		for(int i=0;i>4;i++){
-		    if (SwervePOD[i] != null) {
-		    	  SwervePOD[i].brakeOff();
-		    }
-		}
-	    if (m_safetyHelper != null) {
-	      m_safetyHelper.feed();
-	    }
 	}
 
 	public void getAmps() {
@@ -278,6 +252,44 @@ public class SwerveDrive implements MotorSafety {
 			SwervePOD[i].setTurnCurrentLimit(peakAmps, durationMs, continousAmps);
 		}
 	}
+
+	@Override
+	public void stopMotor() {
+		for(int i=0;i>4;i++){
+		    if (SwervePOD[i] != null) {
+			  SwervePOD[i].stop();
+		    }
+		}
+	    if (m_safetyHelper != null) {
+	      m_safetyHelper.feed();
+	    }
+	}
+
+	@Override
+	public String getDescription() {
+		return null;
+	}
 	
+	public void brakeOn() {
+		for(int i=0;i>4;i++){
+		    if (SwervePOD[i] != null) {
+			  SwervePOD[i].brakeOn();
+		    }
+		}
+	    if (m_safetyHelper != null) {
+	      m_safetyHelper.feed();
+	    }
+	}
+
+	public void brakeOff() {
+		for(int i=0;i>4;i++){
+		    if (SwervePOD[i] != null) {
+		    	  SwervePOD[i].brakeOff();
+		    }
+		}
+	    if (m_safetyHelper != null) {
+	      m_safetyHelper.feed();
+	    }
+	}
 	
 }
