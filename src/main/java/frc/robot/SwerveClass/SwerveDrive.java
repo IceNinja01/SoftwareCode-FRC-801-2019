@@ -17,26 +17,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 @SuppressWarnings("unused")
-public class SwerveRPM implements MotorSafety {
+public class SwerveDrive implements MotorSafety {
 
 
 	//Variables to be used are set to private
 	
-	protected MotorSafetyHelper m_safetyHelper;
+	private MotorSafety m_safetyHelper;
 	protected PIDOutput[] pidOutput = new PIDOutput[4]; 
-	private PIDController[] pidTurnController  = new PIDController[4];
-	private PIDSource[] pidTurnSource  = new PIDSource[4];
 	public static final double kDefaultExpirationTime = 0.1;
 	public static final double kDefaultMaxOutput = 1.0;
 
 	protected double temp, STR, FWD, RCW;
 	protected double A,B,C,D, max;
-	protected double L = 33.5; //Lenght of robot wheel base
-	protected double W = 28.25; //Width of robot wheel base
+	protected double L = 28.5; //Lenght of robot wheel base
+	protected double W = 28.5; //Width of robot wheel base
 	protected double R = Math.sqrt(L*L+W*W);
-	protected double kP = 0.005;
-	protected double kI = 0.00;
-	protected double kD = 0.005;
 	protected double timeUs;
 	private String motorName[] = {"FrontRight","FrontLeft","BackLeft","BackRight"};
 
@@ -55,15 +50,13 @@ public class SwerveRPM implements MotorSafety {
 	private RollingAverage yavg;
 	private RollingAverage zavg;	
 	
-	public  SwerveRPM(SwervePOD FrontRightPOD, SwervePOD FrontLeftPOD, SwervePOD BackLeftPOD,SwervePOD BackRightPOD,
+	public  SwerveDrive(SwervePOD FrontRightPOD, SwervePOD FrontLeftPOD, SwervePOD BackLeftPOD,SwervePOD BackRightPOD,
 			int avgSize) {
 		
 		SwervePOD[0] = FrontRightPOD;
 		SwervePOD[1]  = FrontLeftPOD;
 		SwervePOD[2]   = BackLeftPOD;
 		SwervePOD[3]  = BackRightPOD;
-		/*Set the Current Limit of the RPM Motors	 */
-		setRPMCurrentLimit(10, 200, 20);
 		
 		// Initializes the _avg variables to size avgSize
 		xavg = new RollingAverage(avgSize);
@@ -160,7 +153,7 @@ public class SwerveRPM implements MotorSafety {
 			    }
 				//Turn Motors
 			    if(wheelSpeeds[i]>0.1){
-			    	pidTurnController[i].setSetpoint(wheelAngles[i]);
+			    	SwervePOD[i].setAngle(wheelAngles[i]);
 			    	oldAngle[i] = wheelAngles[i];
 			    }
 		    
@@ -195,73 +188,33 @@ public class SwerveRPM implements MotorSafety {
 
 	public void turnMotors(double angle_CMD) {
 	    for(int i=0;i<4;i++){
-	    	pidTurnController[i].setSetpoint(angle_CMD);
+	    	SwervePOD[i].setAngle(angle_CMD);
 	    }
 	}
 	
 	public void turnMotorsRPM(double angle_CMD , double speed){
 	    for(int i=0;i<4;i++){
-	    	pidTurnController[i].setSetpoint(angle_CMD);
+	    	SwervePOD[i].setAngle(angle_CMD);
 	    	SwervePOD[i].setSpeed(-maxRPM*speed);
 	    }
 		
 	}
 	
-	@Override
-	public void setExpiration(double timeout) {
-		m_safetyHelper.setExpiration(timeout);
-	}
-
-	@Override
-	public double getExpiration() {
-		return m_safetyHelper.getExpiration();
-	}
-
-	@Override
-	public boolean isAlive() {
-		return m_safetyHelper.isAlive();
-	}
-
-	@Override
-	public void stopMotor() {
-		for(int i=0;i>4;i++){
-		    if (SwervePOD[i] != null) {
-		      SwervePOD[i].set(ControlMode.Velocity, 0);
-		    }
-		    if (turnMotors[i] != null) {
-		      pidTurnController[i].disable();
-		      turnMotors[i].set(ControlMode.PercentOutput, 0.0);
-
-		    }
-		}
-	    if (m_safetyHelper != null) {
-	      m_safetyHelper.feed();
-	    }
-	}
 	public void brakeOn() {
 		for(int i=0;i>4;i++){
 		    if (SwervePOD[i] != null) {
-			  SwervePOD[i].setNeutralMode(NeutralMode.Brake);
-		      SwervePOD[i].neutralOutput();
-		    }
-		    if (turnMotors[i] != null) {
-			  pidTurnController[i].disable();
-
+			  SwervePOD[i].brakeOn();
 		    }
 		}
 	    if (m_safetyHelper != null) {
 	      m_safetyHelper.feed();
 	    }
 	}
+
 	public void brakeOff() {
 		for(int i=0;i>4;i++){
 		    if (SwervePOD[i] != null) {
-		    	  SwervePOD[i].setNeutralMode(NeutralMode.Coast);
-			      SwervePOD[i].set(ControlMode.Velocity, 0);
-			    }
-			    if (turnMotors[i] != null) {
-				  pidTurnController[i].enable();
-
+		    	  SwervePOD[i].brakeOff();
 		    }
 		}
 	    if (m_safetyHelper != null) {
@@ -269,37 +222,15 @@ public class SwerveRPM implements MotorSafety {
 	    }
 	}
 
-	@Override
-	public void setSafetyEnabled(boolean enabled) {
-		m_safetyHelper.setSafetyEnabled(enabled);
-	}
-
-	@Override
-	public boolean isSafetyEnabled() {
-		return m_safetyHelper.isSafetyEnabled();
-	}
-
-	@Override
-	public String getDescription() {
-		return "Swerve Drive";
-	}
-	
-//  @SuppressWarnings("unused")
-  private void setupMotorSafety() {
-	    m_safetyHelper = new MotorSafetyHelper(this);
-	    m_safetyHelper.setExpiration(kDefaultExpirationTime);
-	    m_safetyHelper.setSafetyEnabled(true);
-	  }
-	
 	public void getAmps() {
 		for(int i=0 ; i<4; i++) {
-		   SmartDashboard.putNumber("RPMAmps_"+motorName[i], SwervePOD[i].getAmps);
-		   SmartDashboard.putNumber("RPMVolts_"+motorName[i], S);
+		   SmartDashboard.putNumber("DriveAmps_"+motorName[i], SwervePOD[i].getDriveAmps());
+		   SmartDashboard.putNumber("DriveVolts_"+motorName[i], SwervePOD[i].getDriveVoltage());
 		}
 	}
 	
-	public double currentSpeed(SwervePODSwervePOD motor, int num){
-		double speed = motor.getSelectedSensorVelocity(0);
+	public double currentSpeed(SwervePOD motor, int num){
+		double speed = motor.getSpeed();
 		SmartDashboard.putNumber("Speed"+motorName[num], speed);
 		return speed;
 	}
@@ -318,21 +249,33 @@ public class SwerveRPM implements MotorSafety {
 
 	public void setWidth(double width){
 		this.W = width;
+		R = Math.sqrt(L*L+W*W);
 	}
 
 	public void setLength(double length){
 		this.L = length;
+		R = Math.sqrt(L*L+W*W);
 	}
-	
-	public void setRPMCurrentLimit(int peakAmps, int durationMs, int continousAmps) {
+
+	/**
+	 * @param stallLimit The current limit in Amps at 0 RPM.
+	 * @param freeLimit The current limit at free speed (5700RPM for NEO).
+	 */
+	public void setDriveCurrentLimit(int stallLimit, int freeLimit) {
+		/* Peak Current and Duration must be exceeded before current limit is activated.
+		When activated, current will be limited to Continuous Current.
+		Set Peak Current params to 0 if desired behavior is to immediately current-limit. */
+		for(int i=0;i>4;i++){
+			SwervePOD[i].setDriveCurrentLimit(stallLimit, freeLimit);
+		}
+	}
+
+	public void setTurnCurrentLimit(int peakAmps, int durationMs, int continousAmps) {
 	/* Peak Current and Duration must be exceeded before current limit is activated.
 	When activated, current will be limited to Continuous Current.
 	Set Peak Current params to 0 if desired behavior is to immediately current-limit. */
 		for(int i=0;i>4;i++){
-			SwervePOD[i].configPeakCurrentLimit(peakAmps, 10); /* 35 A */
-			SwervePOD[i].configPeakCurrentDuration(durationMs, 10); /* 200ms */
-			SwervePOD[i].configContinuousCurrentLimit(continousAmps, 10); /* 30A */
-			SwervePOD[i].enableCurrentLimit(true); /* turn it on */
+			SwervePOD[i].setTurnCurrentLimit(peakAmps, durationMs, continousAmps);
 		}
 	}
 	
