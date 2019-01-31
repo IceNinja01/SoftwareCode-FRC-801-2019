@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Utilities.Utils;
 
 //This code use Ether's calculations to perform the inverse kinamatics equations for swerve RPM
 //https://www.chiefdelphi.com/t/paper-4-wheel-independent-RPM-independent-steering-swerve/107383
@@ -33,7 +34,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	private String motorName[] = {"FrontRight","FrontLeft","BackLeft","BackRight"};
 
 	private double[] oldAngle = {0,0,0,0};
-	private double maxRPM = 1.0;
+	private double maxRPM = 5700.0;
 	private double maxTurn = 1.0;
 
 	private int deadBand = 1; //
@@ -154,7 +155,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 		    
 		    
 	    }
-		getspeed();
+		// getspeed();
 	    	SmartDashboard.putNumber("Angle", angleJoyStickDiff[0]);
 
 		if (m_safetyHelper != null) {
@@ -168,7 +169,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 		double vel_X = 0;
 		double vel_Y = 0;
 		double velocity = 0;
-		for(int i=0;i<4;i++){
+		for(int i=0;i<1;i++){
 			vel_X += SwervePOD[i].getSpeed()*Math.cos(SwervePOD[i].getAngle());
 			vel_Y +=  SwervePOD[i].getSpeed()*Math.sin(SwervePOD[i].getAngle());
 		}

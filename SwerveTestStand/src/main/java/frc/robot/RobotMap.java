@@ -29,7 +29,4 @@ public class RobotMap {
   // public static int rangefinderPort = 1;
   // public static int rangefinderModule = 1;
 
-  public static CANSparkMax rightFrontDrive = new CANSparkMax(0, MotorType.kBrushless);
-
-  public static Team801TalonSRX rightFrontTurn = new Team801TalonSRX(4);
 }

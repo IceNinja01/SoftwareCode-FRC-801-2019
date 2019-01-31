@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Utilities.Utils;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -49,7 +50,7 @@ public class SwervePOD {
 		drivePID = driveMotor.getPIDController();
 
 		turnMotor  = new Team801TalonSRX(Turn);		
-		motorName.value = PODName;
+		// motorName.value = PODName;
 	}
 	
 	public enum MotorName{
@@ -87,15 +88,15 @@ public class SwervePOD {
 	 */
 	public void configPIDTurn(double kP, double kI, double kD, int kIz, double kFF, double kMinOutput, double kMaxOutput, double deadBand) {
 	    // set PID coefficients for turn motor
-		turnMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10);
+		turnMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 30);
 		/* set the peak and nominal outputs, 12V means full */
-		turnMotor.configNominalOutputForward(0,10);
-		turnMotor.configNominalOutputReverse(0, 10);
-		turnMotor.configPeakOutputForward(11.0, 10);
-		turnMotor.configPeakOutputReverse(-11.0, 10);
+		turnMotor.configNominalOutputForward(0,30);
+		turnMotor.configNominalOutputReverse(0, 30);
+		turnMotor.configPeakOutputForward(11.0, 30);
+		turnMotor.configPeakOutputReverse(-11.0, 30);
 		turnMotor.enableVoltageCompensation(true); 
 		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
-		turnMotor.configNeutralDeadband(0.001, 10);
+		turnMotor.configNeutralDeadband(0.01, 30);
 		//set coast mode
 		turnMotor.setNeutralMode(NeutralMode.Coast);
 //		//set Voltage for turn motors
@@ -148,10 +149,10 @@ public class SwervePOD {
 		double timeUs = turnMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
 		// Convert timeUs Pulse to angle	   
 		double degrees = turnMotor.getSensorCollection().getPulseWidthRiseToFallUs()*(360.0/timeUs);  
-		SmartDashboard.putNumber("RawAngle_"+motorName.name(), degrees);
-		degrees = Utils.wrapAngle0To360Deg(degrees) - Constants.AngleBias[motorName.value];
+		SmartDashboard.putNumber("RawAngle_", degrees);
+		degrees = Utils.wrapAngle0To360Deg(degrees) - Constants.AngleBias[0];
 		degrees = Utils.wrapAngle0To360Deg(degrees);
-		SmartDashboard.putNumber(motorName.name()+" turn", degrees);
+		SmartDashboard.putNumber(" turn", degrees);
 		return degrees;
 	}
 	
@@ -179,9 +180,9 @@ public class SwervePOD {
 	 * @param timeMsec The current limit at free speed (5700RPM for NEO).
 	 */
 	public void setTurnCurrentLimit(int peakAmps, int durationMs, int continousAmps) {
-		turnMotor.configPeakCurrentLimit(peakAmps, 10); /* 35 A */
-		turnMotor.configPeakCurrentDuration(durationMs, 10); /* 200ms */
-		turnMotor.configContinuousCurrentLimit(continousAmps, 10); /* 30A */
+		turnMotor.configPeakCurrentLimit(peakAmps, 30); /* 35 A */
+		turnMotor.configPeakCurrentDuration(durationMs, 30); /* 200ms */
+		turnMotor.configContinuousCurrentLimit(continousAmps, 30); /* 30A */
 		turnMotor.enableCurrentLimit(true);
 	}
 
