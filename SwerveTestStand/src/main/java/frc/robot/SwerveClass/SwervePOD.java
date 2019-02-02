@@ -96,11 +96,11 @@ public class SwervePOD {
 		turnMotor.configPeakOutputReverse(-11.0, 30);
 		turnMotor.enableVoltageCompensation(true); 
 		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
-		turnMotor.configNeutralDeadband(0.01, 30);
+		turnMotor.configNeutralDeadband(0.001, 30);
 		//set coast mode
 		turnMotor.setNeutralMode(NeutralMode.Coast);
-//		//set Voltage for turn motors
 		turnMotor.setSensorPhase(false); 
+		// turnMotor.setInverted(true);
 		turnMotor.set(ControlMode.PercentOutput, 0.0);
 
 		pidTurnSource = new PIDSource() {				
@@ -122,6 +122,7 @@ public class SwervePOD {
 		pidTurnController.setContinuous(true);
 		pidTurnController.setOutputRange(-kMinOutput, kMaxOutput);
 		pidTurnController.enable();
+		
 	}
 	/**
 	 * @param kP proportional constant for PID control
@@ -148,12 +149,20 @@ public class SwervePOD {
 		// Convert rotations to degrees	   
 		double timeUs = turnMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
 		// Convert timeUs Pulse to angle	   
-		double degrees = turnMotor.getSensorCollection().getPulseWidthRiseToFallUs()*(360.0/timeUs);  
+		double degrees = turnMotor.getSensorCollection().getPulseWidthRiseToFallUs()/timeUs;
+		SmartDashboard.putNumber("RawEncoder_", degrees);
+
+		degrees *= (360.0);  
 		SmartDashboard.putNumber("RawAngle_", degrees);
 		degrees = Utils.wrapAngle0To360Deg(degrees) - Constants.AngleBias[0];
 		degrees = Utils.wrapAngle0To360Deg(degrees);
 		SmartDashboard.putNumber(" turn", degrees);
 		return degrees;
+	}
+
+	public void getPIDError() {
+		SmartDashboard.putNumber("error", pidTurnController.getError());
+		SmartDashboard.putNumber("Setpoint$", pidTurnController.getSetpoint());
 	}
 	
 	public void setSpeed(double speed) {
@@ -205,7 +214,10 @@ public class SwervePOD {
 	public double getSpeed(){
 		//Add the following constants to make proper speed calculations
 		//(kMaxRPM  / 600) * (kSensorUnitsPerRotation / kGearRatio)
-		return driveMotorEnc.getVelocity(); 
+		double speed = driveMotorEnc.getVelocity();
+		speed = (speed/5.33)*(4*Math.PI)*(1/60.0)*(1/12.0);
+		SmartDashboard.putNumber("Motor Speed", speed);
+		return speed;
 	}
 
 	public int getPosition(){
@@ -228,6 +240,13 @@ public class SwervePOD {
 		driveMotor.setIdleMode(IdleMode.kCoast);
 		drivePID.setReference(0 , ControlType.kVelocity);
 		turnMotor.setNeutralMode(NeutralMode.Coast);	
+	}
+
+	public void setAngle(){
+		//TODO write code for talon position set for turn motor
+		//needs to have continous turn like PID controller from wpilib
+
+
 	}
 
 }
