@@ -124,7 +124,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 
 			double[] degs = new double[4];
 		    for(int i=0;i<1;i++){
-		    	degs[i] = SwervePOD[i].getAngle();
+		    	degs[i] = SwervePOD[i].getAngleDeg();
 		    	
 		    	angleJoyStickDiff[i]= wheelAngles[i]- oldAngle[i];
 		    	angleError[i] = wheelAngles[i] - degs[i];
@@ -152,8 +152,8 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 			    	SwervePOD[i].setAngle(wheelAngles[i]);
 			    	oldAngle[i] = wheelAngles[i];
 			    }
-		    SwervePOD[i].getSpeed();
-			SwervePOD[i].getPIDError();
+			SwervePOD[i].getSpeed();
+			SwervePOD[i].getAngleDeg();
 			SmartDashboard.putNumber("Angle", wheelAngles[i]);
 
 	    }
@@ -172,8 +172,8 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 		double vel_Y = 0;
 		double velocity = 0;
 		for(int i=0;i<1;i++){
-			vel_X += SwervePOD[i].getSpeed()*Math.cos(SwervePOD[i].getAngle());
-			vel_Y +=  SwervePOD[i].getSpeed()*Math.sin(SwervePOD[i].getAngle());
+			vel_X += SwervePOD[i].getSpeed()*Math.cos(SwervePOD[i].getAngleDeg());
+			vel_Y +=  SwervePOD[i].getSpeed()*Math.sin(SwervePOD[i].getAngleDeg());
 		}
 		vel_X /= 4;
 		vel_Y /= 4;

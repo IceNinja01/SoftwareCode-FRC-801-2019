@@ -36,6 +36,8 @@ public class SwervePOD {
 	private double k_drive_P, k_drive_I, k_drive_D, k_drive_Iz, k_drive_FF, kMinRPM, kMaxRPM;
 	private double k_turn_P, k_turn_I, k_turn_D, k_turn_Iz, k_turn_FF, kMinAngle, kMaxAngle;
 	private double angle;
+
+	private int m_inputRange = 6*4096;
 	/**
 	 * 
 	 * @param Drive Motor Number on PDB for the Drive motor on SwervePOD
@@ -66,6 +68,7 @@ public class SwervePOD {
 	}
 	
 	public void initialize() {
+		
 
 
 	}
@@ -86,42 +89,43 @@ public class SwervePOD {
 	 *				if IZone != 0 and abs(err) > IZone:ClearIaccum()
 	 * @param kFF feedforward constant for PID control
 	 */
-	public void configPIDTurn(double kP, double kI, double kD, int kIz, double kFF, double kMinOutput, double kMaxOutput, double deadBand) {
+	public void configPIDTurn(double kP, double kI, double kD, int kIz, double kFF, double kMinOutput, double kMaxOutput, int deadBand) {
 	    // set PID coefficients for turn motor
-		turnMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 30);
+		turnMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 30);
+		turnMotor.setSensorPhase(false); 
+
+		turnMotor.config_kP(0, kP, 30);
+		turnMotor.config_kI(0, kI, 30);
+		turnMotor.config_kD(0, kD, 30);
+		turnMotor.config_IntegralZone(0, kIz, 30);
+		turnMotor.config_kF(0, kFF, 30);
+		
 		/* set the peak and nominal outputs, 12V means full */
-		turnMotor.configNominalOutputForward(0,30);
+		turnMotor.configNominalOutputForward(0, 30);
 		turnMotor.configNominalOutputReverse(0, 30);
 		turnMotor.configPeakOutputForward(11.0, 30);
 		turnMotor.configPeakOutputReverse(-11.0, 30);
 		turnMotor.enableVoltageCompensation(true); 
 		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
 		turnMotor.configNeutralDeadband(0.001, 30);
+		turnMotor.configAllowableClosedloopError(0, deadBand*(24576/360), 30); // degrees deadband
+		/**
+		 * Grab the 360 degree position of the MagEncoder's absolute
+		 * position, and intitally set the relative sensor to match.
+		 */
+		int absolutePosition = turnMotor.getSensorCollection().getPulseWidthPosition();
+
+		/* Mask out overflows, keep bottom 12 bits */
+		absolutePosition &= 0xFFF;
+		if (true) { absolutePosition *= -1; }
+		if (false) { absolutePosition *= -1; }
+		SmartDashboard.putNumber("PositionEnc", absolutePosition);	
+		turnMotor.setSelectedSensorPosition(wrapUnits(absolutePosition), 0, 30);
 		//set coast mode
 		turnMotor.setNeutralMode(NeutralMode.Coast);
-		turnMotor.setSensorPhase(false); 
 		// turnMotor.setInverted(true);
-		turnMotor.set(ControlMode.PercentOutput, 0.0);
-
-		pidTurnSource = new PIDSource() {				
-			@Override
-			public void setPIDSourceType(PIDSourceType pidSource) {				
-			}
-			@Override
-			public double pidGet() {
-				return getAngle();
-			}				
-			@Override
-			public PIDSourceType getPIDSourceType() {
-				return PIDSourceType.kDisplacement;
-			}
-		};
-		pidTurnController = new PIDController(kP, kI, kD, pidTurnSource, turnMotor);
-		pidTurnController.setAbsoluteTolerance(deadBand);
-		pidTurnController.setInputRange(0, 360);
-		pidTurnController.setContinuous(true);
-		pidTurnController.setOutputRange(-kMinOutput, kMaxOutput);
-		pidTurnController.enable();
+		turnMotor.selectProfileSlot(0, 0);
+		turnMotor.set(ControlMode.Position, 0.0);
 		
 	}
 	/**
@@ -144,25 +148,19 @@ public class SwervePOD {
 		drivePID.setOutputRange(kMinOutput, kMaxOutput);	
 	}
 
-	public double getAngle() {
-		int motorNumber = turnMotor.getDeviceID();
-		// Convert rotations to degrees	   
-		double timeUs = turnMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
-		// Convert timeUs Pulse to angle	   
-		double degrees = turnMotor.getSensorCollection().getPulseWidthRiseToFallUs()/timeUs;
-		SmartDashboard.putNumber("RawEncoder_", degrees);
-
-		degrees *= (360.0);  
-		SmartDashboard.putNumber("RawAngle_", degrees);
-		degrees = Utils.wrapAngle0To360Deg(degrees) - Constants.AngleBias[0];
-		degrees = Utils.wrapAngle0To360Deg(degrees);
-		SmartDashboard.putNumber(" turn", degrees);
-		return degrees;
+	public int getAngleUnits(){
+		int nativeUnits = turnMotor.getSelectedSensorPosition(0);
+		return nativeUnits;
 	}
 
-	public void getPIDError() {
-		SmartDashboard.putNumber("error", pidTurnController.getError());
-		SmartDashboard.putNumber("Setpoint$", pidTurnController.getSetpoint());
+	public double getAngleDeg() {
+		int motorNumber = turnMotor.getDeviceID();
+		// Convert rotations to degrees	   
+		int nativeUnits = getAngleUnits();
+		SmartDashboard.putNumber("nativeUnits", nativeUnits);
+		double degrees = toDeg(nativeUnits) - Constants.AngleBias[0];
+		SmartDashboard.putNumber("AngleEncoder", degrees);
+		return degrees;
 	}
 	
 	public void setSpeed(double speed) {
@@ -170,7 +168,25 @@ public class SwervePOD {
 	}
 	
 	public void setAngle(double angle) {
-		pidTurnController.setSetpoint(angle);
+		int relativeUnits = getAngleUnits();
+		int error = (int) ((angle - getAngleDeg()) / 360.0);
+		int setPoint = relativeUnits;
+		error %= m_inputRange;
+		if (Math.abs(error) > m_inputRange / 2) { // if going from 10 -> 350, you must calculate the difference
+		  if (error > 0) {
+			error -= m_inputRange;
+		  } else {
+			error += m_inputRange;
+		  }
+		}
+		if (error > 0){ // add or subtract error to current position
+			setPoint += error;
+			}
+		else{
+			setPoint -= error;
+		} 
+		//Set new position of motor
+		turnMotor.set(ControlMode.Position, setPoint);
 	}
 	
 	public void setDriveEncoder(int counts_per_rev){
@@ -226,14 +242,12 @@ public class SwervePOD {
 
 	public void stop() {
 		drivePID.setReference(0 , ControlType.kVelocity);
-		pidTurnController.disable();
 		turnMotor.set(ControlMode.PercentOutput, 0.0);
 	}
 	
 	public void brakeOn() {
 		driveMotor.setIdleMode(IdleMode.kBrake);
 		turnMotor.setNeutralMode(NeutralMode.Brake);
-		pidTurnController.disable();
 	}
 	
 	public void brakeOff() {
@@ -242,11 +256,22 @@ public class SwervePOD {
 		turnMotor.setNeutralMode(NeutralMode.Coast);	
 	}
 
-	public void setAngle(){
-		//TODO write code for talon position set for turn motor
-		//needs to have continous turn like PID controller from wpilib
+	private double toDeg(int units){
+		double angle = wrapUnits(units); 
+		angle *= 360.0 / 24576.0;
+		return angle;
+	}
 
+	private int toNativeUnits(double angle){
+		int units = (int) angle;
+		units *= 24576/360;
+		return units;
+	}
 
+	private int wrapUnits(int units){
+		int offset = units;
+		offset %= 24576;
+		return offset;
 	}
 
 }
