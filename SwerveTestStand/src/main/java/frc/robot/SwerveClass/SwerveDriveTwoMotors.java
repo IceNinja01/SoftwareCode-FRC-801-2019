@@ -146,14 +146,14 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 			    else
 			    {
 			    	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
-			    }
+				}
+				SwervePOD[i].getSpeed();
+				SwervePOD[i].getAngleDeg();
 				//Turn Motors
-			    if(wheelSpeeds[i]>0.1){
+			    // if(wheelSpeeds[i]>0.1){
 			    	SwervePOD[i].setAngle(wheelAngles[i]);
 			    	oldAngle[i] = wheelAngles[i];
-			    }
-			SwervePOD[i].getSpeed();
-			SwervePOD[i].getAngleDeg();
+			    // }
 			SmartDashboard.putNumber("Angle", wheelAngles[i]);
 
 	    }

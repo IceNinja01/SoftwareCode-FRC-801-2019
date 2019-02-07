@@ -37,7 +37,15 @@ public class SwervePOD {
 	private double k_turn_P, k_turn_I, k_turn_D, k_turn_Iz, k_turn_FF, kMinAngle, kMaxAngle;
 	private double angle;
 
-	private int m_inputRange = 6*4096;
+	private int m_inputRange = 360;
+
+	private int nativeUnits;
+
+	private double last_error;
+
+	private double turn_kP;
+
+	private double turn_kD;
 	/**
 	 * 
 	 * @param Drive Motor Number on PDB for the Drive motor on SwervePOD
@@ -68,8 +76,7 @@ public class SwervePOD {
 	}
 	
 	public void initialize() {
-		
-
+	
 
 	}
 
@@ -92,27 +99,29 @@ public class SwervePOD {
 	public void configPIDTurn(double kP, double kI, double kD, int kIz, double kFF, double kMinOutput, double kMaxOutput, int deadBand) {
 	    // set PID coefficients for turn motor
 		turnMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 30);
-		turnMotor.setSensorPhase(false); 
+		turnMotor.setSensorPhase(true); 
+		turn_kP = kP;
+		turn_kD = kD;
 
-		turnMotor.config_kP(0, kP, 30);
-		turnMotor.config_kI(0, kI, 30);
-		turnMotor.config_kD(0, kD, 30);
-		turnMotor.config_IntegralZone(0, kIz, 30);
-		turnMotor.config_kF(0, kFF, 30);
+		// turnMotor.config_kP(0, kP, 30);
+		// turnMotor.config_kI(0, kI, 30);
+		// turnMotor.config_kD(0, kD, 30);
+		// turnMotor.config_IntegralZone(0, kIz, 30);
+		// turnMotor.config_kF(0, kFF, 30);
 		
-		/* set the peak and nominal outputs, 12V means full */
+		// /* set the peak and nominal outputs, 12V means full */
 		turnMotor.configNominalOutputForward(0, 30);
 		turnMotor.configNominalOutputReverse(0, 30);
 		turnMotor.configPeakOutputForward(11.0, 30);
 		turnMotor.configPeakOutputReverse(-11.0, 30);
 		turnMotor.enableVoltageCompensation(true); 
-		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
-		turnMotor.configNeutralDeadband(0.001, 30);
-		turnMotor.configAllowableClosedloopError(0, deadBand*(24576/360), 30); // degrees deadband
-		/**
-		 * Grab the 360 degree position of the MagEncoder's absolute
-		 * position, and intitally set the relative sensor to match.
-		 */
+		// /* 0.001 represents 0.1% - default value is 0.04 or 4% */
+		// turnMotor.configNeutralDeadband(0.001, 30);
+		// // turnMotor.configAllowableClosedloopError(0, deadBand*(24576/360), 30); // degrees deadband
+		// /**
+		//  * Grab the 360 degree position of the MagEncoder's absolute
+		//  * position, and intitally set the relative sensor to match.
+		//  */
 		int absolutePosition = turnMotor.getSensorCollection().getPulseWidthPosition();
 
 		/* Mask out overflows, keep bottom 12 bits */
@@ -120,13 +129,34 @@ public class SwervePOD {
 		if (true) { absolutePosition *= -1; }
 		if (false) { absolutePosition *= -1; }
 		SmartDashboard.putNumber("PositionEnc", absolutePosition);	
-		turnMotor.setSelectedSensorPosition(wrapUnits(absolutePosition), 0, 30);
-		//set coast mode
+		turnMotor.setSelectedSensorPosition(0, 0, 30);
+		// //set coast mode
 		turnMotor.setNeutralMode(NeutralMode.Coast);
-		// turnMotor.setInverted(true);
-		turnMotor.selectProfileSlot(0, 0);
-		turnMotor.set(ControlMode.Position, 0.0);
-		
+		turnMotor.setInverted(false);
+		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
+		turnMotor.configNeutralDeadband(0.001, 10);
+//		//set Voltage for turn motors
+		turnMotor.set(ControlMode.PercentOutput, 0.0);
+
+		// pidTurnSource = new PIDSource() {				
+		// 	@Override
+		// 	public void setPIDSourceType(PIDSourceType pidSource) {				
+		// 	}
+		// 	@Override
+		// 	public double pidGet() {
+		// 		return getAngleUnits();
+		// 	}				
+		// 	@Override
+		// 	public PIDSourceType getPIDSourceType() {
+		// 		return PIDSourceType.kDisplacement;
+		// 	}
+		// };
+		// pidTurnController = new PIDController(kP, kI, kD, pidTurnSource, turnMotor);
+		// pidTurnController.setAbsoluteTolerance(deadBand);
+		// pidTurnController.setInputRange(0, 360);
+		// pidTurnController.setContinuous(true);
+		// pidTurnController.setOutputRange(-kMinOutput, kMaxOutput);
+		// pidTurnController.enable();
 	}
 	/**
 	 * @param kP proportional constant for PID control
@@ -149,14 +179,14 @@ public class SwervePOD {
 	}
 
 	public int getAngleUnits(){
-		int nativeUnits = turnMotor.getSelectedSensorPosition(0);
+		nativeUnits = turnMotor.getSelectedSensorPosition(0);
 		return nativeUnits;
 	}
 
 	public double getAngleDeg() {
 		int motorNumber = turnMotor.getDeviceID();
 		// Convert rotations to degrees	   
-		int nativeUnits = getAngleUnits();
+		nativeUnits = wrapUnits(getAngleUnits());
 		SmartDashboard.putNumber("nativeUnits", nativeUnits);
 		double degrees = toDeg(nativeUnits) - Constants.AngleBias[0];
 		SmartDashboard.putNumber("AngleEncoder", degrees);
@@ -168,8 +198,16 @@ public class SwervePOD {
 	}
 	
 	public void setAngle(double angle) {
-		int relativeUnits = getAngleUnits();
-		int error = (int) ((angle - getAngleDeg()) / 360.0);
+		// pidTurnController.setSetpoint(angle);
+		double error = getError(angle);
+		// Set new position of motor
+		turnMotor.set(ControlMode.PercentOutput, error);
+	}
+	
+	private double getError(double angle2) {
+		int relativeUnits = nativeUnits;
+		SmartDashboard.putNumber("Relative units", relativeUnits);
+		double error = angle2 - getAngleDeg();
 		int setPoint = relativeUnits;
 		error %= m_inputRange;
 		if (Math.abs(error) > m_inputRange / 2) { // if going from 10 -> 350, you must calculate the difference
@@ -179,17 +217,23 @@ public class SwervePOD {
 			error += m_inputRange;
 		  }
 		}
-		if (error > 0){ // add or subtract error to current position
-			setPoint += error;
-			}
-		else{
-			setPoint -= error;
-		} 
-		//Set new position of motor
-		turnMotor.set(ControlMode.Position, setPoint);
+
+		// if (error > 0){ // add or subtract error to current position
+		// 	error += relativeUnits;
+		// 	}
+		// else{
+		// 	error -= relativeUnits;
+		// } 
+		double pidOutPut = turn_kP * error + turn_kD * last_error;
+		last_error = error - last_error;
+		SmartDashboard.putNumber("setAnlge", angle);
+		SmartDashboard.putNumber("Error",  error);
+		SmartDashboard.putNumber("SetPoint",  setPoint);
+
+		return pidOutPut;
 	}
-	
-	public void setDriveEncoder(int counts_per_rev){
+
+	public void setDriveEncoder(int counts_per_rev) {
 		driveMotor.setParameter(CANSparkMaxLowLevel.ConfigParameter.kEncoderCountsPerRev, counts_per_rev);
 	}
 
@@ -242,11 +286,13 @@ public class SwervePOD {
 
 	public void stop() {
 		drivePID.setReference(0 , ControlType.kVelocity);
+		pidTurnController.disable();
 		turnMotor.set(ControlMode.PercentOutput, 0.0);
 	}
 	
 	public void brakeOn() {
 		driveMotor.setIdleMode(IdleMode.kBrake);
+		// pidTurnController.disable();
 		turnMotor.setNeutralMode(NeutralMode.Brake);
 	}
 	
