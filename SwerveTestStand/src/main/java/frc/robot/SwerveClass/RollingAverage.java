@@ -17,7 +17,7 @@ public class RollingAverage {
     public RollingAverage(int size) {
         this.size = size;
         samples = new double[size];
-        for (int i = 0; i < size; i++) samples[i] = 0d;
+        reset();
     }
     
     public void add(double x) {
@@ -30,6 +30,12 @@ public class RollingAverage {
     public double getAverage() {
         return total / size;
     }
+
+	public void reset() {
+        for(int i=0; i<size; i++){ 
+            samples[i] = 0d;
+        }
+	}
 }
 
 
