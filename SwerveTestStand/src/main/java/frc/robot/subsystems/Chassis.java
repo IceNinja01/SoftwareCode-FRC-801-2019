@@ -27,8 +27,10 @@ public class Chassis extends Subsystem {
 		rightFrontPod = new SwervePOD(0, 4, 0);
 		rightFrontPod.configPIDDrive(0.00001, 0.000001, 0.0, 0.0, 0.0, -1.0, 1.0);
 
-		rightFrontPod.configPIDTurn(0.002, 0.001, 0.00001, 0, 0.0, -0.2, 0.2, 1);
-		chassisSwerveDrive = new SwerveDriveTwoMotors(rightFrontPod, 1);
+		rightFrontPod.configPIDTurn(0.005, 0.00001, 0.001, 0, 0.001, -1.0, 1.0, 1);
+
+		chassisSwerveDrive = new SwerveDriveTwoMotors(rightFrontPod, 3);
+		chassisSwerveDrive.setDriveCurrentLimit(10, 40);
 	}
 
 	public void initDefaultCommand() {
@@ -54,6 +56,7 @@ public class Chassis extends Subsystem {
 		
 	public void getAngle(){
 		rightFrontPod.getAngleDeg();
+		rightFrontPod.getAbsAngle();
 	}
 		
 }

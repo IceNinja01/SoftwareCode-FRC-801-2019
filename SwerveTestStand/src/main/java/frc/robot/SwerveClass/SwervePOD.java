@@ -47,9 +47,10 @@ public class SwervePOD {
 
 	private double turn_kI;
 
-	private RollingAverage integral;
-
 	private int m_value;
+
+	private boolean kMotorInvert = false;
+	private boolean kSensorPhase = true;
 	/**
 	 * 
 	 * @param Drive Motor Number on PDB for the Drive motor on SwervePOD
@@ -104,11 +105,10 @@ public class SwervePOD {
 	public void configPIDTurn(double kP, double kI, double kD, int kIz, double kFF, double kMinOutput, double kMaxOutput, int deadBand) {
 	    // set PID coefficients for turn motor
 		turnMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 30);
-		turnMotor.setSensorPhase(true); 
+		turnMotor.setSensorPhase(kSensorPhase); 
 		turn_kP = kP;
 		turn_kD = kD;
 		turn_kI = kI;
-		integral = new RollingAverage(10);
 		m_value = deadBand;
 		
 		// /* set the peak and nominal outputs, 12V means full */
@@ -123,17 +123,20 @@ public class SwervePOD {
 		//  * Grab the 360 degree position of the MagEncoder's absolute
 		//  * position, and intitally set the relative sensor to match.
 		//  */
-		int absolutePosition = turnMotor.getSensorCollection().getPulseWidthPosition();
+		int absolutePosition = getAbsAngle();	
 
-		/* Mask out overflows, keep bottom 12 bits */
-		absolutePosition &= 0xFFF;
-		if (true) { absolutePosition *= -1; }
-		if (false) { absolutePosition *= -1; }
-		SmartDashboard.putNumber("PositionEnc", absolutePosition);	
-		turnMotor.setSelectedSensorPosition(0, 0, 30);
+		if (absolutePosition > Constants.AngleBias[0])
+		{
+			turnMotor.setSelectedSensorPosition(24576- (absolutePosition-Constants.AngleBias[0]), 0, 30);
+		}
+		else
+		{
+			turnMotor.setSelectedSensorPosition(Constants.AngleBias[0]-absolutePosition, 0, 30);
+		}
+		
 		// //set coast mode
 		turnMotor.setNeutralMode(NeutralMode.Coast);
-		turnMotor.setInverted(false);
+		turnMotor.setInverted(kMotorInvert);
 		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
 		turnMotor.configNeutralDeadband(0.001, 10);
 //		//set Voltage for turn motors
@@ -156,22 +159,35 @@ public class SwervePOD {
 		drivePID.setD(kD);
 		drivePID.setIZone(kIz);
 		drivePID.setFF(kFF);
-		drivePID.setOutputRange(kMinOutput, kMaxOutput);	
+		drivePID.setOutputRange(kMinOutput, kMaxOutput);
+		driveMotor.setInverted(true);	
 	}
 
 	public int getAngleUnits(){
-		nativeUnits = turnMotor.getSelectedSensorPosition(0);
-		return nativeUnits;
+		int nativeUnits_temp = turnMotor.getSelectedSensorPosition(0);
+		SmartDashboard.putNumber("NativeEnc", nativeUnits_temp);
+		return nativeUnits_temp;
 	}
 
 	public double getAngleDeg() {
 		int motorNumber = turnMotor.getDeviceID();
 		// Convert rotations to degrees	   
 		nativeUnits = wrapUnits(getAngleUnits());
-		SmartDashboard.putNumber("nativeUnits", nativeUnits);
-		double degrees = toDeg(nativeUnits) - Constants.AngleBias[0];
+		SmartDashboard.putNumber("RelativeEnc", nativeUnits);
+		double degrees = toDeg(nativeUnits);
 		SmartDashboard.putNumber("AngleEncoder", degrees);
 		return degrees;
+	}
+
+	public int getAbsAngle(){
+		int absolutePosition = turnMotor.getSensorCollection().getPulseWidthPosition();
+
+		/* Mask out overflows, keep bottom 12 bits */
+		absolutePosition &= 0xFFF;
+		// if (kSensorPhase) { absolutePosition *= -1; }
+		// if (kMotorInvert) { absolutePosition *= -1; }
+		SmartDashboard.putNumber("AbsoluteEnc", absolutePosition);	
+		return absolutePosition;
 	}
 	
 	public void setSpeed(double speed) {
@@ -193,13 +209,12 @@ public class SwervePOD {
 			error += m_inputRange;
 		  }
 		}
-		integral.add(error);
-		double pidOutPut = turn_kP * error + turn_kI * integral.getAverage() - turn_kD * (error - last_error);
+		double pidOutPut = turn_kP * error + turn_kI * (error - last_error) - turn_kD * (error - last_error);
 		last_error = error;
-		if(onTarget()){ reset();} //reset last_error and integral
+		// if(onTarget()){ reset();} //reset last_error and integral
 
-		SmartDashboard.putNumber("setAnlge", angle2);
-		SmartDashboard.putNumber("Error",  error);
+		// SmartDashboard.putNumber("setAnlge", angle2);
+		// SmartDashboard.putNumber("Error",  error);
 
 		return pidOutPut;
 	}
@@ -285,7 +300,7 @@ public class SwervePOD {
 	}
 
 	private int wrapUnits(int units){
-		int offset = units;
+		int offset = Math.abs(units);
 		offset %= 24576;
 		return offset;
 	}
@@ -296,8 +311,6 @@ public class SwervePOD {
 
 	public void reset(){
 		last_error = 0;
-		integral.reset();
-
 	}
 
 }

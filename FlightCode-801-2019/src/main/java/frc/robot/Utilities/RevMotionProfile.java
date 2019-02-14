@@ -23,7 +23,7 @@ public class RevMotionProfile {
          Where V(t) is equal to the motors current velocity
          and where P(t) is equal to the motors current position
          */
-        public double[][] OneDimensionMotion(double distance, double maxVel, double accel)
+        public double[][] OneDimensionMotion(double distance, double maxVel, double accel, double dt)
         {
             /*
              * distance is units ft MaxVelocity is ft/sec accel is ft/sec^2
@@ -43,7 +43,6 @@ public class RevMotionProfile {
             {// Trapezoidal
                 pathTime = rampTime * 2 + (distance - accelDist * 2) / maxVel;
             }
-            double dt = 0.01; // steps are equal to 10ms
             int segments = (int) (pathTime * (1 / 0.01)) + 1;
             // [position, velocity, time]
             double[][] path = new double[segments][3];

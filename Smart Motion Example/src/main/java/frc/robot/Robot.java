@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -44,7 +45,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  * as intended.
  */
 public class Robot extends TimedRobot {
-  private static final int deviceID = 1;
+  private static final int deviceID = 0;
   private CANSparkMax m_motor;
   private CANPIDController m_pidController;
   private CANEncoder m_encoder;

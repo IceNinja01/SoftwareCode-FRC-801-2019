@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    lift.init(Constants.rightLiftMotorID);
+    lift.init();
 
     m_oi = new OI();
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());

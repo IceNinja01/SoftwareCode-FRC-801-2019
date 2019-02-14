@@ -154,11 +154,12 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 			    	SwervePOD[i].setAngle(wheelAngles[i]);
 			    	oldAngle[i] = wheelAngles[i];
 			    // }
-			SmartDashboard.putNumber("Angle", wheelAngles[i]);
+			// SmartDashboard.putNumber("Angle", wheelAngles[i]);
+			SwervePOD[i].getAbsAngle();
 
 	    }
 		// getspeed();
-	    	SmartDashboard.putNumber("JoyAngle", angleJoyStickDiff[0]);
+	    	// SmartDashboard.putNumber("JoyAngle", angleJoyStickDiff[0]);
 
 		if (m_safetyHelper != null) {
 			m_safetyHelper.feed();
@@ -198,7 +199,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	}
 
 	public void getAmps() {
-		for(int i=0 ; i<1; i++) {
+		for(int i=0; i<1; i++) {
 		   SmartDashboard.putNumber("DriveAmps_"+motorName[i], SwervePOD[i].getDriveAmps());
 		   SmartDashboard.putNumber("DriveVolts_"+motorName[i], SwervePOD[i].getDriveVoltage());
 		}
