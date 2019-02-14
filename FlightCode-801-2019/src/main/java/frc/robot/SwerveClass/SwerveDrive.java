@@ -124,7 +124,7 @@ public void drive(double AxisX, double AxisY, double rotation, double gyroAngle)
 	}
 
 		double[] degs = new double[4];
-		for(int i=0;i<1;i++){
+		for(int i=0;i<3;i++){
 			degs[i] = SwervePOD[i].getAngleDeg();
 			
 			angleJoyStickDiff[i]= wheelAngles[i]- oldAngle[i];
@@ -166,133 +166,164 @@ public void drive(double AxisX, double AxisY, double rotation, double gyroAngle)
 		m_safetyHelper.feed();
 	  }
 
-}
-// Get the speed of the robot and angle from motor values. The angle is calculated from motors.
-// Use gyro for true angle measurements.
-private void getspeed() {
-	double vel_X = 0;
-	double vel_Y = 0;
-	double velocity = 0;
-	for(int i=0;i<1;i++){
-		vel_X += SwervePOD[i].getSpeed()*Math.cos(SwervePOD[i].getAngleDeg());
-		vel_Y +=  SwervePOD[i].getSpeed()*Math.sin(SwervePOD[i].getAngleDeg());
 	}
-	vel_X /= 4;
-	vel_Y /= 4;
-	double omega = Utils.wrapAngle0To360Deg(Math.atan2(vel_Y,vel_X)*180/Math.PI);
-	velocity = Math.sqrt(vel_Y*vel_Y + vel_X*vel_X);
-	SmartDashboard.putNumber("Velocity", velocity);
-	SmartDashboard.putNumber("Angle_Omega", omega);
+	// Get the speed of the robot and angle from motor values. The angle is calculated from motors.
+	// Use gyro for true angle measurements.
+	private void getspeed() {
+		double vel_X = 0;
+		double vel_Y = 0;
+		double velocity = 0;
+		for(int i=0;i<1;i++){
+			vel_X += SwervePOD[i].getSpeed()*Math.cos(SwervePOD[i].getAngleDeg());
+			vel_Y +=  SwervePOD[i].getSpeed()*Math.sin(SwervePOD[i].getAngleDeg());
+		}
+		vel_X /= 4;
+		vel_Y /= 4;
+		double omega = Utils.wrapAngle0To360Deg(Math.atan2(vel_Y,vel_X)*180/Math.PI);
+		velocity = Math.sqrt(vel_Y*vel_Y + vel_X*vel_X);
+		SmartDashboard.putNumber("Velocity", velocity);
+		SmartDashboard.putNumber("Angle_Omega", omega);
 
-}
-
-public void turnMotors(double angle_CMD) {
-	for(int i=0;i<1;i++){
-		SwervePOD[i].setAngle(angle_CMD);
 	}
-}
 
-public void turnMotorsRPM(double angle_CMD , double speed){
-	for(int i=0;i<1;i++){
-		SwervePOD[i].setAngle(angle_CMD);
-		SwervePOD[i].setSpeed(-maxRPM*speed);
+	public void turnMotors(double angle_CMD) {
+		for(int i=0;i<1;i++){
+			SwervePOD[i].setAngle(angle_CMD);
+		}
 	}
-}
 
-public void getAmps() {
-	for(int i=0 ; i<1; i++) {
-	   SmartDashboard.putNumber("DriveAmps_"+motorName[i], SwervePOD[i].getDriveAmps());
-	   SmartDashboard.putNumber("DriveVolts_"+motorName[i], SwervePOD[i].getDriveVoltage());
+	public void turnMotorsRPM(double angle_CMD , double speed){
+		for(int i=0;i<1;i++){
+			SwervePOD[i].setAngle(angle_CMD);
+			SwervePOD[i].setSpeed(-maxRPM*speed);
+		}
 	}
-}
 
-public double currentSpeed(SwervePOD motor, int num){
-	double speed = motor.getSpeed();
-	SmartDashboard.putNumber("Speed"+motorName[num], speed);
-	return speed;
-}
+	public void getAmps() {
+		for(int i=0 ; i<1; i++) {
+		SmartDashboard.putNumber("DriveAmps_"+motorName[i], SwervePOD[i].getDriveAmps());
+		SmartDashboard.putNumber("DriveVolts_"+motorName[i], SwervePOD[i].getDriveVoltage());
+		}
+	}
 
-public void setMaxRPM(double maxRPM){
-	this.maxRPM = maxRPM;
-}
+	public double currentSpeed(SwervePOD motor, int num){
+		double speed = motor.getSpeed();
+		SmartDashboard.putNumber("Speed"+motorName[num], speed);
+		return speed;
+	}
 
-public double getLR() {
-	return L/R;
-}
+	public void setMaxRPM(double maxRPM){
+		this.maxRPM = maxRPM;
+	}
 
-public double getWR() {
-	return W/R;
-}
+	public double getLR() {
+		return L/R;
+	}
 
-public void setWidth(double width){
-	this.W = width;
-	R = Math.sqrt(L*L+W*W);
-}
+	public double getWR() {
+		return W/R;
+	}
 
-public void setLength(double length){
-	this.L = length;
-	R = Math.sqrt(L*L+W*W);
-}
+	public void setWidth(double width){
+		this.W = width;
+		R = Math.sqrt(L*L+W*W);
+	}
 
-/**
- * @param stallLimit The current limit in Amps at 0 RPM.
- * @param freeLimit The current limit at free speed (5700RPM for NEO).
- */
-public void setDriveCurrentLimit(int stallLimit, int freeLimit) {
+	public void setLength(double length){
+		this.L = length;
+		R = Math.sqrt(L*L+W*W);
+	}
+
+	/**
+	 * @param stallLimit The current limit in Amps at 0 RPM.
+	 * @param freeLimit The current limit at free speed (5700RPM for NEO).
+	 */
+	public void setDriveCurrentLimit(int stallLimit, int freeLimit) {
+		/* Peak Current and Duration must be exceeded before current limit is activated.
+		When activated, current will be limited to Continuous Current.
+		Set Peak Current params to 0 if desired behavior is to immediately current-limit. */
+		for(int i=0;i>1;i++){
+			SwervePOD[i].setDriveCurrentLimit(stallLimit, freeLimit);
+		}
+	}
+
+	public void setTurnCurrentLimit(int peakAmps, int durationMs, int continousAmps) {
 	/* Peak Current and Duration must be exceeded before current limit is activated.
 	When activated, current will be limited to Continuous Current.
 	Set Peak Current params to 0 if desired behavior is to immediately current-limit. */
-	for(int i=0;i>1;i++){
-		SwervePOD[i].setDriveCurrentLimit(stallLimit, freeLimit);
-	}
-}
-
-public void setTurnCurrentLimit(int peakAmps, int durationMs, int continousAmps) {
-/* Peak Current and Duration must be exceeded before current limit is activated.
-When activated, current will be limited to Continuous Current.
-Set Peak Current params to 0 if desired behavior is to immediately current-limit. */
-	for(int i=0;i>1;i++){
-		SwervePOD[i].setTurnCurrentLimit(peakAmps, durationMs, continousAmps);
-	}
-}
-
-@Override
-public void stopMotor() {
-	for(int i=0;i>1;i++){
-		if (SwervePOD[i] != null) {
-		  SwervePOD[i].stop();
+		for(int i=0;i>1;i++){
+			SwervePOD[i].setTurnCurrentLimit(peakAmps, durationMs, continousAmps);
 		}
 	}
-	if (m_safetyHelper != null) {
-	  m_safetyHelper.feed();
-	}
-}
 
-@Override
-public String getDescription() {
-	return null;
-}
-
-public void brakeOn() {
-	for(int i=0;i>1;i++){
-		if (SwervePOD[i] != null) {
-		  SwervePOD[i].brakeOn();
+	@Override
+	public void stopMotor() {
+		for(int i=0;i>1;i++){
+			if (SwervePOD[i] != null) {
+			SwervePOD[i].stop();
+			}
+		}
+		if (m_safetyHelper != null) {
+		m_safetyHelper.feed();
 		}
 	}
-	if (m_safetyHelper != null) {
-	  m_safetyHelper.feed();
-	}
-}
 
-public void brakeOff() {
-	for(int i=0;i>1;i++){
-		if (SwervePOD[i] != null) {
-			  SwervePOD[i].brakeOff();
+	@Override
+	public String getDescription() {
+		return null;
+	}
+
+	public void brakeOn() {
+		for(int i=0;i>1;i++){
+			if (SwervePOD[i] != null) {
+			SwervePOD[i].brakeOn();
+			}
+		}
+		if (m_safetyHelper != null) {
+		m_safetyHelper.feed();
 		}
 	}
-	if (m_safetyHelper != null) {
-	  m_safetyHelper.feed();
+
+	public void brakeOff() {
+		for(int i=0;i>1;i++){
+			if (SwervePOD[i] != null) {
+				SwervePOD[i].brakeOff();
+			}
+		}
+		if (m_safetyHelper != null) {
+		m_safetyHelper.feed();
+		}
 	}
-}
+
+	/**
+	 * @param kP proportional constant for PID control
+	 * @param kI intergral constant for PID control
+	 * @param kD derivative constant for PID control
+	 * @param kIz I Zone is specified in the same units as sensor position (ADC units or quadrature edges). If pos/vel error is outside of this value, the integrated error will auto-clear:
+	 *				if IZone != 0 and abs(err) > IZone:ClearIaccum()
+	 * @param kFF feedforward constant for PID control
+	 * @param kMinOutput the minimum percentage to write to the output, -1 min
+	 * @param kMaxOutput the maximum percentage to write to the output, 1 max
+	 */
+	public void configPIDDrive(double kP, double kI, double kD, double kIz, double kFF, double kMinOutput, double kMaxOutput) {
+		for(int i=0;i>1;i++){
+			SwervePOD[i].configPIDDrive(kP, kI, kD, kIz, kFF, kMinOutput, kMaxOutput);
+		}
+
+	}
+	/**
+	 * @param kP proportional constant for PID control
+	 * @param kI intergral constant for PID control
+	 * @param kD derivative constant for PID control
+	 * @param kIz I Zone is specified in the same units as sensor position (ADC units or quadrature edges). If pos/vel error is outside of this value, the integrated error will auto-clear:
+	 *				if IZone != 0 and abs(err) > IZone:ClearIaccum()
+	 * @param kFF feedforward constant for PID control
+	 */
+	public void configPIDTurn(double kP, double kI, double kD, int kIz, double kFF, double kMinOutput, double kMaxOutput, int deadBand) {
+		for(int i=0;i>1;i++){
+			SwervePOD[i].configPIDTurn(kP, kI, kD, kIz, kFF, kMinOutput, kMaxOutput, deadBand);
+		}
+	
+	}
 
 }	

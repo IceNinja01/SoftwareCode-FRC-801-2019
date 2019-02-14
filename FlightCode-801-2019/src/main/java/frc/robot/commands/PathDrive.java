@@ -10,6 +10,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.Chassis;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.Trajectory;
@@ -68,10 +69,11 @@ public class PathDrive extends Command {
     // 'getEncPosition' function.
     // 1000 is the amount of encoder ticks per full revolution
     // Wheel Diameter is the diameter of your wheel in meters
-    frFollower.configureEncoder(RobotMap.frontRight.getPosition(), 294, 0.1016);
-    flFollower.configureEncoder(RobotMap.frontLeft.getPosition(), 294, 0.1016);
-    blFollower.configureEncoder(RobotMap.backLeft.getPosition(), 294, 0.1016);
-    brFollower.configureEncoder(RobotMap.backRight.getPosition(), 294, 0.1016);
+   
+    frFollower.configureEncoder(Robot.chassis.rightFrontPod.getPosition(), 224, 0.1016);
+    flFollower.configureEncoder(Robot.chassis.leftFrontPod.getPosition(), 224, 0.1016);
+    blFollower.configureEncoder(Robot.chassis.leftBackPod.getPosition(), 224, 0.1016);
+	  brFollower.configureEncoder(Robot.chassis.rightBackPod.getPosition(), 224, 0.1016);
 
     // The first argument is the proportional gain. Usually this will be quite high
     // The second argument is the integral gain. This is unused for motion profiling
@@ -91,24 +93,24 @@ public class PathDrive extends Command {
   @Override
   protected void execute() {
     //Calculate error and PID outputs
-    frOutput = frFollower.calculate(RobotMap.frontRight.getPosition());
-    flOutput = flFollower.calculate(RobotMap.frontLeft.getPosition());
-    blOutput = blFollower.calculate(RobotMap.backLeft.getPosition());
-    brOutput = brFollower.calculate(RobotMap.backRight.getPosition());
+    frOutput = frFollower.calculate(Robot.chassis.rightFrontPod.getPosition());
+    flOutput = flFollower.calculate(Robot.chassis.leftFrontPod.getPosition());
+    blOutput = blFollower.calculate(Robot.chassis.leftBackPod.getPosition());
+    brOutput = brFollower.calculate(Robot.chassis.rightBackPod.getPosition());
     frHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(frFollower.getHeading()));    // Bound to -180..180 degrees
     flHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(flFollower.getHeading()));    // Bound to -180..180 degrees
     blHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(blFollower.getHeading()));    // Bound to -180..180 degrees
     brHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(brFollower.getHeading()));    // Bound to -180..180 degrees
     //set speed for Swerve PODs
-    RobotMap.frontRight.setSpeed(frOutput);
-    RobotMap.frontLeft.setSpeed(flOutput);
-    RobotMap.backRight.setSpeed(blOutput);
-    RobotMap.backLeft.setSpeed(brOutput);
+    Robot.chassis.rightFrontPod.setSpeed(frOutput);
+    Robot.chassis.leftFrontPod.setSpeed(flOutput);
+    Robot.chassis.leftBackPod.setSpeed(blOutput);
+    Robot.chassis.rightBackPod.setSpeed(brOutput);
     //turn SwervePODs
-    RobotMap.frontRight.setAngle(frHeading);
-    RobotMap.frontLeft.setAngle(flHeading);
-    RobotMap.backRight.setAngle(blHeading);
-    RobotMap.backLeft.setAngle(brHeading);
+    Robot.chassis.rightFrontPod.setAngle(frHeading);
+    Robot.chassis.leftFrontPod.setAngle(flHeading);
+    Robot.chassis.leftBackPod.setAngle(blHeading);
+    Robot.chassis.rightBackPod.setAngle(brHeading);
   
 
   }
