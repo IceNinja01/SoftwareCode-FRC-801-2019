@@ -127,7 +127,8 @@ public class SwervePOD {
 		m_value = deadBand;
 		turnMotorPID = new PID(kP, kI, kD, kFF);
 		turnMotorPID.setOutputLimits(kMaxOutput);
-
+		turnMotorPID.setContinous(true);
+		turnMotorPID.setContinousInputRange(360);
 
 		// /* set the peak and nominal outputs, 12V means full */
 		turnMotor.configNominalOutputForward(0, 10);
@@ -215,29 +216,7 @@ public class SwervePOD {
 	
 	public void setAngle(double angle) {
 		// Set new position of motor
-		turnMotor.set(ControlMode.PercentOutput, getError(angle));
-	}
-	
-	private double getError(double angle2) {
-
-
-		double error = angle2 - getAngleDeg();
-		error %= m_inputRange;
-		if (Math.abs(error) > m_inputRange / 2) { // if going from 10 -> 150, you must calculate the difference
-		  if (error > 0) {
-			error -= m_inputRange;
-		  } else {
-			error += m_inputRange;
-		  }
-		}
-		double pidOutPut = turn_kP * error + turn_kI * (error - last_error) - turn_kD * (error - last_error);
-		last_error = error;
-		// if(onTarget()){ reset();} //reset last_error and integral
-
-		// SmartDashboard.putNumber("setAnlge", angle2);
-		// SmartDashboard.putNumber("Error",  error);
-
-		return pidOutPut;
+		turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
 	}
 
 	public void setDriveEncoder(int counts_per_rev) {

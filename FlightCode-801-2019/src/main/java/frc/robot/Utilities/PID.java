@@ -35,6 +35,9 @@ public class PID
   private double outputFilter=0;
   
   private double setpointRange=0;
+  private double continousInputRange=0;
+
+  private boolean continous;
   
   //**********************************
   // Constructor functions
@@ -223,6 +226,17 @@ public class PID
     
     // Do the simple parts of the calculations
     double error=setpoint-actual;
+    if(continous=true){
+
+      error %= continousInputRange;
+      if (Math.abs(error) > continousInputRange / 2) { // if going from 10 -> 350, you must calculate the difference
+        if (error > 0) {
+        error -= continousInputRange;
+        } else {
+        error += continousInputRange;
+        }
+      }
+    }
     
     // Calculate F output. Notice, this depends only on the setpoint, and not the error.
     Foutput=F*setpoint;
@@ -365,6 +379,23 @@ public class PID
   public void setSetpointRange(double range)
   {
     setpointRange=range;
+  }
+
+    /**
+   * Set the continous range for the PID error. ensures that the error wraps from 0 -> inputRange
+   * @param range, with units being the same as the expected sensor range.
+   */
+  public void setContinousInputRange(double range)
+  {
+    continousInputRange=range;
+  }
+
+   /**
+   * Set the continous range on for the PID error loop
+   * @param logic, boolean value for contious mode
+   */
+  public void setContinous(boolean logic){
+    continous = logic;
   }
   
   /**
