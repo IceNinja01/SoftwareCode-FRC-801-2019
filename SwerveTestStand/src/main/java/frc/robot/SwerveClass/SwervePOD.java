@@ -209,12 +209,12 @@ public class SwervePOD {
 			error += m_inputRange;
 		  }
 		}
-		double pidOutPut = turn_kP * error + turn_kI * (error - last_error) - turn_kD * (error - last_error);
+		double pidOutPut = turn_kP * error + turn_kI * (error + last_error) - turn_kD * (error - last_error);
 		last_error = error;
 		// if(onTarget()){ reset();} //reset last_error and integral
 
-		// SmartDashboard.putNumber("setAnlge", angle2);
-		// SmartDashboard.putNumber("Error",  error);
+		SmartDashboard.putNumber("setAnlge", angle2);
+		SmartDashboard.putNumber("Error",  error);
 
 		return pidOutPut;
 	}
