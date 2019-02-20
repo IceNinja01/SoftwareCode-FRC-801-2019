@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.SwerveClass.SwervePOD;
 import frc.robot.SwerveClass.Team801TalonSRX;
+import frc.robot.SwerveClass.SwervePOD.MotorName;
 
 /**
  *
@@ -24,7 +25,7 @@ public class Chassis extends Subsystem {
 	public static SwerveDriveTwoMotors chassisSwerveDrive;
 
 	public void init(){
-		rightFrontPod = new SwervePOD(0, 4, 0);
+		rightFrontPod = new SwervePOD(0, 4, MotorName.RightFront);
 		rightFrontPod.configPIDDrive(0.00001, 0.000001, 0.0, 0.0, 0.0, -1.0, 1.0);
 
 		rightFrontPod.configPIDTurn(0.005, 0.00001, 0.001, 0, 0.001, -1.0, 1.0, 1);

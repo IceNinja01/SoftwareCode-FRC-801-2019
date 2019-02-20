@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Utilities.PID;
 import frc.robot.Utilities.Utils;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -23,19 +24,24 @@ import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
 
 public class SwervePOD {
 
+	//**********************************
+  	// Class private variables
+  	//**********************************
+
 	private MotorName motorName;
 
 	private CANSparkMax driveMotor;
 	private CANEncoder driveMotorEnc;
 	private CANPIDController drivePID;
 
-	private Team801TalonSRX turnMotor;
+	private TalonSRX turnMotor;
+	private PID turnMotorPID;
 
 	private double k_drive_P, k_drive_I, k_drive_D, k_drive_Iz, k_drive_FF, kMinRPM, kMaxRPM;
 	private double k_turn_P, k_turn_I, k_turn_D, k_turn_Iz, k_turn_FF, kMinAngle, kMaxAngle;
 	private double angle;
 
-	private int m_inputRange = 360;
+	private int m_inputRange = 160;
 
 	private int nativeUnits;
 
@@ -51,38 +57,50 @@ public class SwervePOD {
 
 	private boolean kMotorInvert = false;
 	private boolean kSensorPhase = true;
+
+	//**********************************
+  	// Constructor functions
+  	//**********************************
 	/**
 	 * 
 	 * @param Drive Motor Number on PDB for the Drive motor on SwervePOD
 	 * @param Turn	Motor Number on PDB for the Turn motor on SwervePOD
-	 * @param PODName EnumType for POD Name: RightFront(0), LeftFront(1), LeftBack(2), RightBack(3).
+	 * @param i EnumType for POD Name: RightFront(0), LeftFront(1), LeftBack(2), RightBack(1).
 	 */
 
-	public SwervePOD(int Drive, int Turn, int PODName) {
+	public SwervePOD(int Drive, int Turn, MotorName motorName) {
 //		Initialize motors
 		driveMotor  = new CANSparkMax(Drive, CANSparkMaxLowLevel.MotorType.kBrushless);
 		driveMotorEnc = driveMotor.getEncoder();
 		drivePID = driveMotor.getPIDController();
 
-		turnMotor  = new Team801TalonSRX(Turn);		
-		// motorName.value = PODName;
+		turnMotor  = new TalonSRX(Turn);	
+		motorName.value = motorName;
 	}
 	
 	public enum MotorName{
-		RightFront(0),
-		LeftFront(1),
-		LeftBack(2),
-		RightBack(3);
-		public int value;
-		MotorName(int initValue){
-			
-			this.value = initValue;			
+
+		RightFront,
+		LeftFront,
+		LeftBack,
+		RightBack;
+
+		public MotorName value;
+
+		static{
+			RightFront.value = RightFront;
+			LeftFront.value = LeftFront;
+			LeftBack.value = LeftBack;
+			RightBack.value = RightBack;
 		}		
+
+		public MotorName getMotorName(){
+			return value;
+		}
+		
 	}
 	
 	public void initialize() {
-		
-	
 
 	}
 
@@ -104,21 +122,22 @@ public class SwervePOD {
 	 */
 	public void configPIDTurn(double kP, double kI, double kD, int kIz, double kFF, double kMinOutput, double kMaxOutput, int deadBand) {
 	    // set PID coefficients for turn motor
-		turnMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 30);
+		turnMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		turnMotor.setSensorPhase(kSensorPhase); 
-		turn_kP = kP;
-		turn_kD = kD;
-		turn_kI = kI;
 		m_value = deadBand;
-		
+		turnMotorPID = new PID(kP, kI, kD, kFF);
+		turnMotorPID.setOutputLimits(kMaxOutput);
+		turnMotorPID.setContinous(true);
+		turnMotorPID.setContinousInputRange(360);
+
 		// /* set the peak and nominal outputs, 12V means full */
-		turnMotor.configNominalOutputForward(0, 30);
-		turnMotor.configNominalOutputReverse(0, 30);
-		turnMotor.configPeakOutputForward(11.0 * kMaxOutput, 30);
-		turnMotor.configPeakOutputReverse(-11.0 * kMinOutput, 30);
+		turnMotor.configNominalOutputForward(0, 10);
+		turnMotor.configNominalOutputReverse(0, 10);
+		turnMotor.configPeakOutputForward(11.0 * kMaxOutput, 10);
+		turnMotor.configPeakOutputReverse(-11.0 * kMinOutput, 10);
 		turnMotor.enableVoltageCompensation(true); 
 		// /* 0.001 represents 0.1% - default value is 0.04 or 4% */
-		turnMotor.configNeutralDeadband(0.001, 30);
+		turnMotor.configNeutralDeadband(0.001, 10);
 		// /**
 		//  * Grab the 360 degree position of the MagEncoder's absolute
 		//  * position, and intitally set the relative sensor to match.
@@ -127,11 +146,11 @@ public class SwervePOD {
 
 		if (absolutePosition > Constants.AngleBias[0])
 		{
-			turnMotor.setSelectedSensorPosition(24576- (absolutePosition-Constants.AngleBias[0]), 0, 30);
+			turnMotor.setSelectedSensorPosition(24576- (absolutePosition-Constants.AngleBias[motorName.getMotorName().ordinal()]), 0, 10);
 		}
 		else
 		{
-			turnMotor.setSelectedSensorPosition(Constants.AngleBias[0]-absolutePosition, 0, 30);
+			turnMotor.setSelectedSensorPosition(motorName.getMotorName().ordinal()-absolutePosition, 0, 10);
 		}
 		
 		// //set coast mode
@@ -163,19 +182,20 @@ public class SwervePOD {
 		driveMotor.setInverted(true);	
 	}
 
-	public int getAngleUnits(){
+
+	public int getNativeUnits(){
 		int nativeUnits_temp = turnMotor.getSelectedSensorPosition(0);
-		SmartDashboard.putNumber("NativeEnc", nativeUnits_temp);
+		SmartDashboard.putNumber("NativeEnc " + motorName.getMotorName().ordinal(), nativeUnits_temp);
 		return nativeUnits_temp;
 	}
 
 	public double getAngleDeg() {
 		int motorNumber = turnMotor.getDeviceID();
 		// Convert rotations to degrees	   
-		nativeUnits = wrapUnits(getAngleUnits());
-		SmartDashboard.putNumber("RelativeEnc", nativeUnits);
+		nativeUnits = wrapUnits(getNativeUnits());
+		SmartDashboard.putNumber("RelativeEnc " + motorName.getMotorName().ordinal(), nativeUnits);
 		double degrees = toDeg(nativeUnits);
-		SmartDashboard.putNumber("AngleEncoder", degrees);
+		SmartDashboard.putNumber("AngleEncoder "+ motorName.getMotorName().ordinal(), degrees);
 		return degrees;
 	}
 
@@ -186,7 +206,7 @@ public class SwervePOD {
 		absolutePosition &= 0xFFF;
 		// if (kSensorPhase) { absolutePosition *= -1; }
 		// if (kMotorInvert) { absolutePosition *= -1; }
-		SmartDashboard.putNumber("AbsoluteEnc", absolutePosition);	
+		SmartDashboard.putNumber("AbsoluteEnc " + motorName.getMotorName().ordinal(), absolutePosition);	
 		return absolutePosition;
 	}
 	
@@ -196,27 +216,7 @@ public class SwervePOD {
 	
 	public void setAngle(double angle) {
 		// Set new position of motor
-		turnMotor.set(ControlMode.PercentOutput, getError(angle));
-	}
-	
-	private double getError(double angle2) {
-		double error = angle2 - getAngleDeg();
-		error %= m_inputRange;
-		if (Math.abs(error) > m_inputRange / 2) { // if going from 10 -> 350, you must calculate the difference
-		  if (error > 0) {
-			error -= m_inputRange;
-		  } else {
-			error += m_inputRange;
-		  }
-		}
-		double pidOutPut = turn_kP * error + turn_kI * (error + last_error) - turn_kD * (error - last_error);
-		last_error = error;
-		// if(onTarget()){ reset();} //reset last_error and integral
-
-		SmartDashboard.putNumber("setAnlge", angle2);
-		SmartDashboard.putNumber("Error",  error);
-
-		return pidOutPut;
+		turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
 	}
 
 	public void setDriveEncoder(int counts_per_rev) {
@@ -235,9 +235,9 @@ public class SwervePOD {
 	 * @param timeMsec The current limit at free speed (5700RPM for NEO).
 	 */
 	public void setTurnCurrentLimit(int peakAmps, int durationMs, int continousAmps) {
-		turnMotor.configPeakCurrentLimit(peakAmps, 30); /* 35 A */
-		turnMotor.configPeakCurrentDuration(durationMs, 30); /* 200ms */
-		turnMotor.configContinuousCurrentLimit(continousAmps, 30); /* 30A */
+		turnMotor.configPeakCurrentLimit(peakAmps, 10); /* 15 A */
+		turnMotor.configPeakCurrentDuration(durationMs, 10); /* 200ms */
+		turnMotor.configContinuousCurrentLimit(continousAmps, 10); /* 10A */
 		turnMotor.enableCurrentLimit(true);
 	}
 
@@ -261,7 +261,7 @@ public class SwervePOD {
 		//Add the following constants to make proper speed calculations
 		//(kMaxRPM  / 600) * (kSensorUnitsPerRotation / kGearRatio)
 		double speed = driveMotorEnc.getVelocity();
-		speed = (speed/5.33)*(4*Math.PI)*(1/60.0)*(1/12.0);
+		speed = (speed/5.1)*(4*Math.PI)*(1/60.0)*(1/12.0);
 		SmartDashboard.putNumber("Motor Speed", speed);
 		return speed;
 	}
@@ -289,13 +289,13 @@ public class SwervePOD {
 
 	private double toDeg(int units){
 		double angle = wrapUnits(units); 
-		angle *= 360.0 / 24576.0;
+		angle *= 160.0 / 24576.0;
 		return angle;
 	}
 
 	private int toNativeUnits(double angle){
 		int units = (int) angle;
-		units *= 24576/360;
+		units *= 24576/160;
 		return units;
 	}
 
