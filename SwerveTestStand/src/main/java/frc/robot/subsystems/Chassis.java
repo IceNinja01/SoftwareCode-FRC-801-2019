@@ -25,8 +25,8 @@ public class Chassis extends Subsystem {
 	public static SwerveDriveTwoMotors chassisSwerveDrive;
 
 	public void init(){
-		rightFrontPod = new SwervePOD(0, 4, MotorName.RightFront);
-		rightFrontPod.configPIDDrive(0.00001, 0.000001, 0.0, 0.0, 0.0, -1.0, 1.0);
+		rightFrontPod = new SwervePOD(1, 4, MotorName.RightFront);
+		rightFrontPod.configPIDDrive(0.00005, 0.000001, 0.0, 0.0, 0.0, -1.0, 1.0);
 
 		rightFrontPod.configPIDTurn(0.005, 0.00001, 0.001, 0, 0.001, -1.0, 1.0, 1);
 
