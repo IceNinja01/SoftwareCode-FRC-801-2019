@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
   chassis.getAngle();
-  // chassis.getError();
+  chassis.getError();
   }
 
 
