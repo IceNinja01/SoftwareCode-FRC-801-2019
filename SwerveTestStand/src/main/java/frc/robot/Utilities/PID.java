@@ -416,6 +416,10 @@ public class PID
       outputFilter=strength;
     }
   }
+
+  public double getError(){
+    return errorSum;
+  }
   
   //**************************************
   // Helper functions

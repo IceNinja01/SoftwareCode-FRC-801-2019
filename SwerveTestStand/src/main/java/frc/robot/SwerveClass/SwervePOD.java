@@ -199,6 +199,12 @@ public class SwervePOD {
 		SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
 		drivePID.setReference(speed, ControlType.kVelocity);
 	}
+
+	public double getTurnPIDError(){
+		double error = turnMotorPID.getError();
+		SmartDashboard.putNumber("Turn_PIDError ", error);
+		return error;
+	}
 	
 	public void setAngle(double angle) {
 		// Set new position of motor
