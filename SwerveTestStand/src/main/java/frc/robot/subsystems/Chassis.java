@@ -28,9 +28,9 @@ public class Chassis extends Subsystem {
 		rightFrontPod = new SwervePOD(1, 4, MotorName.RightFront);
 		rightFrontPod.configPIDDrive(0.00005, 0.000001, 0.0, 0.0, 0.0, -1.0, 1.0);
 
-		rightFrontPod.configPIDTurn(0.005, 0.00001, 0.001, 0, 0.001, -1.0, 1.0, 1);
+		rightFrontPod.configPIDTurn(0.003, 0.00000, 0.0000, 1, 0.0001, -1.0, 1.0, 1);
 
-		chassisSwerveDrive = new SwerveDriveTwoMotors(rightFrontPod, 3);
+		chassisSwerveDrive = new SwerveDriveTwoMotors(rightFrontPod, 10);
 		chassisSwerveDrive.setDriveCurrentLimit(10, 40);
 	}
 
@@ -45,7 +45,6 @@ public class Chassis extends Subsystem {
 	        y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, 1.0);
 	        z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
 	        
-
 	        chassisSwerveDrive.drive(x,y,z,angleCMD);
 
 	 }

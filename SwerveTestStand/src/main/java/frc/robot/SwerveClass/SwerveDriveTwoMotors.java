@@ -34,7 +34,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	private String motorName[] = {"FrontRight","FrontLeft","BackLeft","BackRight"};
 
 	private double[] oldAngle = {0,0,0,0};
-	private double maxRPM = 5700.0;
+	private double maxRPM = 1200.0;
 	private double maxTurn = 1.0;
 
 	private int deadBand = 1; //
@@ -151,7 +151,8 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 				SwervePOD[i].getAngleDeg();
 				//Turn Motors
 			    if(wheelSpeeds[i]>0.1){
-			    	SwervePOD[i].setAngle(wheelAngles[i]);
+					// SwervePOD[i].setAngle(SmartDashboard.getNumber("Set_Angle", 0));
+					SwervePOD[i].setAngle(wheelAngles[i]);
 			    	oldAngle[i] = wheelAngles[i];
 			    }
 			SmartDashboard.putNumber("Angle", wheelAngles[i]);

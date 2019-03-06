@@ -45,6 +45,8 @@ public class Robot extends TimedRobot {
     chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", chooser);
+    SmartDashboard.putNumber("Set_Angle", 0);
+    SmartDashboard.getNumber("Set_Angle", 0);
   }
 
   /**
