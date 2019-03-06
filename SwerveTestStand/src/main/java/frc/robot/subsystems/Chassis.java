@@ -29,7 +29,8 @@ public class Chassis extends Subsystem {
 		rightFrontPod.configPIDDrive(0.00005, 0.000001, 0.0, 0.0, 0.0, -1.0, 1.0);
 
 		rightFrontPod.configPIDTurn(0.003, 0.00000, 0.0000, 1, 0.0001, -1.0, 1.0, 1);
-
+		rightFrontPod.brakeOff();
+		
 		chassisSwerveDrive = new SwerveDriveTwoMotors(rightFrontPod, 10);
 		chassisSwerveDrive.setDriveCurrentLimit(10, 40);
 	}

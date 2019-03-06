@@ -34,7 +34,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	private String motorName[] = {"FrontRight","FrontLeft","BackLeft","BackRight"};
 
 	private double[] oldAngle = {0,0,0,0};
-	private double maxRPM = 1200.0;
+	private double maxRPM = 500.0;
 	private double maxTurn = 1.0;
 
 	private int deadBand = 1; //

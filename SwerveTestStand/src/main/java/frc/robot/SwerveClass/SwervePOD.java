@@ -148,7 +148,7 @@ public class SwervePOD {
 		drivePID.setIZone(kIz);
 		drivePID.setFF(kFF);
 		drivePID.setOutputRange(kMinOutput, kMaxOutput);
-		driveMotor.setInverted(true);	
+		driveMotor.setInverted(true);
 	}
 
     // reads the actual encoder count
