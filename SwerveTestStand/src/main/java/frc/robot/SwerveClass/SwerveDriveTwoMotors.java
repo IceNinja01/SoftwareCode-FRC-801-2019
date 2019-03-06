@@ -1,14 +1,6 @@
 package frc.robot.SwerveClass;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-
 import edu.wpi.first.wpilibj.MotorSafety;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utilities.Utils;
 
@@ -21,7 +13,6 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	//Variables to be used are set to private
 	
 	private MotorSafety m_safetyHelper;
-	protected PIDOutput[] pidOutput = new PIDOutput[4]; 
 	public static final double kDefaultExpirationTime = 0.1;
 	public static final double kDefaultMaxOutput = 1.0;
 
@@ -37,7 +28,6 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	private double maxRPM = 500.0;
 	private double maxTurn = 1.0;
 
-	private int deadBand = 1; //
 	private SwervePOD[] SwervePOD  = new SwervePOD[4];
     private double[] wheelAngles = new double[4];
 	private double[] wheelSpeeds = new double[4];
@@ -82,6 +72,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 		FWD = -yavg.getAverage();
 		STR = xavg.getAverage();
 		RCW = zavg.getAverage();
+
 		double radians = gyroAngle*Math.PI/180.00;
 		temp = FWD*Math.cos(radians) + STR*Math.sin(radians);
 		STR = -FWD*Math.sin(radians) + STR*Math.cos(radians);
@@ -125,11 +116,10 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 			double[] degs = new double[4];
 		    for(int i=0;i<1;i++){
 		    	degs[i] = SwervePOD[i].getAngleDeg();
-		    	
-		    	angleJoyStickDiff[i]= wheelAngles[i]- oldAngle[i];
+		    	SmartDashboard.putNumber("OLDAngle", oldAngle[i]);
+		    	angleJoyStickDiff[i]=(wheelAngles[i]- oldAngle[i]);
 		    	angleError[i] = wheelAngles[i] - degs[i];
-
-			    if(Math.abs(angleJoyStickDiff[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
+			    if(angleJoyStickDiff[i] > 90){ //new angle is greater than a 90degree turn, so find shortest path
 			    	//reverse translational motors 
 			    	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
 			    	
@@ -141,17 +131,31 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 			    	//now the angle is set to move to the shortest path, which is just 180 degrees 
 			    	//from the current heading
 			    	
+				}    
+				if(angleJoyStickDiff[i] < 90){ //new angle is less than a 90degree turn, so find shortest path
+			    	//reverse translational motors 
+			    	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
+			    	
+			    	//find new angle
+			    	wheelAngles[i] += 180.0; //subtract 180 degrees
+			    	if(wheelAngles[i] > 360){ //wrap to new angle between 0-360
+			    		wheelAngles[i] -= 360.0;
+			    	}
+			    	//now the angle is set to move to the shortest path, which is just 180 degrees 
+			    	//from the current heading
+			    	
 			    }    
 			    
 			    else
 			    {
 			    	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 				}
-				SwervePOD[i].getSpeed();
-				SwervePOD[i].getAngleDeg();
+
+				// SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
+				// SwervePOD[i].getSpeed();
+				// SwervePOD[i].getAngleDeg();
 				//Turn Motors
 			    if(wheelSpeeds[i]>0.1){
-					// SwervePOD[i].setAngle(SmartDashboard.getNumber("Set_Angle", 0));
 					SwervePOD[i].setAngle(wheelAngles[i]);
 			    	oldAngle[i] = wheelAngles[i];
 			    }
