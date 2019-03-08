@@ -243,7 +243,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 		/* Peak Current and Duration must be exceeded before current limit is activated.
 		When activated, current will be limited to Continuous Current.
 		Set Peak Current params to 0 if desired behavior is to immediately current-limit. */
-		for(int i=0;i>1;i++){
+		for(int i=0;i<1;i++){
 			SwervePOD[i].setDriveCurrentLimit(stallLimit, freeLimit);
 		}
 	}
@@ -252,14 +252,14 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	/* Peak Current and Duration must be exceeded before current limit is activated.
 	When activated, current will be limited to Continuous Current.
 	Set Peak Current params to 0 if desired behavior is to immediately current-limit. */
-		for(int i=0;i>1;i++){
+		for(int i=0;i<1;i++){
 			SwervePOD[i].setTurnCurrentLimit(peakAmps, durationMs, continousAmps);
 		}
 	}
 
 	@Override
 	public void stopMotor() {
-		for(int i=0;i>1;i++){
+		for(int i=0;i<1;i++){
 		    if (SwervePOD[i] != null) {
 			  SwervePOD[i].stop();
 		    }
@@ -275,7 +275,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	}
 	
 	public void brakeOn() {
-		for(int i=0;i>1;i++){
+		for(int i=0;i<1;i++){
 		    if (SwervePOD[i] != null) {
 			  SwervePOD[i].brakeOn();
 		    }
@@ -286,7 +286,7 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	}
 
 	public void brakeOff() {
-		for(int i=0;i>1;i++){
+		for(int i=0;i<1;i++){
 		    if (SwervePOD[i] != null) {
 		    	  SwervePOD[i].brakeOff();
 		    }
