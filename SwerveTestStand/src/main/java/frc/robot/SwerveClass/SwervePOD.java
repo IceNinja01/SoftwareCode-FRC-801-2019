@@ -48,6 +48,8 @@ public class SwervePOD {
 
 	private PIDController pidTurnController;
 
+	private boolean d_motorInvert = false;
+
 	//**********************************
   	// Constructor functions
   	//**********************************
@@ -100,12 +102,12 @@ public class SwervePOD {
 	    // set PID coefficients for turn motor
 		turnMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		turnMotor.setSensorPhase(kSensorPhase); 
-		// m_value = deadBand;
-		// turnMotorPID = new PID(kP, kI, kD, kFF);
-		// turnMotorPID.setMaxIOutput((double) kIz);
-		// turnMotorPID.setOutputLimits(kMaxOutput);
-		// turnMotorPID.setContinous(true);
-		// turnMotorPID.setContinousInputRange(360);
+		m_value = deadBand;
+		turnMotorPID = new PID(kP, kI, kD, kFF);
+		turnMotorPID.setMaxIOutput((double) kIz);
+		turnMotorPID.setOutputLimits(kMaxOutput);
+		turnMotorPID.setContinous(true);
+		turnMotorPID.setContinousInputRange(360);
 
 		// /* set the peak and nominal outputs, 12V means full */
 		turnMotor.configNominalOutputForward(0, 10);
@@ -122,14 +124,14 @@ public class SwervePOD {
 
 		if (absolutePosition > Constants.AngleBias[0])
 		{
-			turnMotor.setSelectedSensorPosition(24576- (absolutePosition-Constants.AngleBias[motorName.ordinal()]), 0, 10);
+			turnMotor.setSelectedSensorPosition(24576 - (absolutePosition-Constants.AngleBias[motorName.ordinal()]), 0, 10);
 		}
 		else
 		{
 			turnMotor.setSelectedSensorPosition(Constants.AngleBias[motorName.ordinal()]-absolutePosition, 0, 10);
 		}
 		
-		// //set coast mode
+// 		// //set coast mode
 		turnMotor.setNeutralMode(NeutralMode.Coast);
 		turnMotor.setInverted(kMotorInvert);
 		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
@@ -137,27 +139,6 @@ public class SwervePOD {
 //		//set Voltage for turn motors
 		turnMotor.set(ControlMode.PercentOutput, 0.0);
 
-
-		pidTurnSource = new PIDSource() {				
-			@Override
-			public void setPIDSourceType(PIDSourceType pidSource) {				
-			}
-			@Override
-			public double pidGet() {
-				return getAngleDeg();
-			}				
-			@Override
-			public PIDSourceType getPIDSourceType() {
-				return PIDSourceType.kDisplacement;
-			}
-		};
-		
-		pidTurnController = new PIDController(kP, kI, kD, pidTurnSource, turnMotor);
-		pidTurnController.setAbsoluteTolerance(deadBand);
-		pidTurnController.setInputRange(0, 360);
-		pidTurnController.setContinuous(true);
-		pidTurnController.setOutputRange(-kMinOutput, kMaxOutput);
-		pidTurnController.enable();
 	}
 	
 	/**
@@ -178,7 +159,11 @@ public class SwervePOD {
 		drivePID.setIZone(kIz);
 		drivePID.setFF(kFF);
 		drivePID.setOutputRange(kMinOutput, kMaxOutput);
-		driveMotor.setInverted(true);
+		driveMotor.setInverted(d_motorInvert);
+	}
+
+	public void invertDriveMotor(boolean invert){
+		d_motorInvert = invert;
 	}
 
     // reads the actual encoder count
@@ -214,17 +199,25 @@ public class SwervePOD {
 	}
 
 	public double getTurnPIDError(){
+		// double error = pidTurnController.getError();
 		double error = turnMotorPID.getError();
+
 		SmartDashboard.putNumber("Turn_PIDError ", error);
 		return error;
+	}
+
+	public void getPIDOut(){
+		// SmartDashboard.putNumber("Turn_PIDOut", pidTurnController.get());
+
+		SmartDashboard.putNumber("Turn_PIDOut", turnMotorPID.getOutput());
 	}
 	
 	public void setAngle(double angle) {
 		// Set new position of motor
 		// turnMotor.set(ControlMode.PercentOutput, -0.2);
 
-		// turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
-		pidTurnController.setSetpoint(angle);
+		turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
+		// pidTurnController.setSetpoint(angle);
 		
 	}
 

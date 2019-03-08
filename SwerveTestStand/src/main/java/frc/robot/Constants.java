@@ -12,5 +12,5 @@ package frc.robot;
  */
 public class Constants {
 
-	public static int[] AngleBias ={1255,0,0,0};
+	public static int[] AngleBias ={0,0,0,0};
 }

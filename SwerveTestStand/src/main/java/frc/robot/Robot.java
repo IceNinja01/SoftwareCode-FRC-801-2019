@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.AngleCMD;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -47,6 +48,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto mode", chooser);
     SmartDashboard.putNumber("Set_Angle", 0);
     SmartDashboard.getNumber("Set_Angle", 0);
+    SmartDashboard.putData("Turn", new AngleCMD());
   }
 
   /**
