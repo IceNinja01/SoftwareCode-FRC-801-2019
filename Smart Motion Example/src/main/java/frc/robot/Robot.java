@@ -45,7 +45,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  * as intended.
  */
 public class Robot extends TimedRobot {
-  private static final int deviceID = 0;
+  private static final int deviceID = 1;
   private CANSparkMax m_motor;
   private CANPIDController m_pidController;
   private CANEncoder m_encoder;
@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
      * - setSmartMotionAllowedClosedLoopError() will set the max allowed
      * error for the pid controller in Smart Motion mode
      */
-    int smartMotionSlot = 0;
+    int smartMotionSlot = 1;
     m_pidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
     m_pidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
     m_pidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
