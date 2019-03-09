@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
-
+import frc.robot.Constants;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,8 +23,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  */ 
 public class Elevator extends Subsystem 
 {
-  //devices 0,1,2,3,4,5,6,7 used
-  public static final int deviceID = 0;
   public static CANSparkMax m_motor;
   public static CANPIDController m_pidController;
   public static CANEncoder m_encoder;
@@ -33,7 +31,7 @@ public class Elevator extends Subsystem
 public void init()
 {
       // initialize motor
-      m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
+      m_motor = new CANSparkMax(Constants.rightInsideElevatorMotorID, MotorType.kBrushless);
 
       /**
        * The RestoreFactoryDefaults method can be used to reset the configuration parameters
