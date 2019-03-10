@@ -8,10 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Utilities.LidarModule;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Lift;
@@ -29,6 +31,8 @@ public class Robot extends TimedRobot {
   public static Lift lift;
   public static OI oi;
 
+  public static LidarModule lidar;
+
   Command m_autonomousCommand;
   SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -40,8 +44,13 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     elevator = new Elevator();
-    Elevator.init();
+    elevator.init();
+    
+    lift = new Lift();
+    lift.init();
+
     oi = new OI();
+    lidar = new LidarModule(Port.kOnboard);
 
     chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());

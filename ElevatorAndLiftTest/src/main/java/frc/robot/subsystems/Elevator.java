@@ -21,12 +21,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  */ 
 public class Elevator extends Subsystem 
 {
-  public static CANSparkMax m_motor;
-  public static CANPIDController m_pidController;
-  public static CANEncoder m_encoder;
-  public static double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+  public CANSparkMax m_motor;
+  public CANPIDController m_pidController;
+  public CANEncoder m_encoder;
+  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
-public static void init()
+public void init()
 {
       // initialize motor
       m_motor = new CANSparkMax(Constants.rightInsideElevatorMotorID, MotorType.kBrushless);
