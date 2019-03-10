@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
 import frc.robot.Utilities.ADIS16448_IMU;
 import frc.robot.Utilities.Utils;
 import frc.robot.commands.DriveWithJoysticks;
