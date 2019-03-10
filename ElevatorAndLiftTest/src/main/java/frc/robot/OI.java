@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
 import frc.robot.Utilities.XBOXJoystick;
+import frc.robot.commands.Lift.LiftToggle;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -55,30 +56,33 @@ public class OI {
   public OI() {
 
     // elevator mapping
-    elevatorBottomButton.whenPressed(command);
-    elevatorLowerPortButton.whenPressed(command);
-    elevatorMiddleButton.whenPressed(command);
-    elevatorUpperPortButton.whenPressed(command);
-    elevatorGatherButton.whenPressed(command);
+    /*
+    elevatorBottomButton.whenPressed(command); // TODO
+    elevatorLowerPortButton.whenPressed(command); // TODO
+    elevatorMiddleButton.whenPressed(command); // TODO
+    elevatorUpperPortButton.whenPressed(command); // TODO
+    elevatorGatherButton.whenPressed(command); // TODO
+    */
     
     // Lift Mapping
-    liftUpDownToggleButton.whenPressed(command);
+    liftUpDownToggleButton.whenPressed(new LiftToggle());
     
     // Gather Mapping
-    gatherButton.whenPressed(command);
-    ejectButton.whenPressed(command);
-    stabButton.whenPressed(command);
-    retractButton.whenPressed(command);
+    /*
+    gatherButton.whenPressed(command); // TODO
+    ejectButton.whenPressed(command); // TODO
+    stabButton.whenPressed(command); // TODO
+    retractButton.whenPressed(command); // TODO
+    */
     
     // Arm mapping
-    playButton.whenPressed(command);
-    diskPickButton.whenPressed(command);
-    stowButton.whenPressed(command);
-    ballButton.whenPressed(command);
+    /*
+    playButton.whenPressed(command); // TODO
+    diskPickButton.whenPressed(command); // TODO
+    stowButton.whenPressed(command); // TODO
+    ballButton.whenPressed(command); // TODO
+    */
     
 
   }
-
-  
-
 }
