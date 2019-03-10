@@ -1,0 +1,84 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
+package frc.robot.Utilities;
+
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.buttons.POVButton;
+import frc.robot.Utilities.XBOXJoystick;
+import frc.robot.commands.Arm.*;
+import frc.robot.commands.Elevator.*;
+import frc.robot.commands.Gather.*;
+import frc.robot.commands.Lift.*;
+
+/**
+ * This class is the glue that binds the controls on the physical operator
+ * interface to the commands and command groups that allow control of the robot.
+ */
+public class OI {
+
+  public XBOXJoystick driver = new XBOXJoystick(0);
+  public XBOXJoystick manipulator = new XBOXJoystick(1);
+
+  //// CREATING BUTTONS
+  // One type of button is a joystick button which is any button on a
+  //// joystick.
+  // You create one by telling it which joystick it's on and which button
+  // number it is.
+  // Joystick stick = new Joystick(port);
+  // Button button = new JoystickButton(stick, buttonNumber);
+   
+    // Elevator mapping
+    Button elevatorBottomButton = new JoystickButton(manipulator, 1);     // 'A' button
+    Button elevatorLowerPortButton = new JoystickButton(manipulator, 3);  // 'X' button
+    Button elevatorMiddlePortButton = new JoystickButton(manipulator, 2); // 'B' button
+    Button elevatorUpperPortButton = new JoystickButton(manipulator, 4);  // 'Y' button
+    Button elevatorGatherButton = new JoystickButton(manipulator, 6);     // Right Bumper
+
+    // Lift Mapping
+    Button liftUpDownToggleButton = new JoystickButton(driver, 8);        // start button
+
+    // Gather Mapping
+    Button gatherButton = new JoystickButton(driver, 5);    // Left bumper
+    Button ejectButton = new JoystickButton(driver, 5);     // Right bumper
+    Button stabButton = new POVButton(driver, 0);           // POV UP
+    Button retractButton = new POVButton(driver, 180);      // POV Down
+
+    // Arm mapping
+    Button playButton = new JoystickButton(driver, 1);      // 'A' button
+    Button diskPickButton = new JoystickButton(driver, 4);  // 'Y' button
+    Button stowButton = new JoystickButton(driver, 3);      // 'X' button
+    Button ballButton = new JoystickButton(driver, 2);      // 'B' button
+    
+
+  public OI() {
+
+    // elevator mapping
+    elevatorBottomButton.whenPressed( new ElevatorBottomCMD() );
+    elevatorLowerPortButton.whenPressed( new ElevatorLowerPortCMD() );
+    elevatorMiddlePortButton.whenPressed( new ElevatorMiddlePortCMD() );
+    elevatorUpperPortButton.whenPressed( new ElevatorUpperPortCMD() );
+    elevatorGatherButton.whenPressed( new ElevatorGatherCMD() );
+    
+    // Lift Mapping
+    liftUpDownToggleButton.whenPressed( new LiftUpDownToggleCMD() );
+    
+    // Gather Mapping
+    gatherButton.whenPressed( new GatherCMD() );
+    ejectButton.whenPressed( new EjectCMD() );
+    stabButton.whenPressed( new StabCMD() );
+    retractButton.whenPressed( new RetractCMD() );
+    
+    // Arm mapping
+    playButton.whenPressed( new PlayCMD() );
+    diskPickButton.whenPressed( new DiskPickCMD() );
+    stowButton.whenPressed( new StowCMD() );
+    ballButton.whenPressed( new BallCMD() );
+
+  }
+}

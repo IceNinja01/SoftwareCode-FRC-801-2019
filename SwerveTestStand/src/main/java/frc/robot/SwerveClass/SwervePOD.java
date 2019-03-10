@@ -4,13 +4,12 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-//import edu.wpi.first.wpilibj.PIDController;
-//import edu.wpi.first.wpilibj.PIDSource;
-//import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Utilities.PID;
-//import frc.robot.Utilities.Utils;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -20,7 +19,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
-//import com.revrobotics.CANSparkMaxLowLevel.ConfigParameter;
 
 public class SwervePOD {
 
@@ -34,29 +32,23 @@ public class SwervePOD {
 	private CANEncoder driveMotorEnc;
 	private CANPIDController drivePID;
 
-	private TalonSRX turnMotor;
+	private Team801TalonSRX turnMotor;
 	private PID turnMotorPID;
-
-	//private double k_drive_P, k_drive_I, k_drive_D, k_drive_Iz, k_drive_FF, kMinRPM, kMaxRPM;
-	//private double k_turn_P, k_turn_I, k_turn_D, k_turn_Iz, k_turn_FF, kMinAngle, kMaxAngle;
-	//private double angle;
-
-	//private int m_inputRange = 160;
 
 	private int nativeUnits;
 
 	private double last_error;
 
-	//private double turn_kP;
-
-	//private double turn_kD;
-
-	//private double turn_kI;
-
 	private int m_value;
 
 	private boolean kMotorInvert = false;
 	private boolean kSensorPhase = true;
+
+	private PIDSource pidTurnSource;
+
+	private PIDController pidTurnController;
+
+	private boolean d_motorInvert = false;
 
 	//**********************************
   	// Constructor functions
@@ -74,7 +66,7 @@ public class SwervePOD {
 		driveMotorEnc = driveMotor.getEncoder();
 		drivePID = driveMotor.getPIDController();
 
-		turnMotor  = new TalonSRX(Turn);	
+		turnMotor  = new Team801TalonSRX(Turn);	
 		this.motorName = motorName;
 	}
 	
@@ -112,6 +104,7 @@ public class SwervePOD {
 		turnMotor.setSensorPhase(kSensorPhase); 
 		m_value = deadBand;
 		turnMotorPID = new PID(kP, kI, kD, kFF);
+		turnMotorPID.setMaxIOutput((double) kIz);
 		turnMotorPID.setOutputLimits(kMaxOutput);
 		turnMotorPID.setContinous(true);
 		turnMotorPID.setContinousInputRange(360);
@@ -119,9 +112,8 @@ public class SwervePOD {
 		// /* set the peak and nominal outputs, 12V means full */
 		turnMotor.configNominalOutputForward(0, 10);
 		turnMotor.configNominalOutputReverse(0, 10);
-		turnMotor.configPeakOutputForward(11.0 * kMaxOutput, 10);
-		turnMotor.configPeakOutputReverse(-11.0 * kMinOutput, 10);
-		turnMotor.enableVoltageCompensation(true); 
+		turnMotor.configPeakOutputForward(kMaxOutput, 10);
+		turnMotor.configPeakOutputReverse(kMinOutput, 10);
 		// /* 0.001 represents 0.1% - default value is 0.04 or 4% */
 		turnMotor.configNeutralDeadband(0.001, 10);
 		// /**
@@ -132,21 +124,23 @@ public class SwervePOD {
 
 		if (absolutePosition > Constants.AngleBias[0])
 		{
-			turnMotor.setSelectedSensorPosition(24576- (absolutePosition-Constants.AngleBias[motorName.ordinal()]), 0, 10);
+			turnMotor.setSelectedSensorPosition(24576 - (absolutePosition-Constants.AngleBias[motorName.ordinal()]), 0, 10);
 		}
 		else
 		{
 			turnMotor.setSelectedSensorPosition(Constants.AngleBias[motorName.ordinal()]-absolutePosition, 0, 10);
 		}
 		
-		// //set coast mode
+// 		// //set coast mode
 		turnMotor.setNeutralMode(NeutralMode.Coast);
 		turnMotor.setInverted(kMotorInvert);
 		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
 		turnMotor.configNeutralDeadband(0.001, 10);
 //		//set Voltage for turn motors
 		turnMotor.set(ControlMode.PercentOutput, 0.0);
+
 	}
+	
 	/**
 	 * @param kP proportional constant for PID control
 	 * @param kI intergral constant for PID control
@@ -165,7 +159,11 @@ public class SwervePOD {
 		drivePID.setIZone(kIz);
 		drivePID.setFF(kFF);
 		drivePID.setOutputRange(kMinOutput, kMaxOutput);
-		driveMotor.setInverted(true);	
+		driveMotor.setInverted(d_motorInvert);
+	}
+
+	public void invertDriveMotor(boolean invert){
+		d_motorInvert = invert;
 	}
 
     // reads the actual encoder count
@@ -201,14 +199,26 @@ public class SwervePOD {
 	}
 
 	public double getTurnPIDError(){
+		// double error = pidTurnController.getError();
 		double error = turnMotorPID.getError();
+
 		SmartDashboard.putNumber("Turn_PIDError ", error);
 		return error;
+	}
+
+	public void getPIDOut(){
+		// SmartDashboard.putNumber("Turn_PIDOut", pidTurnController.get());
+
+		SmartDashboard.putNumber("Turn_PIDOut", turnMotorPID.getOutput());
 	}
 	
 	public void setAngle(double angle) {
 		// Set new position of motor
+		// turnMotor.set(ControlMode.PercentOutput, -0.2);
+
 		turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
+		// pidTurnController.setSetpoint(angle);
+		
 	}
 
 	public void setDriveEncoder(int counts_per_rev) {

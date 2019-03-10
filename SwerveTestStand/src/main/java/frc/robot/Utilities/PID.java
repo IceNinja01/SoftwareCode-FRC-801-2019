@@ -38,6 +38,7 @@ public class PID
   private double continousInputRange=0;
 
   private boolean continous;
+  private double error;
   
   //**********************************
   // Constructor functions
@@ -225,7 +226,7 @@ public class PID
     }
     
     // Do the simple parts of the calculations
-    double error=setpoint-actual;
+    error=setpoint-actual;
     if(continous=true){
 
       error %= continousInputRange;
@@ -418,7 +419,7 @@ public class PID
   }
 
   public double getError(){
-    return errorSum;
+    return error;
   }
   
   //**************************************

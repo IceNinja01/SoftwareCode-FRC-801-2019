@@ -1,5 +1,6 @@
 package frc.robot.SwerveClass;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -14,7 +15,7 @@ public class Team801TalonSRX extends TalonSRX implements PIDOutput
 	@Override
 	public void pidWrite(double output)
 	{
-		this.set(getControlMode(), output);
+		this.set(ControlMode.PercentOutput, output);
 	}
 	
 }

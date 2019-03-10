@@ -9,7 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
+//import frc.robot.RobotMap;
 import frc.robot.subsystems.Chassis;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
@@ -45,7 +45,7 @@ public class PathDrive extends Command {
     this.maxVel = maxVel;
     this.kAcc = kAcc;
     // Use requires() here to declare subsystem dependencies
-    requires(Robot.m_subsystem);
+    requires(Robot.chassis);
   }
 
   // Called just before this Command runs the first time
