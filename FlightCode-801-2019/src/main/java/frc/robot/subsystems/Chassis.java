@@ -61,8 +61,8 @@ public class Chassis extends PIDSubsystem {
 
 		chassisSwerveDrive.brakeOff();
 	
-		imu.calibrate();
-		imu.reset();
+	//	imu.calibrate();
+	//	imu.reset();
 	
 	}
 

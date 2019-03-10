@@ -27,7 +27,7 @@ import frc.robot.subsystems.Arm;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static OI oi = new OI();;
+  public static OI oi;
   public static Lift lift = new Lift();
   public static Elevator elevator = new Elevator();
   public static Gather gather = new Gather();
@@ -43,7 +43,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     chassis.init();
+    elevator.init();
     lift.init();
+    arm.init();
+    gather.init();
 
     oi = new OI();
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());

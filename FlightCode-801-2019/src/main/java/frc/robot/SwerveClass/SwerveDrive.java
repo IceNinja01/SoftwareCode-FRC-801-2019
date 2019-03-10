@@ -38,10 +38,13 @@ public class SwerveDrive extends MotorSafety {
 	private RollingAverage yavg;
 	private RollingAverage zavg;	
 	
-	public  SwerveDrive(SwervePOD FrontRightPOD,
+	public  SwerveDrive(SwervePOD rightFrontPOD,
 			frc.robot.SwerveClass.SwervePOD leftFrontPod, frc.robot.SwerveClass.SwervePOD leftBackPod, frc.robot.SwerveClass.SwervePOD rightBackPod, int avgSize) {
 		
-		SwervePOD[0] = FrontRightPOD;
+		SwervePOD[0] = rightFrontPOD;
+		SwervePOD[1] = leftFrontPod;
+		SwervePOD[2] = leftBackPod;
+		SwervePOD[3] = rightBackPod;
 
 		
 		// Initializes the _avg variables to size avgSize
