@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Utilities.Utils;
 import frc.robot.commands.DriveWithJoysticks;
@@ -20,7 +21,7 @@ public class Chassis extends Subsystem {
 	public static SwerveDriveTwoMotors chassisSwerveDrive;
 
 	public void init(){
-		rightFrontPod = new SwervePOD(1, 4, MotorName.RightFront);
+		rightFrontPod = new SwervePOD(Constants.RightFrontDrive, Constants.RightFrontSteer, MotorName.RightFront);
 		rightFrontPod.configPIDDrive(0.00001, 0.000001, 0.0, 0.0, 0.0, -1.0, 1.0);
 
 		rightFrontPod.configPIDTurn(0.0035, 0.00000, 0.0000, 0, 0.0001, -1.0, 1.0, 5);

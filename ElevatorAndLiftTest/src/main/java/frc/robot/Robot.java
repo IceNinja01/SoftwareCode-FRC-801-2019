@@ -12,12 +12,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Utilities.OI;
-import frc.robot.subsystems.Chassis;
-import frc.robot.subsystems.Lift;
+import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Gather;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.ExampleSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,14 +25,15 @@ import frc.robot.subsystems.Arm;
  * project.
  */
 public class Robot extends TimedRobot {
+
+
+  public static Elevator elevator;
+  public static Lift lift;
   public static OI oi;
-  public static Lift lift = new Lift();
-  public static Elevator elevator = new Elevator();
-  public static Gather gather = new Gather();
-  public static Arm arm = new Arm();
-  public static Chassis chassis = new Chassis();
+
   Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  SendableChooser<Command> chooser = new SendableChooser<>();
+
 
   /**
    * This function is run when the robot is first started up and should be
@@ -42,16 +41,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    chassis.init();
-    elevator.init();
-    lift.init();
-    arm.init();
-    gather.init();
-
+    elevator = new Elevator();
+    Elevator.init();
     oi = new OI();
-    // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
+
+    chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
-    SmartDashboard.putData("Auto mode", m_chooser);
+    SmartDashboard.putData("Auto mode", chooser);
+
   }
 
   /**
@@ -64,7 +61,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+//  chassis.getAngle();
+//  chassis.getError();
   }
+
 
   /**
    * This function is called once each time the robot enters Disabled mode.
@@ -93,7 +93,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_chooser.getSelected();
+    m_autonomousCommand = chooser.getSelected();
 
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
