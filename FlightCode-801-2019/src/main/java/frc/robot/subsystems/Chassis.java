@@ -2,11 +2,13 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.Utilities.ADIS16448_IMU;
 import frc.robot.Utilities.Utils;
 import frc.robot.commands.DriveWithJoysticks;
 
 import frc.robot.SwerveClass.SwerveDrive;
+
+import com.analog.adis16448.frc.ADIS16448_IMU;
+
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.SwerveClass.SwervePOD;
@@ -57,8 +59,8 @@ public class Chassis extends PIDSubsystem {
 
 		chassisSwerveDrive.brakeOff();
 	
-	//	imu.calibrate();
-	//	imu.reset();
+		imu.calibrate();
+		imu.reset();
 	
 	}
 
@@ -74,7 +76,7 @@ public class Chassis extends PIDSubsystem {
 		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
 		
 		if(robotOrient){ //Field oriented
-			chassisSwerveDrive.drive(x,y,z,0.0);
+			chassisSwerveDrive.drive(x,y,z,getGyroAngle());
 		}
 		else{//Robot oriented
 			chassisSwerveDrive.drive(x,y,z,0.0);

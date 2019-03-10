@@ -7,6 +7,8 @@
 
 package frc.robot.commands;
 
+import java.io.IOException;
+
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 //import frc.robot.RobotMap;
@@ -37,7 +39,7 @@ public class PathDrive extends Command {
   private double frOutput, flOutput, blOutput, brOutput, desiredHeading;
   private double frHeading, flHeading, blHeading, brHeading;
 
-  public PathDrive(String name, double kP, double kI, double kD, double maxVel, double kAcc) {
+  public PathDrive(String name, double kP, double kI, double kD, double maxVel, double kAcc) throws IOException {
     trajectory = path.getTrajectory(name);
     this.kP = kP;
     this.kI = kI;

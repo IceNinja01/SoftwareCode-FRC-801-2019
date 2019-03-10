@@ -22,8 +22,6 @@ public class LiftUpDownToggleCMD extends Command {
     Robot.lift.updatePID();
     Robot.lift.updateSmartMotion();
     Robot.lift.liftToggle();
-
-
   }
 
   // Called repeatedly when this Command is scheduled to run
