@@ -1,18 +1,13 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
 import frc.robot.Utilities.ADIS16448_IMU;
 import frc.robot.Utilities.Utils;
 import frc.robot.commands.DriveWithJoysticks;
 
 import frc.robot.SwerveClass.SwerveDrive;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.SwerveClass.SwervePOD;
 import frc.robot.SwerveClass.SwervePOD.MotorName;
