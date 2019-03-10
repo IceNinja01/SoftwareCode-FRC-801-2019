@@ -251,7 +251,7 @@ public class SwervePOD {
 		return driveMotor.getBusVoltage();
 	}
 
-	public double getTurnVolatge(){
+	public double getTurnVoltage(){
 		return turnMotor.getMotorOutputVoltage();
 	}
 

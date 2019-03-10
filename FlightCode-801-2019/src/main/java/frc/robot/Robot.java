@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -33,8 +35,11 @@ public class Robot extends TimedRobot {
   public static Gather gather = new Gather();
   public static Arm arm = new Arm();
   public static Chassis chassis = new Chassis();
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel();;
+
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
+  private Relay lightRelay = new Relay(0);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -52,6 +57,10 @@ public class Robot extends TimedRobot {
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
+    // lightRelay.set(Relay.Value.kOn);
+    // lightRelay.set(Relay.Value.kForward);
+    lightRelay.set(Relay.Value.kOff);
+		// lightRelay.set(Relay.Value.kForward);
   }
 
   /**
@@ -64,6 +73,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    lightRelay.set(Relay.Value.kOff);
+
   }
 
   /**

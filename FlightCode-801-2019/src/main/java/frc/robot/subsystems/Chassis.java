@@ -74,7 +74,7 @@ public class Chassis extends PIDSubsystem {
 		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
 		
 		if(robotOrient){ //Field oriented
-			chassisSwerveDrive.drive(x,y,z,getGyroAngle());
+			chassisSwerveDrive.drive(x,y,z,0.0);
 		}
 		else{//Robot oriented
 			chassisSwerveDrive.drive(x,y,z,0.0);
@@ -92,6 +92,14 @@ public class Chassis extends PIDSubsystem {
 	
 	public void toggleRobotOrient() {
 		robotOrient = false;
+	}
+
+	public void getDriveVoltage(){
+		chassisSwerveDrive.getDriveVoltage();
+	}
+
+	public void getTurnVoltage(){
+		chassisSwerveDrive.getTurnVoltage();
 	}
 
 	//===============================================================================//

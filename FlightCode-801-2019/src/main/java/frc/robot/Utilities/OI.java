@@ -25,13 +25,25 @@ public class OI {
   public XBOXJoystick driver = new XBOXJoystick(0);
   public XBOXJoystick manipulator = new XBOXJoystick(1);
 
-  //// CREATING BUTTONS
-  // One type of button is a joystick button which is any button on a
-  //// joystick.
-  // You create one by telling it which joystick it's on and which button
-  // number it is.
-  // Joystick stick = new Joystick(port);
-  // Button button = new JoystickButton(stick, buttonNumber);
+  //
+    //	      5	    _                            _    6
+    //	       _.-'` `-._                    _,-' `'-._
+    //	    ,-'          `-.,____________,.-'    .-.   `-.
+    //	   /   .---.             ___            ( 4 )     \
+    //	  /  ,' ,-. `.     __   / X \   __   .-. `-` .-.   \
+    //	 /   | | 9 | |    (_7) | / \ | (_8) ( 3 )   ( 2 )   \
+    //	/    `. `-' ,'    __    \___/        `-` ,-. `-`     \
+    //	|      `---`   ,-`  `-.       .---.     ( 1 )        |
+    //	|             / -'  `- \    ,'  .  `.    `-`         |
+    //	|            |          |   | -10 - |                |
+    //	!             \ -.  ,- /    `.  '  ,'                |
+    //	|              `-.__,-'       `---`                  |
+    //	|                  ________________                  |
+    //	|             _,-'`                ``-._             |
+    //	|          ,-'                          `-.          |
+    //	 \       ,'                                `.       /
+    //	  `.__,-'                                    `-.__,'
+    //
    
     // Elevator mapping
     Button elevatorBottomButton = new JoystickButton(manipulator, 1);     // 'A' button
