@@ -72,10 +72,10 @@ public class PathDrive extends Command {
     // 1000 is the amount of encoder ticks per full revolution
     // Wheel Diameter is the diameter of your wheel in meters
    
-    frFollower.configureEncoder(Robot.chassis.rightFrontPod.getPosition(), 224, 0.1016);
-    flFollower.configureEncoder(Robot.chassis.leftFrontPod.getPosition(), 224, 0.1016);
-    blFollower.configureEncoder(Robot.chassis.leftBackPod.getPosition(), 224, 0.1016);
-	  brFollower.configureEncoder(Robot.chassis.rightBackPod.getPosition(), 224, 0.1016);
+    frFollower.configureEncoder((int) Robot.chassis.rightFrontPod.getPosition(), 1, 0.1016);
+    flFollower.configureEncoder((int) Robot.chassis.leftFrontPod.getPosition(), 1, 0.1016);
+    blFollower.configureEncoder((int) Robot.chassis.leftBackPod.getPosition(), 1, 0.1016);
+	  brFollower.configureEncoder((int) Robot.chassis.rightBackPod.getPosition(), 1, 0.1016);
 
     // The first argument is the proportional gain. Usually this will be quite high
     // The second argument is the integral gain. This is unused for motion profiling
@@ -95,10 +95,10 @@ public class PathDrive extends Command {
   @Override
   protected void execute() {
     //Calculate error and PID outputs
-    frOutput = frFollower.calculate(Robot.chassis.rightFrontPod.getPosition());
-    flOutput = flFollower.calculate(Robot.chassis.leftFrontPod.getPosition());
-    blOutput = blFollower.calculate(Robot.chassis.leftBackPod.getPosition());
-    brOutput = brFollower.calculate(Robot.chassis.rightBackPod.getPosition());
+    frOutput = frFollower.calculate((int) Robot.chassis.rightFrontPod.getPosition());
+    flOutput = flFollower.calculate((int) Robot.chassis.leftFrontPod.getPosition());
+    blOutput = blFollower.calculate((int) Robot.chassis.leftBackPod.getPosition());
+    brOutput = brFollower.calculate((int) Robot.chassis.rightBackPod.getPosition());
     frHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(frFollower.getHeading()));    // Bound to -180..180 degrees
     flHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(flFollower.getHeading()));    // Bound to -180..180 degrees
     blHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(blFollower.getHeading()));    // Bound to -180..180 degrees
@@ -113,7 +113,6 @@ public class PathDrive extends Command {
     Robot.chassis.leftFrontPod.setAngle(flHeading);
     Robot.chassis.leftBackPod.setAngle(blHeading);
     Robot.chassis.rightBackPod.setAngle(brHeading);
-  
 
   }
 

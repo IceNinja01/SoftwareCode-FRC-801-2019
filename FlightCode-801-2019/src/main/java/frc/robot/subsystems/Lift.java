@@ -59,8 +59,6 @@ public class Lift extends Subsystem {
       leftLiftMotor = new CANSparkMax(Constants.leftLiftMotorID, MotorType.kBrushless);
       rightLiftMotor.restoreFactoryDefaults();
       leftLiftMotor.restoreFactoryDefaults();
-      // rightLiftMotor.setInverted(true);
-      // leftLiftMotor.setInverted(true);
 
       rightLiftEncoder = rightLiftMotor.getEncoder();
       leftLiftEncoder = leftLiftMotor.getEncoder();
@@ -68,12 +66,11 @@ public class Lift extends Subsystem {
       rightLiftPID = rightLiftMotor.getPIDController();
       leftLiftPID =leftLiftMotor.getPIDController();
 
-      rightLiftEncoder.setPosition(0.0);
+      rightLiftEncoder.setPosition(0.0); //it is assumed that the lift starts in the retracted position
       leftLiftEncoder.setPosition(0.0);
 
-      rightLiftEncoder.setPositionConversionFactor(0.1);
-      leftLiftEncoder.setPositionConversionFactor(0.1);
-
+      rightLiftEncoder.setPositionConversionFactor(0.1); //10 shat rotations per 1"
+      leftLiftEncoder.setPositionConversionFactor(0.1); //10 shat rotations per 1"
 
       ///Shuffle Board Start////
       initDashboard();
@@ -82,18 +79,7 @@ public class Lift extends Subsystem {
       //Set PID and Motion Constants
       updatePID();
       updateSmartMotion();
-      /**
-       * Smart Motion coefficients are set on a CANPIDController object
-       * 
-       * - setSmartMotionMaxVelocity() will limit the velocity in RPM of
-       * the pid controller in Smart Motion mode
-       * - setSmartMotionMinOutputVelocity() will put a lower bound in
-       * RPM of the pid controller in Smart Motion mode
-       * - setSmartMotionMaxAccel() will limit the acceleration in RPM^2
-       * of the pid controller in Smart Motion mode
-       * - setSmartMotionAllowedClosedLoopError() will set the max allowed
-       * error for the pid controller in Smart Motion mode
-       */
+
       smartMotionSlot = 0;
       rightLiftEncoderInitCount = rightLiftEncoder.getPosition();
       leftLiftEncoderInitCount = rightLiftEncoder.getPosition();
@@ -101,7 +87,7 @@ public class Lift extends Subsystem {
   }
 
   public void initDashboard(){
-    setPoint_lift = tab.add("SetPoint", 10.0).getEntry();
+    setPoint_lift = tab.add("SetPoint", 10.0).getEntry(); //input is in Inches
     kP_lift = tab.add("kP", .0005).getEntry();
     kI_lift = tab.add("kI_lift", 1e-6).getEntry();
     kD_lift = tab.add("kD_lift", 0).getEntry();
@@ -122,7 +108,18 @@ public class Lift extends Subsystem {
 
     tab.add(new LiftUpDownToggleCMD()).withPosition(2, 2).withSize(2, 1);
   }
-
+      /**
+       * Smart Motion coefficients are set on a CANPIDController object
+       * 
+       * - setSmartMotionMaxVelocity() will limit the velocity in RPM of
+       * the pid controller in Smart Motion mode
+       * - setSmartMotionMinOutputVelocity() will put a lower bound in
+       * RPM of the pid controller in Smart Motion mode
+       * - setSmartMotionMaxAccel() will limit the acceleration in RPM^2
+       * of the pid controller in Smart Motion mode
+       * - setSmartMotionAllowedClosedLoopError() will set the max allowed
+       * error for the pid controller in Smart Motion mode
+       */
   public void updateSmartMotion(){
     rightLiftPID.setSmartMotionMaxVelocity(maxVel_lift.getDouble(2000), smartMotionSlot);
     rightLiftPID.setSmartMotionMinOutputVelocity(minVel_lift.getDouble(10), smartMotionSlot);
@@ -149,9 +146,13 @@ public class Lift extends Subsystem {
     leftLiftPID.setOutputRange(kMinOutput_lift.getDouble(-1.0), kMaxOutput_lift.getDouble(1.0));
   }
 
+  @Override
+  protected void initDefaultCommand() {
+    setDefaultCommand(new LiftStop());
+  }
+
   public void liftToggle()
   {
-
       double val = setPoint_lift.getDouble(10.0);
       encoderPos();
       rightLiftPID.setReference(val, ControlType.kSmartMotion);
@@ -171,18 +172,15 @@ public class Lift extends Subsystem {
     rightEncoderPos.setNumber(rightLiftEncoder.getPosition());
   }
 
-
   public void stop() {
     rightLiftMotor.stopMotor();
     leftLiftMotor.stopMotor();
   }
 
-  // public boolean isOnTarget(){
-  // }
-
-  @Override
-  protected void initDefaultCommand() {
-    setDefaultCommand(new LiftStop());
+  //used to lift to a specified setPoint
+  public void lift(double setPoint) {
+    rightLiftPID.setReference(setPoint, ControlType.kSmartMotion);
+    leftLiftPID.setReference(setPoint, ControlType.kSmartMotion);
   }
   
 }

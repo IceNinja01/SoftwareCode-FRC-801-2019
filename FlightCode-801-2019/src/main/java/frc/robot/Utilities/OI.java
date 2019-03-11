@@ -15,6 +15,7 @@ import frc.robot.commands.Arm.*;
 import frc.robot.commands.Elevator.*;
 import frc.robot.commands.Gather.*;
 import frc.robot.commands.Lift.*;
+import frc.robot.commands.commandgroups.RetractTopPlatformAndDriveFwd;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -50,10 +51,11 @@ public class OI {
     Button elevatorLowerPortButton = new JoystickButton(manipulator, 3);  // 'X' button
     Button elevatorMiddlePortButton = new JoystickButton(manipulator, 2); // 'B' button
     Button elevatorUpperPortButton = new JoystickButton(manipulator, 4);  // 'Y' button
-    Button elevatorGatherButton = new JoystickButton(manipulator, 6);     // Right Bumper
+    Button elevatorGatherButton = new JoystickButton(manipulator, 6);     // Right Top Bumper
 
     // Lift Mapping
-    Button liftUpDownToggleButton = new JoystickButton(driver, 8);        // start button
+    Button liftTopPlatformButton = new JoystickButton(driver, 8);       // Right Bottom bumper
+    Button retractAndDriveButton = new JoystickButton(driver, 7);   // Left Bottom bumper
 
     // Gather Mapping
     Button gatherButton = new JoystickButton(driver, 5);    // Left bumper
@@ -67,7 +69,6 @@ public class OI {
     Button stowButton = new JoystickButton(driver, 3);      // 'X' button
     Button ballButton = new JoystickButton(driver, 2);      // 'B' button
     
-
   public OI() {
 
     // elevator mapping
@@ -78,7 +79,8 @@ public class OI {
     elevatorGatherButton.whenPressed( new ElevatorGatherCMD() );
     
     // Lift Mapping
-    liftUpDownToggleButton.whenPressed( new LiftUpDownToggleCMD() );
+    liftTopPlatformButton.whenPressed( new LiftTopPlatform() );
+    retractAndDriveButton.whenPressed( new RetractTopPlatformAndDriveFwd() );
     
     // Gather Mapping
     gatherButton.whenPressed( new GatherCMD() );

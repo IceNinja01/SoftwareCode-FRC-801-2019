@@ -36,7 +36,8 @@ public class SwerveDrive extends MotorSafety {
 
 	private RollingAverage xavg;
 	private RollingAverage yavg;
-	private RollingAverage zavg;	
+	private RollingAverage zavg;
+	private double[] position = new double[4];
 	
 	public  SwerveDrive(SwervePOD rightFrontPOD,
 			frc.robot.SwerveClass.SwervePOD leftFrontPod, frc.robot.SwerveClass.SwervePOD leftBackPod, frc.robot.SwerveClass.SwervePOD rightBackPod, int avgSize) {
@@ -176,9 +177,7 @@ public class SwerveDrive extends MotorSafety {
 			    }
 			SmartDashboard.putNumber("Angle", wheelAngles[i]);
 			SmartDashboard.putNumber("Int", i);
-
 			SwervePOD[i].getAbsAngle();
-
 	    }
 			getspeed();
 	    	SmartDashboard.putNumber("JoyAngle", angleJoyStickDiff[0]);
@@ -204,7 +203,28 @@ public class SwerveDrive extends MotorSafety {
 		velocity = Math.sqrt(vel_Y*vel_Y + vel_X*vel_X);
 		SmartDashboard.putNumber("Velocity", velocity);
 		SmartDashboard.putNumber("Angle_Omega", omega);
+	}
 
+	public void getDistance(){
+		
+		for(int i=0; i < 4; i++){
+			position[i] = SwervePOD[i].getPosition();
+		}
+	}
+
+	public boolean isDistance(double setPoint){
+		double avg = 0;
+		getDistance();
+		for(int i=0; i < 4; i++){
+			avg += position[i];
+		}
+		avg /=4;
+		if(avg<=setPoint){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	public void turnMotors(double angle_CMD) {
@@ -212,7 +232,8 @@ public class SwerveDrive extends MotorSafety {
 	    	SwervePOD[i].setAngle(angle_CMD);
 	    }
 	}
-	
+
+	//Used driving by Command, velocity and angle
 	public void turnMotorsRPM(double angle_CMD , double speed){
 	    for(int i=0;i<4;i++){
 	    	SwervePOD[i].setAngle(angle_CMD);

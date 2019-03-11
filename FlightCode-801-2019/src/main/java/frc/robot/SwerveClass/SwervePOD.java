@@ -268,8 +268,10 @@ public class SwervePOD {
 		return speed;
 	}
 
-	public int getPosition(){
-		return (int) driveMotorEnc.getPosition();
+	public double getPosition(){
+		double position = driveMotorEnc.getPosition();
+		position = (position/5.1)*(4*Math.PI);
+		return position;
 	}
 
 	public void stop() {

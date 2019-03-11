@@ -84,6 +84,10 @@ public class Chassis extends PIDSubsystem {
 
 	 }
 
+	 public void motorDrive_CMD(double angle, double velocity){
+		 chassisSwerveDrive.turnMotorsRPM(angle, velocity);
+	 }
+
 	public void stop() {   
 	    	chassisSwerveDrive.stopMotor();
 		}
@@ -103,6 +107,12 @@ public class Chassis extends PIDSubsystem {
 	public void getTurnVoltage(){
 		chassisSwerveDrive.getTurnVoltage();
 	}
+
+	public boolean isDistance(double setPoint){
+		return chassisSwerveDrive.isDistance(setPoint);
+	}
+
+
 
 	//===============================================================================//
 	//Imu code
@@ -143,5 +153,6 @@ public class Chassis extends PIDSubsystem {
 	public double getHeadingCmd() {
 		return headingCMD;
 	}
+
 }
 
