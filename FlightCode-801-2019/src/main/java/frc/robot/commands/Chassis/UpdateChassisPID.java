@@ -10,18 +10,14 @@ package frc.robot.commands.Chassis;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class DriveFwd extends Command {
-  private double setPoint;
-  private double velocity;
-  private double angle;
+public class UpdateChassisPID extends Command {
+
 
   //Used to drive by angle and velocity, stops at setpoint
-  public DriveFwd(double angle, double velocity, double setPoint) {
+  public UpdateChassisPID() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.chassis);
-    this.angle = angle;
-    this.velocity = velocity;
-    this.setPoint = setPoint;
+
   }
 
   // Called just before this Command runs the first time
@@ -35,13 +31,12 @@ public class DriveFwd extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.chassis.motorDrive_CMD(angle, velocity);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Robot.chassis.isDistance(setPoint);
+    return false;
   }
 
   // Called once after isFinished returns true

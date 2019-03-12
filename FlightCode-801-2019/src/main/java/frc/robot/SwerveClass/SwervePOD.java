@@ -120,6 +120,19 @@ public class SwervePOD {
 		//  * Grab the 360 degree position of the MagEncoder's absolute
 		//  * position, and intitally set the relative sensor to match.
 		//  */
+
+		
+// 		// //set coast mode
+		turnMotor.setNeutralMode(NeutralMode.Coast);
+		turnMotor.setInverted(kMotorInvert);
+		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
+		turnMotor.configNeutralDeadband(0.001, 10);
+//		//set Voltage for turn motors
+		turnMotor.set(ControlMode.PercentOutput, 0.0);
+
+	}
+
+	public void setBias(){
 		int absolutePosition = getAbsAngle();	
 
 		if (absolutePosition > Constants.AngleBias[0])
@@ -130,15 +143,10 @@ public class SwervePOD {
 		{
 			turnMotor.setSelectedSensorPosition(Constants.AngleBias[motorName.ordinal()]-absolutePosition, 0, 10);
 		}
-		
-// 		// //set coast mode
-		turnMotor.setNeutralMode(NeutralMode.Coast);
-		turnMotor.setInverted(kMotorInvert);
-		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
-		turnMotor.configNeutralDeadband(0.001, 10);
-//		//set Voltage for turn motors
-		turnMotor.set(ControlMode.PercentOutput, 0.0);
+	}
 
+	public void setInvertTurn(boolean invert){
+		turnMotor.setInverted(invert);
 	}
 	
 	/**
