@@ -8,9 +8,16 @@
 package frc.robot.subsystems;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.Map;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
@@ -23,27 +30,58 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  */ 
 public class Elevator extends Subsystem 
 {
-  public static CANSparkMax m_motor;
-  public static CANPIDController m_pidController;
-  public static CANEncoder m_encoder;
+  public static CANSparkMax rightInsideElevatorMotor;
+  public static CANPIDController rightInsideElevatorMotorPID;
+  public static CANEncoder rightInsideElevatorMotorEncoder;
   public static double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
+  public static CANSparkMax leftElevatorCarriageMotor;
+  public static CANPIDController leftElevatorCarriageMotorPID;
+  public static CANEncoder leftElevatorCarriageMotorEncoder;
+  private String ElevatorTitle = "Elevator";
+  private ShuffleboardTab tab = Shuffleboard.getTab(ElevatorTitle);
+  private NetworkTableEntry kP_Elevator;
+  private NetworkTableEntry kI_Elevator;
+  private NetworkTableEntry kD_Elevator;
+  private NetworkTableEntry kIz_Elevator;
+  private NetworkTableEntry kFF_Elevator;
+  private NetworkTableEntry kMaxOutput_Elevator;
+  private NetworkTableEntry kP_Carriage;
+  private NetworkTableEntry kI_Carriage;
+  private NetworkTableEntry kD_Carriage;
+  private NetworkTableEntry kIz_Carriage;
+  private NetworkTableEntry kFF_Carriage;
+  private NetworkTableEntry kMaxOutput_Carriage;
+
 
 public void init()
 {
       // initialize motor
-      m_motor = new CANSparkMax(Constants.rightInsideElevatorMotorID, MotorType.kBrushless);
+      rightInsideElevatorMotor = new CANSparkMax(Constants.rightInsideElevatorMotorID, MotorType.kBrushless);
+      leftElevatorCarriageMotor = new CANSparkMax(Constants.leftElevatorCarriageMotorID, MotorType.kBrushless);
 
       /**
        * The RestoreFactoryDefaults method can be used to reset the configuration parameters
        * in the SPARK MAX to their factory default state. If no argument is passed, these
        * parameters will not persist between power cycles
        */
-      m_motor.restoreFactoryDefaults();
-  
+      rightInsideElevatorMotor.restoreFactoryDefaults();
+      leftElevatorCarriageMotor.restoreFactoryDefaults();
       // initialze PID controller and encoder objects
-      m_pidController = m_motor.getPIDController();
-      m_encoder = m_motor.getEncoder();
-  
+      rightInsideElevatorMotorPID = rightInsideElevatorMotor.getPIDController();
+      rightInsideElevatorMotorEncoder = rightInsideElevatorMotor.getEncoder();
+      leftElevatorCarriageMotorPID = leftElevatorCarriageMotor.getPIDController();
+      leftElevatorCarriageMotorEncoder = leftElevatorCarriageMotor.getEncoder();
+
+      rightInsideElevatorMotorEncoder.setPosition(0.0);
+      leftElevatorCarriageMotorEncoder.setPosition(0.0);
+
+      rightInsideElevatorMotorEncoder.setPositionConversionFactor(1.0);
+      leftElevatorCarriageMotorEncoder.setPositionConversionFactor(1.0);
+
+      ///Shuffle Board Start////
+      initDashboard();
+
+
       // PID coefficients
       kP = 5e-5; 
       kI = 1e-6;
@@ -59,12 +97,12 @@ public void init()
       maxAcc = 1500;
   
       // set PID coefficients
-      m_pidController.setP(kP);
-      m_pidController.setI(kI);
-      m_pidController.setD(kD);
-      m_pidController.setIZone(kIz);
-      m_pidController.setFF(kFF);
-      m_pidController.setOutputRange(kMinOutput, kMaxOutput);
+      rightInsideElevatorMotorPID.setP(kP);
+      rightInsideElevatorMotorPID.setI(kI);
+      rightInsideElevatorMotorPID.setD(kD);
+      rightInsideElevatorMotorPID.setIZone(kIz);
+      rightInsideElevatorMotorPID.setFF(kFF);
+      rightInsideElevatorMotorPID.setOutputRange(kMinOutput, kMaxOutput);
   
       /**
        * Smart Motion coefficients are set on a CANPIDController object
@@ -79,10 +117,10 @@ public void init()
        * error for the pid controller in Smart Motion mode
        */
       int smartMotionSlot = 0;
-      m_pidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
-      m_pidController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
-      m_pidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
-      m_pidController.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
+      rightInsideElevatorMotorPID.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+      rightInsideElevatorMotorPID.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
+      rightInsideElevatorMotorPID.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+      rightInsideElevatorMotorPID.setSmartMotionAllowedClosedLoopError(allowedErr, smartMotionSlot);
   
       // display PID coefficients on SmartDashboard
       SmartDashboard.putNumber("P Gain", kP);
@@ -105,6 +143,33 @@ public void init()
       SmartDashboard.putBoolean("Mode", true);
 }
 
+public void initDashboard(){
+//ElevatorMotor
+ShuffleboardLayout ElevatorMotor = Shuffleboard.getTab(ElevatorTitle)
+  .getLayout("ElevatorMotor", BuiltInLayouts.kList)
+  .withSize(2, 5)
+  .withPosition(0, 0);
+kP_Elevator = ElevatorMotor.add("kP_Elevator", .0005).getEntry();
+kI_Elevator = ElevatorMotor.add("kI_Elevator", 1e-6).getEntry();
+kD_Elevator = ElevatorMotor.add("kD_Elevator", 0).getEntry();
+kIz_Elevator = ElevatorMotor.add("kIz_Elevator", 0).getEntry(); 
+kFF_Elevator = ElevatorMotor.add("kFF_Elevator", 0).getEntry(); 
+kMaxOutput_Elevator = ElevatorMotor.add("kMaxOutput_Elevator", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+
+//CarriageMotor
+ShuffleboardLayout CarriageMotor = Shuffleboard.getTab(ElevatorTitle)
+ .getLayout("CarriageMotor", BuiltInLayouts.kList)
+ .withSize(2, 5)
+ .withPosition(2, 0);
+kP_Carriage = CarriageMotor.add("kP_Carriage", 0.01).getEntry();
+kI_Carriage = CarriageMotor.add("kI_Carriage", 0.01).getEntry();
+kD_Carriage = CarriageMotor.add("kD_Carriage", 0).getEntry();
+kIz_Carriage = CarriageMotor.add("kIz_Carriage", 0).getEntry(); 
+kFF_Carriage = CarriageMotor.add("kFF_Carriage", 0.0001).getEntry(); 
+kMaxOutput_Carriage = CarriageMotor.add("kMaxOutput_Carriage", 1.0).getEntry(); 
+
+}
+
 public void elevMove()
 {
   // read PID coefficients from SmartDashboard
@@ -121,26 +186,26 @@ public void elevMove()
   double allE = SmartDashboard.getNumber("Allowed Closed Loop Error", 0);
 
   // if PID coefficients on SmartDashboard have changed, write new values to controller
-  if((p != kP)) { m_pidController.setP(p); kP = p; }
-  if((i != kI)) { m_pidController.setI(i); kI = i; }
-  if((d != kD)) { m_pidController.setD(d); kD = d; }
-  if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; }
-  if((ff != kFF)) { m_pidController.setFF(ff); kFF = ff; }
+  if((p != kP)) { rightInsideElevatorMotorPID.setP(p); kP = p; }
+  if((i != kI)) { rightInsideElevatorMotorPID.setI(i); kI = i; }
+  if((d != kD)) { rightInsideElevatorMotorPID.setD(d); kD = d; }
+  if((iz != kIz)) { rightInsideElevatorMotorPID.setIZone(iz); kIz = iz; }
+  if((ff != kFF)) { rightInsideElevatorMotorPID.setFF(ff); kFF = ff; }
   if((max != kMaxOutput) || (min != kMinOutput)) { 
-    m_pidController.setOutputRange(min, max); 
+    rightInsideElevatorMotorPID.setOutputRange(min, max); 
     kMinOutput = min; kMaxOutput = max; 
   }
-  if((maxV != maxVel)) { m_pidController.setSmartMotionMaxVelocity(maxV,0); maxVel = maxV; }
-  if((minV != minVel)) { m_pidController.setSmartMotionMaxVelocity(minV,0); minVel = minV; }
-  if((maxA != maxAcc)) { m_pidController.setSmartMotionMaxAccel(maxA,0); maxAcc = maxA; }
-  if((allE != allowedErr)) { m_pidController.setSmartMotionAllowedClosedLoopError(allE,0); allE = allowedErr; }
+  if((maxV != maxVel)) { rightInsideElevatorMotorPID.setSmartMotionMaxVelocity(maxV,0); maxVel = maxV; }
+  if((minV != minVel)) { rightInsideElevatorMotorPID.setSmartMotionMaxVelocity(minV,0); minVel = minV; }
+  if((maxA != maxAcc)) { rightInsideElevatorMotorPID.setSmartMotionMaxAccel(maxA,0); maxAcc = maxA; }
+  if((allE != allowedErr)) { rightInsideElevatorMotorPID.setSmartMotionAllowedClosedLoopError(allE,0); allE = allowedErr; }
 
   double setPoint, processVariable;
   boolean mode = SmartDashboard.getBoolean("Mode", false);
   if(mode) {
     setPoint = SmartDashboard.getNumber("Set Velocity", 0);
-    m_pidController.setReference(setPoint, ControlType.kVelocity);
-    processVariable = m_encoder.getVelocity();
+    rightInsideElevatorMotorPID.setReference(setPoint, ControlType.kVelocity);
+    processVariable = rightInsideElevatorMotorEncoder.getVelocity();
   } else {
     setPoint = SmartDashboard.getNumber("Set Position", 0);
     /**
@@ -148,13 +213,13 @@ public void elevMove()
      * setReference method on an existing pid object and setting
      * the control type to kSmartMotion/''
      */
-    m_pidController.setReference(setPoint, ControlType.kSmartMotion);
-    processVariable = m_encoder.getPosition();
+    rightInsideElevatorMotorPID.setReference(setPoint, ControlType.kSmartMotion);
+    processVariable = rightInsideElevatorMotorEncoder.getPosition();
   }
   
   SmartDashboard.putNumber("SetPoint", setPoint);
   SmartDashboard.putNumber("Process Variable", processVariable);
-  SmartDashboard.putNumber("Output", m_motor.getAppliedOutput());
+  SmartDashboard.putNumber("Output", rightInsideElevatorMotor.getAppliedOutput());
 }
 
   @Override

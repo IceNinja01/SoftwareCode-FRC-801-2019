@@ -10,8 +10,8 @@ package frc.robot.commands.Lift;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 //used to lift the robot to the top platform ~25 inches
-public class LiftTopPlatform extends Command {
-  public LiftTopPlatform() {
+public class LiftTopPlatformCMD extends Command {
+  public LiftTopPlatformCMD() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.lift);
   }
@@ -19,8 +19,6 @@ public class LiftTopPlatform extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.lift.updatePID();
-    Robot.lift.updateSmartMotion();
     Robot.lift.lift(25.0); //go to 25"
   }
 
@@ -34,7 +32,7 @@ public class LiftTopPlatform extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Robot.lift.isMoving();
+    return Robot.lift.isDeltaPosition();
   }
 
   // Called once after isFinished returns true

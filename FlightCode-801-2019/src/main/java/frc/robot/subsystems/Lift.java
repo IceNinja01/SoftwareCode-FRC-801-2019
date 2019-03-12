@@ -107,6 +107,7 @@ public class Lift extends Subsystem {
     encoderError = tab.add("EncoderError", 0).getEntry();
 
     tab.add(new LiftUpDownToggleCMD()).withPosition(2, 2).withSize(2, 1);
+    
   }
       /**
        * Smart Motion coefficients are set on a CANPIDController object
@@ -159,7 +160,7 @@ public class Lift extends Subsystem {
       leftLiftPID.setReference(val, ControlType.kSmartMotion);
   }
 
-  public boolean isMoving()
+  public boolean isDeltaPosition()
   {
     // if either motor is moving faster than motorIsMovingThreshold it is moving...
     double error =rightLiftEncoder.getPosition() - leftLiftEncoder.getPosition();
