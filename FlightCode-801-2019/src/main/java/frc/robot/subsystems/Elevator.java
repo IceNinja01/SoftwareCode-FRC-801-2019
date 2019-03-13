@@ -84,8 +84,8 @@ public class Elevator extends Subsystem
      * in the SPARK MAX to their factory default state. If no argument is passed, these
      * parameters will not persist between power cycles
      */
-    rightInsideElevatorMotor.restoreFactoryDefaults();
-    leftElevatorCarriageMotor.restoreFactoryDefaults();
+    // rightInsideElevatorMotor.restoreFactoryDefaults();
+    // leftElevatorCarriageMotor.restoreFactoryDefaults();
     // initialze PID controller and encoder objects
     rightInsideElevatorMotorPID = rightInsideElevatorMotor.getPIDController();
     rightInsideElevatorMotorEncoder = rightInsideElevatorMotor.getEncoder();
@@ -120,10 +120,10 @@ public class Elevator extends Subsystem
   
   ShuffleboardLayout ElevatorMotorMP = Shuffleboard.getTab(ElevatorTitle)
     .getLayout("ElevatorMotorPM", BuiltInLayouts.kList)
-    .withSize(2, 3)
-    .withPosition(0, 7);
+    .withSize(2, 5)
+    .withPosition(2, 0);
   maxVel_Elevator = ElevatorMotorMP.add("maxVel_Elevator", 5700).getEntry();
-  minVel_Elevator = ElevatorMotorMP.add("maxVel_Elevator", 10).getEntry();
+  minVel_Elevator = ElevatorMotorMP.add("minVel_Elevator", 10).getEntry();
   maxAcc_Elevator = ElevatorMotorMP.add("maxAcc_Elevator", 7500).getEntry();
   setPoint_Elevator = ElevatorMotorMP.add("ElevatorSetPos", 0).getEntry();
   elevatorEncoderPos = ElevatorMotorMP.add("ElevatorGetPos", 0).getEntry();
@@ -135,7 +135,7 @@ public class Elevator extends Subsystem
   ShuffleboardLayout CarriageMotorPID = Shuffleboard.getTab(ElevatorTitle)
    .getLayout("CarriageMotorPID", BuiltInLayouts.kList)
    .withSize(2, 5)
-   .withPosition(2, 0);
+   .withPosition(4, 0);
   kP_Carriage = CarriageMotorPID.add("kP_Carriage", 0.01).getEntry();
   kI_Carriage = CarriageMotorPID.add("kI_Carriage", 0.01).getEntry();
   kD_Carriage = CarriageMotorPID.add("kD_Carriage", 0).getEntry();
@@ -145,14 +145,15 @@ public class Elevator extends Subsystem
   
   ShuffleboardLayout CarriageMotorMP = Shuffleboard.getTab(ElevatorTitle)
     .getLayout("CarriageMotorPM", BuiltInLayouts.kList)
-    .withSize(2, 3)
-    .withPosition(2, 7);
+    .withSize(2, 5)
+    .withPosition(6, 0);
   maxVel_Carriage = CarriageMotorMP.add("maxVel_Carriage", 5700).getEntry();
-  minVel_Carriage = CarriageMotorMP.add("maxVel_Carriage", 10).getEntry();
+  minVel_Carriage = CarriageMotorMP.add("minVel_Carriage", 10).getEntry();
   maxAcc_Carriage = CarriageMotorMP.add("maxAcc_Carriage", 7500).getEntry();
   setPoint_Carriage = CarriageMotorMP.add("CarriageSetPos", 0).getEntry();
   carriageEncoderPos = CarriageMotorMP.add("CarriageGetPos", 0).getEntry();
 
+  
   CarriageMotorMP.add("SendNewPosition", new ElevatorUpperPortCMD()); 
 
   }
