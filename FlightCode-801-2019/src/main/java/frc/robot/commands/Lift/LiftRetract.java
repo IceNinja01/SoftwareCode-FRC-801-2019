@@ -36,7 +36,7 @@ public LiftRetract(double setPoint) {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Robot.lift.isMoving();
+    return Robot.lift.isDeltaPosition();
   }
 
   // Called once after isFinished returns true
