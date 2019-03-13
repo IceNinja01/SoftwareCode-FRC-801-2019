@@ -8,11 +8,10 @@
 package frc.robot.commands.Elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Constants;
 import frc.robot.Robot;
 
-public class ElevatorBottomCMD extends Command {
-  public ElevatorBottomCMD() {
+public class CarriageManualPositionCMD extends Command {
+  public CarriageManualPositionCMD() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.elevator);
   }
@@ -22,22 +21,19 @@ public class ElevatorBottomCMD extends Command {
   protected void initialize() {
     Robot.elevator.updatePID();
     Robot.elevator.updateSmartMotion();
-    Robot.elevator.elevatorRun(Constants.ElevatorBottomPosition);
-    Robot.elevator.carriageRun(Constants.CarriageBottomPosition);
+    Robot.elevator.carriageRun();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    // updates both elevator and carriage dashboard readings
-    Robot.elevator.elevatorEncoderPos();  
+    Robot.elevator.elevatorEncoderPos();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !Robot.elevator.elevatorIsMoving() 
-            && !Robot.elevator.carriageIsMoving();
+    return !Robot.elevator.carriageIsMoving();
   }
 
   // Called once after isFinished returns true

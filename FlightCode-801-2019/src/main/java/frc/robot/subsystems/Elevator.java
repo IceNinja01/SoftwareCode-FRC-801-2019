@@ -7,18 +7,15 @@
 
 package frc.robot.subsystems;
 import frc.robot.Constants;
-import frc.robot.commands.Elevator.ElevatorBottomCMD;
+import frc.robot.commands.Elevator.ElevatorManualPositionCMD;
 import frc.robot.commands.Elevator.ElevatorStopCMD;
-import frc.robot.commands.Elevator.ElevatorUpperPortCMD;
+import frc.robot.commands.Elevator.CarriageManualPositionCMD;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.networktables.NetworkTableEntry;
-
-import java.util.Map;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
@@ -84,8 +81,8 @@ public class Elevator extends Subsystem
      * in the SPARK MAX to their factory default state. If no argument is passed, these
      * parameters will not persist between power cycles
      */
-    // rightInsideElevatorMotor.restoreFactoryDefaults();
-    // leftElevatorCarriageMotor.restoreFactoryDefaults();
+    rightInsideElevatorMotor.restoreFactoryDefaults();
+    leftElevatorCarriageMotor.restoreFactoryDefaults();
     // initialze PID controller and encoder objects
     rightInsideElevatorMotorPID = rightInsideElevatorMotor.getPIDController();
     rightInsideElevatorMotorEncoder = rightInsideElevatorMotor.getEncoder();
@@ -116,26 +113,26 @@ public class Elevator extends Subsystem
   kD_Elevator = ElevatorMotorPID.add("kD_Elevator", 0).getEntry();
   kIz_Elevator = ElevatorMotorPID.add("kIz_Elevator", 0).getEntry(); 
   kFF_Elevator = ElevatorMotorPID.add("kFF_Elevator", 0).getEntry(); 
-  kMaxOutput_Elevator = ElevatorMotorPID.add("kMaxOutput_Elevator", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+  kMaxOutput_Elevator = ElevatorMotorPID.add("kMaxOutput_Elevator", 1).getEntry();
   
   ShuffleboardLayout ElevatorMotorMP = Shuffleboard.getTab(ElevatorTitle)
     .getLayout("ElevatorMotorPM", BuiltInLayouts.kList)
-    .withSize(2, 5)
-    .withPosition(2, 0);
+    .withSize(2, 3)
+    .withPosition(0, 7);
   maxVel_Elevator = ElevatorMotorMP.add("maxVel_Elevator", 5700).getEntry();
-  minVel_Elevator = ElevatorMotorMP.add("minVel_Elevator", 10).getEntry();
+  minVel_Elevator = ElevatorMotorMP.add("maxVel_Elevator", 10).getEntry();
   maxAcc_Elevator = ElevatorMotorMP.add("maxAcc_Elevator", 7500).getEntry();
   setPoint_Elevator = ElevatorMotorMP.add("ElevatorSetPos", 0).getEntry();
   elevatorEncoderPos = ElevatorMotorMP.add("ElevatorGetPos", 0).getEntry();
 
-  ElevatorMotorMP.add("SendNewPosition", new ElevatorBottomCMD()); 
+  ElevatorMotorMP.add("SendNewPosition", new ElevatorManualPositionCMD()); 
   
   
   //CarriageMotor
   ShuffleboardLayout CarriageMotorPID = Shuffleboard.getTab(ElevatorTitle)
    .getLayout("CarriageMotorPID", BuiltInLayouts.kList)
    .withSize(2, 5)
-   .withPosition(4, 0);
+   .withPosition(2, 0);
   kP_Carriage = CarriageMotorPID.add("kP_Carriage", 0.01).getEntry();
   kI_Carriage = CarriageMotorPID.add("kI_Carriage", 0.01).getEntry();
   kD_Carriage = CarriageMotorPID.add("kD_Carriage", 0).getEntry();
@@ -145,16 +142,15 @@ public class Elevator extends Subsystem
   
   ShuffleboardLayout CarriageMotorMP = Shuffleboard.getTab(ElevatorTitle)
     .getLayout("CarriageMotorPM", BuiltInLayouts.kList)
-    .withSize(2, 5)
-    .withPosition(6, 0);
+    .withSize(2, 3)
+    .withPosition(2, 7);
   maxVel_Carriage = CarriageMotorMP.add("maxVel_Carriage", 5700).getEntry();
-  minVel_Carriage = CarriageMotorMP.add("minVel_Carriage", 10).getEntry();
+  minVel_Carriage = CarriageMotorMP.add("maxVel_Carriage", 10).getEntry();
   maxAcc_Carriage = CarriageMotorMP.add("maxAcc_Carriage", 7500).getEntry();
   setPoint_Carriage = CarriageMotorMP.add("CarriageSetPos", 0).getEntry();
   carriageEncoderPos = CarriageMotorMP.add("CarriageGetPos", 0).getEntry();
 
-  
-  CarriageMotorMP.add("SendNewPosition", new ElevatorUpperPortCMD()); 
+  CarriageMotorMP.add("SendNewPosition", new CarriageManualPositionCMD()); 
 
   }
   /**
@@ -207,25 +203,36 @@ public class Elevator extends Subsystem
   
    public void elevatorRun()
   {
-      double setPotint = setPoint_Elevator.getDouble(0.0);
+      double setPoint = setPoint_Elevator.getDouble(0.0);
       elevatorEncoderPos();
-      rightInsideElevatorMotorPID.setReference(setPotint, ControlType.kSmartMotion);;
+      rightInsideElevatorMotorPID.setReference(setPoint, ControlType.kSmartMotion);;
+  } 
+
+  public void elevatorRun(double setPoint)
+  {
+      setPoint_Elevator.setDouble(setPoint);
+      elevatorEncoderPos();
+      rightInsideElevatorMotorPID.setReference(setPoint, ControlType.kSmartMotion);;
   } 
 
   public void carriageRun()
   {
-      double setPotint = setPoint_Carriage.getDouble(0.0);
+      double setPoint = setPoint_Carriage.getDouble(0.0);
       elevatorEncoderPos();
-      leftElevatorCarriageMotorPID.setReference(setPotint, ControlType.kSmartMotion);;
+      leftElevatorCarriageMotorPID.setReference(setPoint, ControlType.kSmartMotion);;
   } 
-  
+
+  public void carriageRun(double setPoint)
+  {
+      setPoint_Carriage.setDouble(setPoint);
+      elevatorEncoderPos();
+      leftElevatorCarriageMotorPID.setReference(setPoint, ControlType.kSmartMotion);;
+  } 
+
+
   public void elevatorEncoderPos()
   {
     elevatorEncoderPos.setNumber(rightInsideElevatorMotorEncoder.getPosition());
-  }
-
-  public void carriageEncoderPos()
-  {
     carriageEncoderPos.setNumber(leftElevatorCarriageMotorEncoder.getPosition());
   }
 
@@ -234,6 +241,7 @@ public class Elevator extends Subsystem
     return Math.abs(rightInsideElevatorMotorEncoder.getPosition() - setPoint_Elevator.getDouble(0.0) ) > closeEnough; 
   }
 
+  
   public boolean carriageIsMoving()
   {
     return Math.abs(leftElevatorCarriageMotorEncoder.getPosition() - setPoint_Carriage.getDouble(0.0) ) > closeEnough;

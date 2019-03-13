@@ -9,6 +9,7 @@ package frc.robot.commands.Elevator;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.Constants;
 
 public class ElevatorUpperPortCMD extends Command {
   public ElevatorUpperPortCMD() {
@@ -21,19 +22,22 @@ public class ElevatorUpperPortCMD extends Command {
   protected void initialize() {
     Robot.elevator.updatePID();
     Robot.elevator.updateSmartMotion();
-    Robot.elevator.carriageRun();
+    Robot.elevator.elevatorRun(Constants.ElevatorUpperPosition);
+    Robot.elevator.carriageRun(Constants.CarriageUpperPosition);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.elevator.carriageEncoderPos();
+    // updates both elevator and carriage dashboard readings
+    Robot.elevator.elevatorEncoderPos();  
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !Robot.elevator.carriageIsMoving();
+    return !Robot.elevator.elevatorIsMoving() 
+            && !Robot.elevator.carriageIsMoving();
   }
 
   // Called once after isFinished returns true
