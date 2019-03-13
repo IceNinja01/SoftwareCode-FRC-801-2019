@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     lightRelay.set(Relay.Value.kOff);
     chassis.chassisSwerveDrive.getUpdate();
-    // SmartDashboard.putNumber("GyroAngle", chassis.getGyroAngle());
+    SmartDashboard.putNumber("GyroAngle", chassis.getGyroAngle());
   }
 
   /**

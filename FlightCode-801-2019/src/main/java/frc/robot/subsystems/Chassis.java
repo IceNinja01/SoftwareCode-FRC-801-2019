@@ -33,7 +33,7 @@ public class Chassis extends PIDSubsystem {
 	public static SwervePOD leftFrontPod;
 	public static SwervePOD leftBackPod;
 	public static SwervePOD rightBackPod;
-	public static ADIS16448_IMU imu;
+	public static ADIS16448_IMU imu = new ADIS16448_IMU();
 
 	
 	public static SwerveDrive chassisSwerveDrive;
@@ -79,25 +79,26 @@ public class Chassis extends PIDSubsystem {
 		
 		leftBackPod.invertDriveMotor(true);
 		rightBackPod.invertDriveMotor(true);
-		chassisSwerveDrive = new SwerveDrive(rightFrontPod, leftFrontPod, leftBackPod, rightBackPod, 3);
+		// rightFrontPod.setInvertTurn(true);
+		chassisSwerveDrive = new SwerveDrive(rightFrontPod, leftFrontPod, leftBackPod, rightBackPod, 10);
 
 		chassisSwerveDrive.configPIDDrive(0.0002, 0.00000, 0.0, 0.0, 0.0, -1.0, 1.0);
 
-		chassisSwerveDrive.configPIDTurn(0.01, 0.01, 0.00001, 0, 0.0001, -1.0, 1.0, 2);
-		// leftBackPod.configPIDTurn(0.00015,  0.0001, 0.001, 0, 0.001, -0.15, 0.15, 1);
-		
+		chassisSwerveDrive.configPIDTurn(0.02, 0.0001, 0.00001, 0, 0.0001, -0.2, 0.2, 5);
+		leftBackPod.configPIDTurn(0.02,  0.0001, 0.0001, 0, 0.0001, -0.2, 0.2, 5);
+		leftFrontPod.configPIDTurn(0.05,  0.0001, 0.0001, 0, 0.0001, -1.0, 1.0, 5);
 		chassisSwerveDrive.setDriveCurrentLimit(20, 40);
-
+		
 		chassisSwerveDrive.brakeOff();
 		rightFrontPod.setBias();
 		leftFrontPod.setBias();
 		leftBackPod.setBias();
 		rightBackPod.setBias();
 		
-		leftFrontPod.setInvertTurn(true);
+		// leftFrontPod.setInvertTurn(true);
 		initDashboard();
-		// imu.calibrate();
-		// imu.reset();
+		imu.calibrate();
+		imu.reset();
 	
 	}
 
@@ -109,10 +110,12 @@ public class Chassis extends PIDSubsystem {
 	public void initDashboard(){
 		 // specify widget properties here
 		 setPoint_drive = tab_chassis.add("SetPoint_Drive", 0.0).getEntry(); //input is in Inches
+		 angle_input = tab_chassis.add("Angle_input", 0).getEntry(); 
+		 velocity_input = tab_chassis.add("Velocity_input", 0).getEntry(); 
 		//DriveMotors
 		ShuffleboardLayout driveMotors = Shuffleboard.getTab(ChassisTitle)
 		.getLayout("DriveMotors", BuiltInLayouts.kList)
-		.withSize(2, 2)
+		.withSize(2, 4)
 		.withPosition(2, 0);
 		kP_drive = driveMotors.add("kP_drive", .0005).getEntry();
 		kI_drive = driveMotors.add("kI_drive", 1e-6).getEntry();
@@ -124,10 +127,10 @@ public class Chassis extends PIDSubsystem {
 		//SteerMotors
 		ShuffleboardLayout steerMotors = Shuffleboard.getTab(ChassisTitle)
 		 .getLayout("SteerMotors", BuiltInLayouts.kList)
-		 .withSize(2, 2)
+		 .withSize(2, 4)
 		 .withPosition(4, 0);
 		kP_turn = steerMotors.add("kP_turn", 0.01).getEntry();
-		kI_turn = steerMotors.add("kI_turn", 0.01).getEntry();
+		kI_turn = steerMotors.add("kI_turn", 0.001).getEntry();
 		kD_turn = steerMotors.add("kD_turn", 0).getEntry();
 		kIz_turn = steerMotors.add("kIz_turn", 0).getEntry(); 
 		kFF_turn = steerMotors.add("kFF_turn", 0.0001).getEntry(); 
@@ -135,8 +138,7 @@ public class Chassis extends PIDSubsystem {
 
 		// kMaxOutput_turn = tab_chassis.add("kMaxOutput_turn", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min_", 0, "max_", 1)).getEntry();
 		 // specify widget properties here
-		 angle_input = tab_chassis.add("Angle_input", 0).getEntry(); 
-		 velocity_input = tab_chassis.add("Velocity_input", 0).getEntry(); 
+
 
 		ShuffleboardLayout chassisCommands = Shuffleboard.getTab(ChassisTitle)
 			.getLayout("ChassisCommands", BuiltInLayouts.kList)
@@ -155,7 +157,7 @@ public class Chassis extends PIDSubsystem {
 		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
 		
 		if(robotOrient){ //Field oriented
-			chassisSwerveDrive.drive(x,y,z,0.0);
+			chassisSwerveDrive.drive(x,y,z,getGyroAngle());
 		}
 		else{//Robot oriented
 			chassisSwerveDrive.drive(x,y,z,0.0);
@@ -169,7 +171,7 @@ public class Chassis extends PIDSubsystem {
 	 }
 
 	 public void setPIDTurn(){
-		chassisSwerveDrive.configPIDTurn(kP_turn.getDouble(0.01), kD_turn.getDouble(0.0001), kI_turn.getDouble(0.001), 0, 0.0001,
+		chassisSwerveDrive.configPIDTurn(kP_turn.getDouble(0.001), kD_turn.getDouble(0.00001), kI_turn.getDouble(0.0001), 0, 0.00001,
 		 -kMaxOutput_turn.getDouble(1.0), kMaxOutput_turn.getDouble(1.0) ,3);
 	 }
 
