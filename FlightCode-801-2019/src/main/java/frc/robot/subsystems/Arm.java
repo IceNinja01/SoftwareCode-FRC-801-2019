@@ -86,10 +86,10 @@ public class Arm extends Subsystem {
 
 		/* Set Motion Magic gains in slot0 - see documentation */
 		armMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
-		armMotor.config_kF(kSlotIdx, kGains.kF, kTimeoutMs);
-		armMotor.config_kP(kSlotIdx, kGains.kP, kTimeoutMs);
-		armMotor.config_kI(kSlotIdx, kGains.kI, kTimeoutMs);
-		armMotor.config_kD(kSlotIdx, kGains.kD, kTimeoutMs);
+		armMotor.config_kF(kSlotIdx, 0.0, kTimeoutMs);
+		armMotor.config_kP(kSlotIdx, 0.0, kTimeoutMs);
+		armMotor.config_kI(kSlotIdx, 0.0, kTimeoutMs);
+		armMotor.config_kD(kSlotIdx, 0.0, kTimeoutMs);
 
 		/* Set acceleration and vcruise velocity - see documentation */
 		armMotor.configMotionCruiseVelocity(15000, kTimeoutMs);

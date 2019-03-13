@@ -7,9 +7,9 @@
 
 package frc.robot.subsystems;
 import frc.robot.Constants;
+import frc.robot.commands.Elevator.CarriageManualPositionCMD;
 import frc.robot.commands.Elevator.ElevatorManualPositionCMD;
 import frc.robot.commands.Elevator.ElevatorStopCMD;
-import frc.robot.commands.Elevator.CarriageManualPositionCMD;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -68,7 +68,7 @@ public class Elevator extends Subsystem
   
   private final int smartMotionSlot = 0;
   private final int maxEncoderError = 0;
-  private final int closeEnough = 5;
+  private final double closeEnough = 0.05;
 
 
   public void init()
@@ -108,19 +108,19 @@ public class Elevator extends Subsystem
     .getLayout("ElevatorMotorPID", BuiltInLayouts.kList)
     .withSize(2, 5)
     .withPosition(0, 0);
-  kP_Elevator = ElevatorMotorPID.add("kP_Elevator", .0005).getEntry();
-  kI_Elevator = ElevatorMotorPID.add("kI_Elevator", 1e-6).getEntry();
-  kD_Elevator = ElevatorMotorPID.add("kD_Elevator", 0).getEntry();
-  kIz_Elevator = ElevatorMotorPID.add("kIz_Elevator", 0).getEntry(); 
-  kFF_Elevator = ElevatorMotorPID.add("kFF_Elevator", 0).getEntry(); 
+  kP_Elevator = ElevatorMotorPID.add("kP_Elevator", .0001).getEntry();
+  kI_Elevator = ElevatorMotorPID.add("kI_Elevator", 0.0).getEntry();
+  kD_Elevator = ElevatorMotorPID.add("kD_Elevator", 0.0).getEntry();
+  kIz_Elevator = ElevatorMotorPID.add("kIz_Elevator", 0.0).getEntry(); 
+  kFF_Elevator = ElevatorMotorPID.add("kFF_Elevator", 0.0).getEntry(); 
   kMaxOutput_Elevator = ElevatorMotorPID.add("kMaxOutput_Elevator", 1).getEntry();
   
   ShuffleboardLayout ElevatorMotorMP = Shuffleboard.getTab(ElevatorTitle)
     .getLayout("ElevatorMotorPM", BuiltInLayouts.kList)
-    .withSize(2, 3)
-    .withPosition(0, 7);
+    .withSize(2, 5)
+    .withPosition(2, 0);
   maxVel_Elevator = ElevatorMotorMP.add("maxVel_Elevator", 5700).getEntry();
-  minVel_Elevator = ElevatorMotorMP.add("maxVel_Elevator", 10).getEntry();
+  minVel_Elevator = ElevatorMotorMP.add("minVel_Elevator", 10).getEntry();
   maxAcc_Elevator = ElevatorMotorMP.add("maxAcc_Elevator", 7500).getEntry();
   setPoint_Elevator = ElevatorMotorMP.add("ElevatorSetPos", 0).getEntry();
   elevatorEncoderPos = ElevatorMotorMP.add("ElevatorGetPos", 0).getEntry();
@@ -132,20 +132,20 @@ public class Elevator extends Subsystem
   ShuffleboardLayout CarriageMotorPID = Shuffleboard.getTab(ElevatorTitle)
    .getLayout("CarriageMotorPID", BuiltInLayouts.kList)
    .withSize(2, 5)
-   .withPosition(2, 0);
-  kP_Carriage = CarriageMotorPID.add("kP_Carriage", 0.01).getEntry();
-  kI_Carriage = CarriageMotorPID.add("kI_Carriage", 0.01).getEntry();
+   .withPosition(4, 0);
+  kP_Carriage = CarriageMotorPID.add("kP_Carriage", 0.0001).getEntry();
+  kI_Carriage = CarriageMotorPID.add("kI_Carriage", 0.0).getEntry();
   kD_Carriage = CarriageMotorPID.add("kD_Carriage", 0).getEntry();
   kIz_Carriage = CarriageMotorPID.add("kIz_Carriage", 0).getEntry(); 
-  kFF_Carriage = CarriageMotorPID.add("kFF_Carriage", 0.0001).getEntry(); 
+  kFF_Carriage = CarriageMotorPID.add("kFF_Carriage", 0.0).getEntry(); 
   kMaxOutput_Carriage = CarriageMotorPID.add("kMaxOutput_Carriage", 1.0).getEntry(); 
   
   ShuffleboardLayout CarriageMotorMP = Shuffleboard.getTab(ElevatorTitle)
     .getLayout("CarriageMotorPM", BuiltInLayouts.kList)
-    .withSize(2, 3)
-    .withPosition(2, 7);
+    .withSize(2, 5)
+    .withPosition(6, 0);
   maxVel_Carriage = CarriageMotorMP.add("maxVel_Carriage", 5700).getEntry();
-  minVel_Carriage = CarriageMotorMP.add("maxVel_Carriage", 10).getEntry();
+  minVel_Carriage = CarriageMotorMP.add("minVel_Carriage", 10).getEntry();
   maxAcc_Carriage = CarriageMotorMP.add("maxAcc_Carriage", 7500).getEntry();
   setPoint_Carriage = CarriageMotorMP.add("CarriageSetPos", 0).getEntry();
   carriageEncoderPos = CarriageMotorMP.add("CarriageGetPos", 0).getEntry();
@@ -168,7 +168,7 @@ public class Elevator extends Subsystem
     
   public void updateSmartMotion(){
     rightInsideElevatorMotorPID.setSmartMotionMaxVelocity(maxVel_Elevator.getDouble(2000), smartMotionSlot);
-    rightInsideElevatorMotorPID.setSmartMotionMinOutputVelocity(minVel_Elevator.getDouble(10), smartMotionSlot);
+    rightInsideElevatorMotorPID.setSmartMotionMinOutputVelocity(minVel_Elevator.getDouble(0), smartMotionSlot);
     rightInsideElevatorMotorPID.setSmartMotionMaxAccel(maxAcc_Elevator.getDouble(1500), smartMotionSlot);
     rightInsideElevatorMotorPID.setSmartMotionAllowedClosedLoopError( maxEncoderError, smartMotionSlot);
   
@@ -180,15 +180,15 @@ public class Elevator extends Subsystem
   
   public void updatePID()
   {
-    rightInsideElevatorMotorPID.setP(kP_Elevator.getDouble(0.0005));
-    rightInsideElevatorMotorPID.setI(kI_Elevator.getDouble(1e-6));
+    rightInsideElevatorMotorPID.setP(kP_Elevator.getDouble(0.0001));
+    rightInsideElevatorMotorPID.setI(kI_Elevator.getDouble(0.0));
     rightInsideElevatorMotorPID.setD(kD_Elevator.getDouble(0.0));
     rightInsideElevatorMotorPID.setIZone(kIz_Elevator.getDouble(0.0));
     rightInsideElevatorMotorPID.setFF(kFF_Elevator.getDouble(0.0));
     rightInsideElevatorMotorPID.setOutputRange(-kMaxOutput_Carriage.getDouble(1.0), kMaxOutput_Elevator.getDouble(1.0));
   
-    leftElevatorCarriageMotorPID.setP(kP_Carriage.getDouble(0.0005));
-    leftElevatorCarriageMotorPID.setI(kI_Carriage.getDouble(1e-6));
+    leftElevatorCarriageMotorPID.setP(kP_Carriage.getDouble(0.0001));
+    leftElevatorCarriageMotorPID.setI(kI_Carriage.getDouble(0.0));
     leftElevatorCarriageMotorPID.setD(kD_Carriage.getDouble(0.0));
     leftElevatorCarriageMotorPID.setIZone(kIz_Carriage.getDouble(0.0));
     leftElevatorCarriageMotorPID.setFF(kFF_Carriage.getDouble(0.0));

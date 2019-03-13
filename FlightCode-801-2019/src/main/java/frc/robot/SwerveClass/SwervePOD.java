@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -129,6 +130,29 @@ public class SwervePOD {
 		turnMotor.configNeutralDeadband(0.001, 10);
 //		//set Voltage for turn motors
 		turnMotor.set(ControlMode.PercentOutput, 0.0);
+		
+		pidTurnController = new PIDController(kP, kI, kD, new PIDSource() {
+			public double pidGet() {
+				return getAngleDeg();
+			}
+			@Override
+			public void setPIDSourceType(PIDSourceType pidSource) {	
+			}
+			@Override
+			public PIDSourceType getPIDSourceType() {
+				return PIDSourceType.kDisplacement;
+			}
+		},  new PIDOutput() {
+			public void pidWrite(double demand) {
+				turnMotor.set(ControlMode.PercentOutput, demand);
+			}
+		});
+		
+		pidTurnController.setAbsoluteTolerance(deadBand);
+		pidTurnController.setInputRange(0, 360);
+		pidTurnController.setContinuous(true);
+		pidTurnController.setOutputRange(-kMinOutput, kMaxOutput);
+		pidTurnController.enable();
 
 	}
 
@@ -224,8 +248,8 @@ public class SwervePOD {
 		// Set new position of motor
 		// turnMotor.set(ControlMode.PercentOutput, -0.2);
 
-		turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
-		// pidTurnController.setSetpoint(angle);
+		// turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
+		pidTurnController.setSetpoint(angle);
 		
 	}
 

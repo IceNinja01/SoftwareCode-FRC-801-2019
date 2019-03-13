@@ -12,11 +12,13 @@ import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utilities.OI;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.Pincher;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Gather;
 import frc.robot.subsystems.Arm;
@@ -35,7 +37,8 @@ public class Robot extends TimedRobot {
   public static Gather gather = new Gather();
   public static Arm arm = new Arm();
   public static Chassis chassis = new Chassis();
-  public static PowerDistributionPanel pdp = new PowerDistributionPanel();;
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel();
+  public static Pincher pincher = new Pincher();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -52,7 +55,9 @@ public class Robot extends TimedRobot {
     lift.init();
     arm.init();
     gather.init();
+    pincher.init();
 
+    
     oi = new OI();
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
