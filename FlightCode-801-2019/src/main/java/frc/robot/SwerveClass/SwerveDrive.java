@@ -189,10 +189,13 @@ public class SwerveDrive extends MotorSafety {
 				SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 
 				//Turn Motors
-			    // if(wheelSpeeds[i]>0.1){
+			    if(wheelSpeeds[i]>0.2){
 					SwervePOD[i].setAngle(wheelAngles[i]);
 			    	oldAngle[i] = wheelAngles[i];
-				// }
+				}
+				else{
+					SwervePOD[i].setAngle(0);
+				}
 				
 			SmartDashboard.putNumber("Angle", wheelAngles[i]);
 			SmartDashboard.putNumber("Int", i);

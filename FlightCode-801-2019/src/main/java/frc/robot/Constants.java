@@ -18,7 +18,8 @@ public class Constants {
 	public static double BackLeftBias = Robot.prefs.getDouble("BackLeftBias", 0.0);
 	public static double BackRightBias = Robot.prefs.getDouble("BackRightBias", 0.0);
 	*/
-    public static final int[] AngleBias = {3575, 1175, 1851, 1132};
+	public static final int[] AngleBias = {1626, 1644, 947, 2001};
+	
 	public static final int rightLiftMotorID = 8;
 	public static final int leftLiftMotorID = 9;
 	
@@ -41,7 +42,17 @@ public class Constants {
 
 	public static double rotations_per_deg = 1;
 
+	public static double ElevatorBottomPosition = 0.0;
+	public static double ElevatorGatherPosition = 0.0;
+	public static double ElevatorLowerPosition = 0.0;
+	public static double ElevatorMiddlePosition = 0.0;
+	public static double ElevatorUpperPosition = 0.0;
 
+	public static double CarriageBottomPosition = 0.0;
+	public static double CarriageGatherPosition = 0.0;
+	public static double CarriageLowerPosition = 0.0;
+	public static double CarriageMiddlePosition = 0.0;
+	public static double CarriageUpperPosition = 0.0;
     
 
 
