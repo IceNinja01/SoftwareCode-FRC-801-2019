@@ -17,11 +17,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants;
 import frc.robot.commands.Lift.LiftStop;
@@ -45,13 +42,13 @@ public class Lift extends Subsystem {
 
   private final double motorIsMovingThreshold = 1.0;
   private String LiftTitle = "Lift Motor";
-  private NetworkTableEntry encoderError,rightEncoderPos,leftEncoderPos,setPoint_lift; 
+  private NetworkTableEntry rightEncoderPos,leftEncoderPos,setPoint_lift; 
   private NetworkTableEntry kP_lift, kI_lift, kD_lift, kIz_lift, kFF_lift, kMaxOutput_lift, kMinOutput_lift;
-  private NetworkTableEntry maxRPM_lift, maxVel_lift, minVel_lift, maxAcc_lift, allowedErr_lift;
+  private NetworkTableEntry maxVel_lift, minVel_lift, maxAcc_lift, encoderError;
   private ShuffleboardTab tab = Shuffleboard.getTab(LiftTitle);
   
-  private int smartMotionSlot;
-
+  private final int smartMotionSlot = 0;
+  private final int maxEncoderError = 0;
 
   
   public void init(){
@@ -79,11 +76,6 @@ public class Lift extends Subsystem {
       //Set PID and Motion Constants
       updatePID();
       updateSmartMotion();
-
-      smartMotionSlot = 0;
-      rightLiftEncoderInitCount = rightLiftEncoder.getPosition();
-      leftLiftEncoderInitCount = rightLiftEncoder.getPosition();
-
   }
 
   public void initDashboard(){
@@ -91,23 +83,21 @@ public class Lift extends Subsystem {
     kP_lift = tab.add("kP", .0005).getEntry();
     kI_lift = tab.add("kI_lift", 1e-6).getEntry();
     kD_lift = tab.add("kD_lift", 0).getEntry();
-    kI_lift = tab.add("kI_liftz", 0).getEntry(); 
+    kIz_lift = tab.add("kIz_liftz", 0).getEntry(); 
     kFF_lift = tab.add("kFF_lift", 0).getEntry(); 
     kMaxOutput_lift = tab.add("kMaxOutput", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).getEntry();
      // specify widget properties here
     kMinOutput_lift = tab.add("kMinOutput", -1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", -1, "max", 0)).getEntry();
-    maxRPM_lift = tab.add("maxRPM", 5700).getEntry();
     // Smart Motion Coefficients
-    maxVel_lift = tab.add("maxVel", 5700).getEntry(); // rpm
+    maxVel_lift = tab.add("maxVel(RPM)", 5700).getEntry(); // rpm
     maxAcc_lift = tab.add("maxAcc", 7500).getEntry(); //accelaeration
     minVel_lift = tab.add("minVel", 10).getEntry();
-    allowedErr_lift = tab.add("allowedErr", 0).getEntry();
     leftEncoderPos = tab.add("LeftEncPos", 0).getEntry();
     rightEncoderPos = tab.add("rightEncoderPos", 0).getEntry();
-    encoderError = tab.add("EncoderError", 0).getEntry();
+    encoderError = tab.add("LRencoderDelta", 0).getEntry();
 
-    tab.add(new LiftUpDownToggleCMD()).withPosition(2, 2).withSize(2, 1);
-    
+
+    tab.add(new LiftUpDownToggleCMD()).withPosition(2, 2).withSize(2, 1);    
   }
       /**
        * Smart Motion coefficients are set on a CANPIDController object
@@ -125,24 +115,28 @@ public class Lift extends Subsystem {
     rightLiftPID.setSmartMotionMaxVelocity(maxVel_lift.getDouble(2000), smartMotionSlot);
     rightLiftPID.setSmartMotionMinOutputVelocity(minVel_lift.getDouble(10), smartMotionSlot);
     rightLiftPID.setSmartMotionMaxAccel(maxAcc_lift.getDouble(1500), smartMotionSlot);
-    rightLiftPID.setSmartMotionAllowedClosedLoopError(allowedErr_lift.getDouble(0), smartMotionSlot);
+    rightLiftPID.setSmartMotionAllowedClosedLoopError(maxEncoderError, smartMotionSlot);
+
     leftLiftPID.setSmartMotionMaxVelocity(maxVel_lift.getDouble(2000), smartMotionSlot);
     leftLiftPID.setSmartMotionMinOutputVelocity(minVel_lift.getDouble(0), smartMotionSlot);
     leftLiftPID.setSmartMotionMaxAccel(maxAcc_lift.getDouble(1500), smartMotionSlot);
-    leftLiftPID.setSmartMotionAllowedClosedLoopError(allowedErr_lift.getDouble(1000), smartMotionSlot);
+    leftLiftPID.setSmartMotionAllowedClosedLoopError(maxEncoderError, smartMotionSlot);
   }
 
   public void updatePID(){
     rightLiftPID.setP(kP_lift.getDouble(0.0005));
     rightLiftPID.setI(kI_lift.getDouble(1e-6));
     rightLiftPID.setD(kD_lift.getDouble(0.0));
-    rightLiftPID.setIZone(kI_lift.getDouble(0.0));
+    rightLiftPID.setI(kI_lift.getDouble(0.0));
+    rightLiftPID.setIZone(kIz_lift.getDouble(0.0));
     rightLiftPID.setFF(kFF_lift.getDouble(0.0));
     rightLiftPID.setOutputRange(kMinOutput_lift.getDouble(-1.0), kMaxOutput_lift.getDouble(1.0));
+
     leftLiftPID.setP(kP_lift.getDouble(0.0005));
     leftLiftPID.setI(kI_lift.getDouble(1e-6));
     leftLiftPID.setD(kD_lift.getDouble(0.0));
-    leftLiftPID.setIZone(kI_lift.getDouble(0.0));
+    leftLiftPID.setI(kI_lift.getDouble(0.0));
+    leftLiftPID.setIZone(kIz_lift.getDouble(0.0));
     leftLiftPID.setFF(kFF_lift.getDouble(0.0));
     leftLiftPID.setOutputRange(kMinOutput_lift.getDouble(-1.0), kMaxOutput_lift.getDouble(1.0));
   }
@@ -154,7 +148,7 @@ public class Lift extends Subsystem {
 
   public void liftToggle()
   {
-      double val = setPoint_lift.getDouble(10.0);
+      double val = setPoint_lift.getDouble(0.0);
       encoderPos();
       rightLiftPID.setReference(val, ControlType.kSmartMotion);
       leftLiftPID.setReference(val, ControlType.kSmartMotion);
@@ -163,7 +157,7 @@ public class Lift extends Subsystem {
   public boolean isDeltaPosition()
   {
     // if either motor is moving faster than motorIsMovingThreshold it is moving...
-    double error =rightLiftEncoder.getPosition() - leftLiftEncoder.getPosition();
+    double error = rightLiftEncoder.getPosition() - leftLiftEncoder.getPosition();
     encoderError.setNumber(error);
     return ( Math.abs(error) >  motorIsMovingThreshold);
   }
