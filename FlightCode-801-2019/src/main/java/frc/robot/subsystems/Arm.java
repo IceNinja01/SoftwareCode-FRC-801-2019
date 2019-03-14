@@ -28,10 +28,10 @@ public class Arm extends Subsystem
 
   private TalonSRX armMotor;
   
-  public static final double kFF = 0.1;
-  public static final double kP = 1.0;
-  public static final double kI = 0;
-  public static final double kD = 0.2;
+  private  double kFF = 0.1;
+  private  double kP = 1.0;
+  private  double kI = 0;
+  private  double kD = 0.2;
 
   public static final int kTimeoutMs = 10;
 
@@ -80,11 +80,7 @@ public class Arm extends Subsystem
     armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, kTimeoutMs);
     armMotor.configReverseSoftLimitThreshold(0, kTimeoutMs);
     armMotor.configForwardSoftLimitThreshold((int)( kEncoderTicks*kDebugMotorTurn ), kTimeoutMs); // FIXME debug
-    armMotor.configNominalOutputForward(0, kTimeoutMs);
-    armMotor.configNominalOutputReverse(0, kTimeoutMs);
-    armMotor.configPeakOutputForward(11);
-    armMotor.configPeakOutputReverse(-11);
-    armMotor.enableVoltageCompensation(true);
+
 
     // FIXME: Test if this is the correct thing for how it should work
 		armMotor.setSensorPhase(true);
@@ -123,22 +119,22 @@ public class Arm extends Subsystem
     .getLayout("ArmMotorPID", BuiltInLayouts.kList)
     .withSize(2, 5)
     .withPosition(0, 0);
-    kP_Arm = ArmMotorPID.add("kP_Arm", kP).getEntry();
-    kI_Arm = ArmMotorPID.add("kI_Arm", kI).getEntry();
-    kD_Arm = ArmMotorPID.add("kD_Arm", kD).getEntry();
-    kFF_Arm = ArmMotorPID.add("kFF_Arm", kFF).getEntry();
+    kP_Arm = ArmMotorPID.add("kP_Arm", kP).withPosition(0, 0).getEntry();
+    kI_Arm = ArmMotorPID.add("kI_Arm", kI).withPosition(0, 1).getEntry();
+    kD_Arm = ArmMotorPID.add("kD_Arm", kD).withPosition(0, 2).getEntry();
+    kFF_Arm = ArmMotorPID.add("kFF_Arm", kFF).withPosition(0, 3).getEntry();
 
     // Motion Magic Constants Area
     ShuffleboardLayout ArmMotorMP = Shuffleboard.getTab(ArmTabTitle)
     .getLayout("ArmMotorMP", BuiltInLayouts.kList)
     .withSize(2, 5)
     .withPosition(2, 0);
-    maxVel_Arm = ArmMotorMP.add("maxVel_Arm", kMaxVelocity).getEntry();
-    maxAcc_Arm = ArmMotorMP.add("maxAcc_Arm", kMaxAcceleration).getEntry();
-    setPoint_Arm = ArmMotorMP.add("ArmSetPos", 0).getEntry();
-    armEncoderPos = ArmMotorMP.add("ArmGetPos", 0).getEntry();
+    maxVel_Arm = ArmMotorMP.add("maxVel_Arm", kMaxVelocity).withPosition(0, 0).getEntry();
+    maxAcc_Arm = ArmMotorMP.add("maxAcc_Arm", kMaxAcceleration).withPosition(0, 1).getEntry();
+    setPoint_Arm = ArmMotorMP.add("ArmSetPos", 0).withPosition(0, 2).getEntry();
+    armEncoderPos = ArmMotorMP.add("ArmGetPos", 0).withPosition(0, 4).getEntry();
 
-    ArmMotorMP.add("SendNewPosition", new ArmManualPositionCMD());
+    ArmMotorMP.add("SendNewPosition", new ArmManualPositionCMD()).withPosition(0, 5);
   }
 
   public void updatePID()
@@ -162,6 +158,7 @@ public class Arm extends Subsystem
 
   public void stop()
   {
+    armMotor.set(ControlMode.PercentOutput, 0.0);
     armMotor.setNeutralMode(NeutralMode.Brake);
   }
 
@@ -206,7 +203,7 @@ public class Arm extends Subsystem
   {
     int position = armMotor.getSelectedSensorPosition();
     double positionDegrees = (position/kEncoderTicks)*360;
-
+    armEncoderPos.setNumber(positionDegrees);
     return positionDegrees;
   }
 

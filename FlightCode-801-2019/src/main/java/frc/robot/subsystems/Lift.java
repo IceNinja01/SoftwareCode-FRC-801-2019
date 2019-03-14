@@ -16,12 +16,15 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants;
-import frc.robot.commands.Lift.LiftStop;
+import frc.robot.commands.Lift.LiftStopCMD;
 import frc.robot.commands.Lift.LiftUpDownToggleCMD;
 
 
@@ -43,13 +46,21 @@ public class Lift extends Subsystem {
   private final double motorIsMovingThreshold = 1.0;
   private String LiftTitle = "Lift Motor";
   private NetworkTableEntry rightEncoderPos,leftEncoderPos,setPoint_lift; 
-  private NetworkTableEntry kP_lift, kI_lift, kD_lift, kIz_lift, kFF_lift, kMaxOutput_lift, kMinOutput_lift;
+  private NetworkTableEntry kP_lift, kI_lift, kD_lift, kIz_lift, kFF_lift, kMaxOutput_lift;
   private NetworkTableEntry maxVel_lift, minVel_lift, maxAcc_lift, encoderError;
   private ShuffleboardTab tab = Shuffleboard.getTab(LiftTitle);
   
   private final int smartMotionSlot = 0;
   private final int maxEncoderError = 0;
-
+  private double kP = 0.001;
+  private double kD = 0.0;
+  private double kI = 0.0;
+  private double kIz = 0.0;
+  private double kFF = 0.0;
+  private double kMaxOutput = 1.0;
+  private double maxVel = 5700;
+  private double maxAcc = 7500;
+  private double minVel = 0;
   
   public void init(){
       rightLiftMotor = new CANSparkMax(Constants.rightLiftMotorID, MotorType.kBrushless);
@@ -80,21 +91,30 @@ public class Lift extends Subsystem {
 
   public void initDashboard(){
     setPoint_lift = tab.add("SetPoint", 10.0).getEntry(); //input is in Inches
-    kP_lift = tab.add("kP", .0005).getEntry();
-    kI_lift = tab.add("kI_lift", 1e-6).getEntry();
-    kD_lift = tab.add("kD_lift", 0).getEntry();
-    kIz_lift = tab.add("kIz_liftz", 0).getEntry(); 
-    kFF_lift = tab.add("kFF_lift", 0).getEntry(); 
-    kMaxOutput_lift = tab.add("kMaxOutput", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).getEntry();
-     // specify widget properties here
-    kMinOutput_lift = tab.add("kMinOutput", -1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", -1, "max", 0)).getEntry();
+    // PID Constants Area
+    ShuffleboardLayout LiftMotorPID = Shuffleboard.getTab(LiftTitle)
+      .getLayout("ArmMotorPID", BuiltInLayouts.kList)
+      .withSize(2, 5)
+      .withPosition(0, 0);
+    kP_lift = LiftMotorPID.add("kP", kP).withPosition(0, 0).getEntry();
+    kI_lift = LiftMotorPID.add("kI_lift", kI).withPosition(0, 1).getEntry();
+    kD_lift = LiftMotorPID.add("kD_lift", kD).withPosition(0, 2).getEntry();
+    kIz_lift = LiftMotorPID.add("kIz_liftz", kIz).withPosition(0, 3).getEntry(); 
+    kFF_lift = LiftMotorPID.add("kFF_lift", kFF).withPosition(0, 4).getEntry(); 
+    kMaxOutput_lift = LiftMotorPID.add("kMaxOutput", kMaxOutput).withWidget(BuiltInWidgets.kNumberSlider) 
+    .withProperties(Map.of("min", 0, "max", 1)).withPosition(0, 5).getEntry();
     // Smart Motion Coefficients
-    maxVel_lift = tab.add("maxVel(RPM)", 5700).getEntry(); // rpm
-    maxAcc_lift = tab.add("maxAcc", 7500).getEntry(); //accelaeration
-    minVel_lift = tab.add("minVel", 10).getEntry();
-    leftEncoderPos = tab.add("LeftEncPos", 0).getEntry();
-    rightEncoderPos = tab.add("rightEncoderPos", 0).getEntry();
-    encoderError = tab.add("LRencoderDelta", 0).getEntry();
+    // Motion Magic Constants Area
+    ShuffleboardLayout LiftMotorMotion = Shuffleboard.getTab(LiftTitle)
+    .getLayout("ArmMotorMP", BuiltInLayouts.kList)
+    .withSize(2, 5)
+    .withPosition(2, 0);
+    maxVel_lift = LiftMotorMotion.add("maxVel(RPM)", maxVel).withPosition(0, 0).getEntry(); // rpm
+    maxAcc_lift = LiftMotorMotion.add("maxAcc", maxAcc).withPosition(0, 1).getEntry(); //accelaeration
+    minVel_lift = LiftMotorMotion.add("minVel", minVel).withPosition(0, 2).getEntry();
+    leftEncoderPos = LiftMotorMotion.add("LeftEncPos", 0).withPosition(0, 3).getEntry();
+    rightEncoderPos = LiftMotorMotion.add("rightEncoderPos", 0).withPosition(0, 4).getEntry();
+    encoderError = LiftMotorMotion.add("LRencoderDelta", 0).withPosition(0, 5).getEntry();
 
 
     tab.add(new LiftUpDownToggleCMD()).withPosition(2, 2).withSize(2, 1);    
@@ -124,13 +144,12 @@ public class Lift extends Subsystem {
   }
 
   public void updatePID(){
-    rightLiftPID.setP(kP_lift.getDouble(0.0005));
-    rightLiftPID.setI(kI_lift.getDouble(1e-6));
-    rightLiftPID.setD(kD_lift.getDouble(0.0));
-    rightLiftPID.setI(kI_lift.getDouble(0.0));
-    rightLiftPID.setIZone(kIz_lift.getDouble(0.0));
-    rightLiftPID.setFF(kFF_lift.getDouble(0.0));
-    rightLiftPID.setOutputRange(kMinOutput_lift.getDouble(-1.0), kMaxOutput_lift.getDouble(1.0));
+    rightLiftPID.setP(kP_lift.getDouble(kP));
+    rightLiftPID.setI(kI_lift.getDouble(kI));
+    rightLiftPID.setD(kD_lift.getDouble(kD));
+    rightLiftPID.setIZone(kIz_lift.getDouble(kIz));
+    rightLiftPID.setFF(kFF_lift.getDouble(kFF));
+    rightLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(kMaxOutput), kMaxOutput_lift.getDouble(kMaxOutput));
 
     leftLiftPID.setP(kP_lift.getDouble(0.0005));
     leftLiftPID.setI(kI_lift.getDouble(1e-6));
@@ -138,12 +157,12 @@ public class Lift extends Subsystem {
     leftLiftPID.setI(kI_lift.getDouble(0.0));
     leftLiftPID.setIZone(kIz_lift.getDouble(0.0));
     leftLiftPID.setFF(kFF_lift.getDouble(0.0));
-    leftLiftPID.setOutputRange(kMinOutput_lift.getDouble(-1.0), kMaxOutput_lift.getDouble(1.0));
+    leftLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(kMaxOutput), kMaxOutput_lift.getDouble(kMaxOutput));
   }
 
   @Override
   protected void initDefaultCommand() {
-    setDefaultCommand(new LiftStop());
+    setDefaultCommand(new LiftStopCMD());
   }
 
   public void liftToggle()

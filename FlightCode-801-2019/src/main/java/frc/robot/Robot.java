@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
     arm.init();
     gather.init();
     pincher.init();
-
+    
     oi = new OI();
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());

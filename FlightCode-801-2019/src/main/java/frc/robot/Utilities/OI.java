@@ -85,8 +85,8 @@ public class OI {
     retractAndDriveButton.whenPressed( new RetractTopPlatformAndDriveFwd() );
     
     // Gather Mapping
-    gatherButton.whenPressed( new GatherCMD() );
-    ejectButton.whenPressed( new EjectCMD() );
+    gatherButton.whileHeld( new GatherCMD() );
+    ejectButton.whileHeld( new EjectCMD() );
     stabButton.whenPressed( new StabCMD() );
     retractButton.whenPressed( new RetractCMD() );
     

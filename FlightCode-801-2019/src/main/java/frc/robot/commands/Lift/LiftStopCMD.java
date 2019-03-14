@@ -10,8 +10,8 @@ package frc.robot.commands.Lift;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class LiftStop extends Command {
-  public LiftStop() {
+public class LiftStopCMD extends Command {
+  public LiftStopCMD() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.lift);
   }

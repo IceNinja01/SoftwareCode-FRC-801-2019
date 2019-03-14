@@ -56,4 +56,11 @@ public class Constants {
 	public static double CarriageMiddlePosition = 0.0;
 	public static double CarriageUpperPosition = 0.0;
 
+	public static double LiftTopPlatformPosition = 25.0;
+	public static double LiftRetractTopPosition = 22.0;
+	public static double LiftMidPlatformPosition = 12.0;
+	public static double LiftRetractMidPosition = 9.0;
+
+	
+
 }

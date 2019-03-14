@@ -7,6 +7,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -14,6 +17,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.Constants;
+import frc.robot.commands.Gather.GatherStopCMD;
 import frc.robot.commands.Lift.LiftStop;
 
 /**
@@ -28,18 +32,55 @@ public class Gather extends Subsystem {
   //private CANEncoder rightLiftEncoder;
   //private CANPIDController rightLiftPID; 
 
-  public void init(){
-    //  rightLiftMotor = new CANSparkMax(Constants.rightLiftMotorID, MotorType.kBrushless);
+  private TalonSRX gatherMotorUpper;
+  private int kTimeoutMs = 10;
+  private TalonSRX gatherMotorLower;
+
+  public void init() {
+    gatherMotorUpper  = new TalonSRX(Constants.GatherMotorUpperID);
+    gatherMotorLower  = new TalonSRX(Constants.GatherMotorLowerID);
+
+    gatherMotorUpper.configFactoryDefault();
+    gatherMotorLower.configFactoryDefault();
+    
+		gatherMotorUpper.configNominalOutputForward(0, kTimeoutMs);
+		gatherMotorUpper.configNominalOutputReverse(0, kTimeoutMs);
+		gatherMotorUpper.configPeakOutputForward(1, kTimeoutMs);
+    gatherMotorUpper.configPeakOutputReverse(-1, kTimeoutMs);
+
+    gatherMotorLower.configNominalOutputForward(0, kTimeoutMs);
+		gatherMotorLower.configNominalOutputReverse(0, kTimeoutMs);
+		gatherMotorLower.configPeakOutputForward(1, kTimeoutMs);
+    gatherMotorLower.configPeakOutputReverse(-1, kTimeoutMs);
+
+    gatherMotorLower.setInverted(true);
+    gatherMotorUpper.setInverted(false);
 
   }
 
   @Override
   public void initDefaultCommand() {
- //   setDefaultCommand(new LiftStop());
+   setDefaultCommand(new GatherStopCMD());
   }
 
   public void stop() {
- //   rightLiftMotor.stopMotor();
+    gatherMotorLower.set(ControlMode.PercentOutput, 0.0);
+    gatherMotorUpper.set(ControlMode.PercentOutput, 0.0);
+    gatherMotorLower.setNeutralMode(NeutralMode.Brake);
+    gatherMotorUpper.setNeutralMode(NeutralMode.Brake);
+
+  }
+
+  public void gatherBall(){
+    gatherMotorLower.set(ControlMode.PercentOutput, 1.0);
+    gatherMotorUpper.set(ControlMode.PercentOutput, 1.0);
+
+  }
+
+  public void ejectBall(){
+    gatherMotorLower.set(ControlMode.PercentOutput, -1.0);
+    gatherMotorUpper.set(ControlMode.PercentOutput, -1.0);
+
   }
   
 }

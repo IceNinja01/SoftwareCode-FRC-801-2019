@@ -10,24 +10,26 @@ package frc.robot.commands.Lift;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Constants;
 import frc.robot.Robot;
-//used to lift the robot to the top platform ~25 inches
-public class LiftTopPlatformCMD extends Command {
-  public LiftTopPlatformCMD() {
+//Retracts the Lift three inches, used after the robot is on the platform
+public class LiftRetractTopPositionCMD extends Command {
+
+public LiftRetractTopPositionCMD() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.lift);
+ 
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.lift.lift(Constants.LiftTopPlatformPosition); //go to 25"
+
+    Robot.lift.lift(Constants.LiftRetractTopPosition); //25" - 3" = 22.0"
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
     Robot.lift.encoderPos();
-
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -48,4 +50,5 @@ public class LiftTopPlatformCMD extends Command {
   protected void interrupted() {
     end();
   }
+
 }
