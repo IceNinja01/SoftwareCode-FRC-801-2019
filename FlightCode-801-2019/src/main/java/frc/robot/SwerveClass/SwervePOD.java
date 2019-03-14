@@ -4,10 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Utilities.PID;
@@ -45,11 +41,15 @@ public class SwervePOD {
 	private boolean kMotorInvert = false;
 	private boolean kSensorPhase = true;
 
-	private PIDSource pidTurnSource;
-
-	private PIDController pidTurnController;
-
 	private boolean d_motorInvert = false;
+
+	// private int setUnits;
+
+	// private int delta;
+
+	// private int setUnitsWrap;
+
+	// private int setAngle;
 
 	//**********************************
   	// Constructor functions
@@ -122,37 +122,13 @@ public class SwervePOD {
 		//  * position, and intitally set the relative sensor to match.
 		//  */
 
-		
 // 		// //set coast mode
 		turnMotor.setNeutralMode(NeutralMode.Coast);
 		turnMotor.setInverted(kMotorInvert);
-		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
-		turnMotor.configNeutralDeadband(0.001, 10);
 //		//set Voltage for turn motors
 		turnMotor.set(ControlMode.PercentOutput, 0.0);
-		
-		pidTurnController = new PIDController(kP, kI, kD, new PIDSource() {
-			public double pidGet() {
-				return getAngleDeg();
-			}
-			@Override
-			public void setPIDSourceType(PIDSourceType pidSource) {	
-			}
-			@Override
-			public PIDSourceType getPIDSourceType() {
-				return PIDSourceType.kDisplacement;
-			}
-		},  new PIDOutput() {
-			public void pidWrite(double demand) {
-				turnMotor.set(ControlMode.PercentOutput, demand);
-			}
-		});
-		
-		pidTurnController.setAbsoluteTolerance(deadBand);
-		pidTurnController.setInputRange(0, 360);
-		pidTurnController.setContinuous(true);
-		pidTurnController.setOutputRange(-kMinOutput, kMaxOutput);
-		pidTurnController.enable();
+		setBias();
+
 
 	}
 
@@ -221,12 +197,12 @@ public class SwervePOD {
 		absolutePosition &= 0xFFF;
 		// if (kSensorPhase) { absolutePosition *= -1; }
 		// if (kMotorInvert) { absolutePosition *= -1; }
-		SmartDashboard.putNumber("AbsoluteEnc " + motorName, absolutePosition);	
+		// SmartDashboard.putNumber("AbsoluteEnc " + motorName, absolutePosition);	
 		return absolutePosition;
 	}
 	
 	public void setSpeed(double speed) {
-		SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
+		// SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
 		drivePID.setReference(speed, ControlType.kVelocity);
 	}
 
@@ -234,24 +210,47 @@ public class SwervePOD {
 		// double error = pidTurnController.getError();
 		double error = turnMotorPID.getError();
 
-		SmartDashboard.putNumber("Turn_PIDError ", error);
 		return error;
 	}
 
-	public void getPIDOut(){
-		// SmartDashboard.putNumber("Turn_PIDOut", pidTurnController.get());
+	// public void getPIDOut(){
 
-		SmartDashboard.putNumber("Turn_PIDOut", turnMotorPID.getOutput());
-	}
+	// 	SmartDashboard.putNumber("Turn_PIDOut", turnMotorPID.getOutput());
+	// }
 	
 	public void setAngle(double angle) {
 		// Set new position of motor
-		// turnMotor.set(ControlMode.PercentOutput, -0.2);
 
-		// turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
-		pidTurnController.setSetpoint(angle);
-		
+
+		turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
+
+
 	}
+
+	public void disablePIDTurn(){
+		turnMotor.set(ControlMode.PercentOutput, 0.0);
+		turnMotorPID.reset();
+	}
+
+
+	// public int getSetNativeUnits(double setAng){
+	// 	setAngle = toNativeUnits(setAng);
+	// 	setUnitsWrap = wrapUnits(getNativeUnits());
+	// 	delta = setAngle - setUnitsWrap;
+	// 	setUnits = 0;
+	// 	if(delta>0){
+	// 		setUnits = getNativeUnits() + delta;
+	// 	}
+	// 	else{
+	// 		setUnits = getNativeUnits() - delta;
+	// 	}
+	// 	SmartDashboard.putNumber("1_SetUnits", setUnits);
+	// 	SmartDashboard.putNumber("1_Delta", delta);
+	// 	SmartDashboard.putNumber("1_setUnitsWrap", setUnitsWrap);
+	// 	SmartDashboard.putNumber("1_setAngleUnits", setAngle);
+
+	// 	return setUnits;
+	// }
 
 	public void setDriveEncoder(int counts_per_rev) {
 		driveMotor.setParameter(CANSparkMaxLowLevel.ConfigParameter.kEncoderCountsPerRev, counts_per_rev);

@@ -84,9 +84,9 @@ public class Chassis extends PIDSubsystem {
 
 		chassisSwerveDrive.configPIDDrive(0.0002, 0.00000, 0.0, 0.0, 0.0, -1.0, 1.0);
 
-		chassisSwerveDrive.configPIDTurn(0.02, 0.0001, 0.00001, 0, 0.0001, -0.2, 0.2, 5);
-		leftBackPod.configPIDTurn(0.02,  0.0001, 0.0001, 0, 0.0001, -0.2, 0.2, 5);
-		leftFrontPod.configPIDTurn(0.05,  0.0001, 0.0001, 0, 0.0001, -1.0, 1.0, 5);
+		chassisSwerveDrive.configPIDTurn(0.002, 0.0001, 0.00001, 0, 0.0001, -0.2, 0.2, 6);
+		// leftBackPod.configPIDTurn(0.02,  0.0001, 0.0001, 0, 0.0001, -0.2, 0.2, 5);
+		// leftFrontPod.configPIDTurn(0.05,  0.0001, 0.0001, 0, 0.0001, -1.0, 1.0, 5);
 		chassisSwerveDrive.setDriveCurrentLimit(20, 40);
 		
 		chassisSwerveDrive.brakeOff();
@@ -155,6 +155,7 @@ public class Chassis extends PIDSubsystem {
 		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, 1.0);
 		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, 1.0);
 		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
+		
 		
 		if(robotOrient){ //Field oriented
 			chassisSwerveDrive.drive(x,y,z,getGyroAngle());

@@ -153,34 +153,34 @@ public class SwerveDrive extends MotorSafety {
 		    	SmartDashboard.putNumber("OLDAngle", oldAngle[i]);
 		    	// angleJoyStickDiff[i]=(wheelAngles[i]- oldAngle[i]);
 		    	angleError[i] = wheelAngles[i] - degs[i];
-				// if(angleError[i]<0){ //wraping for 10 -350 = -340, so add 360 = 20
-				// 	angleError[i] +=360;
-				// }
+				if(angleError[i]<0){ //wraping for 10 -350 = -340, so add 360 = 20
+					angleError[i] +=360;
+				}
 
-				// if(angleError[i]>270){ //wraping for 350 -10 = 340, so 360 - 340 =20 
-				// 	angleError[i] = 360 - angleError[i];
-				// }
+				if(angleError[i]>270){ //wraping for 350 -10 = 340, so 360 - 340 =20 
+					angleError[i] = 360 - angleError[i];
+				}
 				////====================================================//
 				//need to get shortest path to work correctly///
 
 
-				// if(Math.abs(angleError[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
-			    // 	//reverse translational motors 
-			    // 	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
+				if(Math.abs(angleError[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
+			    	//reverse translational motors 
+			    	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
 			    	
-			    // 	//find new angle
-			    // 	wheelAngles[i] -= 180.0; //subtract 180 degrees
-			    // 	if(wheelAngles[i] < 0){ //wrap to new angle between 0-360
-			    // 		wheelAngles[i] += 360.0;
-			    // 	}
-			    // 	//now the angle is set to move to the shortest path, which is just 180 degrees 
-			    // 	//from the current heading
+			    	//find new angle
+			    	wheelAngles[i] -= 180.0; //subtract 180 degrees
+			    	if(wheelAngles[i] < 0){ //wrap to new angle between 0-360
+			    		wheelAngles[i] += 360.0;
+			    	}
+			    	//now the angle is set to move to the shortest path, which is just 180 degrees 
+			    	//from the current heading
 			    	
-				// }      
-			    // else
-			    // {
-			    // 	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
-				// }
+				}      
+			    else
+			    {
+			    	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
+				}
 
 				///===============================================================///
 				//end shortest path
@@ -189,12 +189,12 @@ public class SwerveDrive extends MotorSafety {
 				SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 
 				//Turn Motors
-			    if(wheelSpeeds[i]>0.2){
+			    if(wheelSpeeds[i]>0.1){
 					SwervePOD[i].setAngle(wheelAngles[i]);
 			    	oldAngle[i] = wheelAngles[i];
 				}
 				else{
-					SwervePOD[i].setAngle(0);
+					SwervePOD[i].disablePIDTurn();
 				}
 				
 			SmartDashboard.putNumber("Angle", wheelAngles[i]);

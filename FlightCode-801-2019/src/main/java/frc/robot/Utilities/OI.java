@@ -15,6 +15,8 @@ import frc.robot.commands.Arm.*;
 import frc.robot.commands.Elevator.*;
 import frc.robot.commands.Gather.*;
 import frc.robot.commands.Lift.*;
+import frc.robot.commands.Pincher.RetractCMD;
+import frc.robot.commands.Pincher.StabCMD;
 import frc.robot.commands.commandgroups.RetractTopPlatformAndDriveFwd;
 
 /**

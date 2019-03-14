@@ -8,7 +8,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.commands.Pincher.OpenPincherCMD;
+import frc.robot.commands.Pincher.RetractCMD;
+import frc.robot.commands.Pincher.StabCMD;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 //Used for the hatch graber
 public class Pincher extends Subsystem {
@@ -25,7 +26,7 @@ public class Pincher extends Subsystem {
 	}
 	
 	protected void initDefaultCommand() {
-		setDefaultCommand(new OpenPincherCMD());
+		setDefaultCommand(new RetractCMD());
 	}
 	////Pinchers code below
 	public void closePinchers() {

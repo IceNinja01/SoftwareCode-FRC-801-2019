@@ -28,14 +28,14 @@ public class DriveFwd extends Command {
   @Override
   protected void initialize() {
     //reset encoders
-    Robot.chassis.setPIDDrive();
-    Robot.chassis.setPIDTurn();
+    Robot.chassis.motorDrive_CMD(angle, velocity);
+
+
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.chassis.motorDrive_CMD(angle, velocity);
   }
 
   // Make this return true when this Command no longer needs to run execute()
