@@ -28,13 +28,11 @@ public class Constants {
 	public static final int rightInsideElevatorMotorID = 10;
 	public static final int leftElevatorCarriageMotorID = 11;
 	
-	// FIXME !!!ARMPOSITIONMOTORID SHOULD BE 12!!! FIXME
-	public static final int ArmPositionMotorID = 0; // FIXME Please don't keep this FIXME
+	public static final int ArmPositionMotorID = 12;
 	public static final int GatherMotorUpperID = 13;
 	public static final int GatherMotorLowerID = 14;
 
-	// FIXME !!!RightFrontSteer SHOULD BE 0!!! FIXME
-	public static final int RightFrontSteer = 12; // FIXME Please don't keep this FIXME
+	public static final int RightFrontSteer = 0;
 	public static final int LeftFrontSteer = 1;
 	public static final int LeftRearSteer = 2;
 	public static final int RightRearSteer = 3;
