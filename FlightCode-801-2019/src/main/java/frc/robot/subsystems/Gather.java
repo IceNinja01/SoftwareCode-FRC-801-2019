@@ -18,7 +18,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.Constants;
 import frc.robot.commands.Gather.GatherStopCMD;
-import frc.robot.commands.Lift.LiftStop;
 
 /**
  * Add your docs here.
