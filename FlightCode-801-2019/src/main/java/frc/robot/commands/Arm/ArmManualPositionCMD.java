@@ -9,12 +9,11 @@ package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.Arm.Position;
 
-public class DiskPickCMD extends Command
+public class ArmManualPositionCMD extends Command
 {
-
-  public DiskPickCMD() {
+ 
+  public ArmManualPositionCMD() {
     requires(Robot.arm);
   }
 
@@ -23,7 +22,7 @@ public class DiskPickCMD extends Command
   {
     Robot.arm.updatePID();
     Robot.arm.updateMotionMagic();
-    Robot.arm.goTo(Position.DISKPICK);
+    Robot.arm.goToManual();
   }
 
   @Override
