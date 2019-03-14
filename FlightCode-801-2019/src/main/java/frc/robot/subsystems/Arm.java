@@ -6,109 +6,227 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
-import frc.robot.Constants;
-import frc.robot.SwerveClass.SwervePOD.MotorName;
-import frc.robot.Utilities.PID;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.robot.Constants;
+import frc.robot.commands.Arm.ArmManualPositionCMD;
+import frc.robot.commands.Arm.ArmStopCMD;
 
+public class Arm extends Subsystem
+{
 
-
-/**
- * Add your docs here.
- */
-public class Arm extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
-
-  private MotorName motorName;
   private TalonSRX armMotor;
-  private PID armMotorPID;
   
+  public static final double kFF = 0.1;
+  public static final double kP = 1.0;
+  public static final double kI = 0;
+  public static final double kD = 0.2;
 
-  /**
-	 * Which PID slot to pull gains from. Starting 2018, you can choose from
-	 * 0,1,2 or 3. Only the first two (0,1) are visible in web-based
-	 * configuration.
-	 */
-	public static final int kSlotIdx = 0;
+  public static final int kTimeoutMs = 10;
 
-	/**
-	 * Talon SRX/ Victor SPX will supported multiple (cascaded) PID loops. For
-	 * now we just want the primary one.
-	 */
-	public static final int kPIDLoopIdx = 0;
-
-	/**
-	 * set to zero to skip waiting for confirmation, set to nonzero to wait and
-	 * report to DS if action fails.
-	 */
-	public static final int kTimeoutMs = 30;
-
-
-  /** How much smoothing [0,8] to use during MotionMagic */
-	int _smoothing = 0;
-
-  public void init(){
-    //  rightLiftMotor = new CANSparkMax(Constants.rightLiftMotorID, MotorType.kBrushless);
-    armMotor  = new TalonSRX(Constants.ArmPositionMotorID);	
-		this.motorName = motorName;
+  public static final double kErrorTolerance = 2;   // Degrees
   
-		/**
-		 * Configure Talon SRX Output and Sesnor direction accordingly
-		 * Invert Motor to have green LEDs when driving Talon Forward / Requesting Postiive Output
-		 * Phase sensor to have positive increment when driving Talon Forward (Green LED)
-		 */
+  public static final int kMotorToOutput = 10;      // The ratio of motor turns to output turns.
+  public static final int kEncoderTicks = 4096;     // Encoder ticks per rotation of the motor.
+  public static final double kMaxVelocity = 1;      // One rotation per second
+  public static final double kMaxAcceleration = 1;  // One rotation per second per second
+  
+  public static final int kPlayPos = 0;       // Degrees. A Button
+  public static final int kDiskPickPos = 80;  // Degrees. Y Button
+  public static final int kStowPos = 135;     // Degrees. X Button
+  public static final int kBallPos = 0;       // Degrees. B Button TODO: What?
+
+  public static final int kDebugMotorTurn = 6; // The test stand has a 6 times gear ratio
+
+  private NetworkTableEntry kP_Arm;
+  private NetworkTableEntry kI_Arm;
+  private NetworkTableEntry kD_Arm;
+  private NetworkTableEntry kFF_Arm;
+
+  private NetworkTableEntry maxVel_Arm;
+  private NetworkTableEntry maxAcc_Arm;
+
+  private NetworkTableEntry armEncoderPos;
+  private NetworkTableEntry setPoint_Arm;
+
+  private String ArmTabTitle = "Arm";
+  private ShuffleboardTab tab = Shuffleboard.getTab(ArmTabTitle);
+
+  //How much smoothing [0,8] to use during MotionMagic
+  int _smoothing = 0;
+  
+  public enum Position
+  {
+    PLAY, DISKPICK, STOW, BALL
+  }
+
+  public void init()
+  {
+    armMotor  = new TalonSRX(Constants.ArmPositionMotorID);
+
+    armMotor.configFactoryDefault();
+
+    armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, kTimeoutMs);
+    armMotor.configReverseSoftLimitThreshold(0, kTimeoutMs);
+    armMotor.configForwardSoftLimitThreshold((int)( kEncoderTicks*kDebugMotorTurn ), kTimeoutMs); // FIXME debug
+    armMotor.configNominalOutputForward(0, kTimeoutMs);
+    armMotor.configNominalOutputReverse(0, kTimeoutMs);
+    armMotor.configPeakOutputForward(11);
+    armMotor.configPeakOutputReverse(-11);
+    armMotor.enableVoltageCompensation(true);
+
+    // FIXME: Test if this is the correct thing for how it should work
 		armMotor.setSensorPhase(true);
 		armMotor.setInverted(false);
 
-		/* Set relevant frame periods to be at least as fast as periodic rate */
 		armMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
 		armMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
-
-		/* Set the peak and nominal outputs */
+		
 		armMotor.configNominalOutputForward(0, kTimeoutMs);
 		armMotor.configNominalOutputReverse(0, kTimeoutMs);
 		armMotor.configPeakOutputForward(1, kTimeoutMs);
 		armMotor.configPeakOutputReverse(-1, kTimeoutMs);
 
-		/* Set Motion Magic gains in slot0 - see documentation */
-		armMotor.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
-		armMotor.config_kF(kSlotIdx, 0.0, kTimeoutMs);
-		armMotor.config_kP(kSlotIdx, 0.0, kTimeoutMs);
-		armMotor.config_kI(kSlotIdx, 0.0, kTimeoutMs);
-		armMotor.config_kD(kSlotIdx, 0.0, kTimeoutMs);
+		armMotor.selectProfileSlot(0, 0);
+		armMotor.config_kF(0, kFF, kTimeoutMs);
+		armMotor.config_kP(0, kP, kTimeoutMs);
+		armMotor.config_kI(0, kI, kTimeoutMs);
+		armMotor.config_kD(0, kD, kTimeoutMs);
 
-		/* Set acceleration and vcruise velocity - see documentation */
-		armMotor.configMotionCruiseVelocity(15000, kTimeoutMs);
-		armMotor.configMotionAcceleration(6000, kTimeoutMs);
+		armMotor.configMotionCruiseVelocity((int)(kEncoderTicks*kDebugMotorTurn*kMotorToOutput*(kMaxVelocity/10)), kTimeoutMs); // FIXME debug
+    armMotor.configMotionAcceleration((int)(kEncoderTicks*kDebugMotorTurn*kMotorToOutput*(kMaxAcceleration/10)), kTimeoutMs); // FIXME debug
+    
+    armMotor.setSelectedSensorPosition(Constants.ArmMotorBias, 0, kTimeoutMs);
+    
+    goTo(Position.DISKPICK);
 
-		/* Zero the sensor */
-		armMotor.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
+    initShuffleboard();
+    updatePID();
+    updateMotionMagic();
+  }
 
-		/* Factory default hardware to prevent unexpected behavior */
-		armMotor.configFactoryDefault();  
+  public void initShuffleboard()
+  {
+    // PID Constants Area
+    ShuffleboardLayout ArmMotorPID = Shuffleboard.getTab(ArmTabTitle)
+    .getLayout("ArmMotorPID", BuiltInLayouts.kList)
+    .withSize(2, 5)
+    .withPosition(0, 0);
+    kP_Arm = ArmMotorPID.add("kP_Arm", kP).getEntry();
+    kI_Arm = ArmMotorPID.add("kI_Arm", kI).getEntry();
+    kD_Arm = ArmMotorPID.add("kD_Arm", kD).getEntry();
+    kFF_Arm = ArmMotorPID.add("kFF_Arm", kFF).getEntry();
+
+    // Motion Magic Constants Area
+    ShuffleboardLayout ArmMotorMP = Shuffleboard.getTab(ArmTabTitle)
+    .getLayout("ArmMotorMP", BuiltInLayouts.kList)
+    .withSize(2, 5)
+    .withPosition(2, 0);
+    maxVel_Arm = ArmMotorMP.add("maxVel_Arm", kMaxVelocity).getEntry();
+    maxAcc_Arm = ArmMotorMP.add("maxAcc_Arm", kMaxAcceleration).getEntry();
+    setPoint_Arm = ArmMotorMP.add("ArmSetPos", 0).getEntry();
+    armEncoderPos = ArmMotorMP.add("ArmGetPos", 0).getEntry();
+
+    ArmMotorMP.add("SendNewPosition", new ArmManualPositionCMD());
+  }
+
+  public void updatePID()
+  {
+    armMotor.config_kF(0, kFF_Arm.getDouble(kFF), kTimeoutMs);
+		armMotor.config_kP(0, kP_Arm.getDouble(kP), kTimeoutMs);
+		armMotor.config_kI(0, kI_Arm.getDouble(kI), kTimeoutMs);
+		armMotor.config_kD(0, kD_Arm.getDouble(kD), kTimeoutMs);
+  }
+
+  public void updateMotionMagic()
+  {
+    armMotor.configMotionCruiseVelocity((int)(kEncoderTicks*kDebugMotorTurn*kMotorToOutput*(maxVel_Arm.getDouble(kMaxVelocity)/10)), kTimeoutMs); // FIXME debug
+    armMotor.configMotionAcceleration((int)(kEncoderTicks*kDebugMotorTurn*kMotorToOutput*(maxAcc_Arm.getDouble(kMaxAcceleration)/10)), kTimeoutMs); // FIXME debug
+  }
+
+  public void updatePosition()
+  {
+    armEncoderPos.setNumber(getCurrentPosition());
+  }
+
+  public void stop()
+  {
+    armMotor.setNeutralMode(NeutralMode.Brake);
+  }
+
+  public void goTo(Position pos)
+  {
+    int targetPosition = 0;
+
+    switch (pos)
+    {
+      case PLAY:
+        targetPosition = 0;
+        break;
+      case DISKPICK:
+        targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kDiskPickPos/360));
+        break;
+      case STOW:
+        targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kStowPos/360));
+        break;
+      case BALL:
+        targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kBallPos/360));
+        break;
+    }
+
+    armMotor.set(ControlMode.MotionMagic, targetPosition);
+    armMotor.setNeutralMode(NeutralMode.Coast);
+  }
+
+  public void goTo(double degrees)
+  {
+    armMotor.set(ControlMode.MotionMagic, degrees);
+    armMotor.setNeutralMode(NeutralMode.Coast);
+  }
+
+  public void goToManual()
+  {
+    double setPoint = setPoint_Arm.getDouble(0.0);
+    updatePosition();
+    goTo(setPoint);
+  }
+
+  public double getCurrentPosition()
+  {
+    int position = armMotor.getSelectedSensorPosition();
+    double positionDegrees = (position/kEncoderTicks)*360;
+
+    return positionDegrees;
+  }
+
+  public double getCurrentError()
+  {
+    double positionDegrees = getCurrentPosition();
+    double error = kDiskPickPos - positionDegrees;
+
+    return error;
+  }
+
+  public boolean isCloseEnough()
+  {
+    return getCurrentError() < kErrorTolerance;
   }
 
   @Override
-  public void initDefaultCommand() {
- //   setDefaultCommand(new LiftStop());
-  }
-
-  public void stop() {
- //   rightLiftMotor.stopMotor();
+  public void initDefaultCommand()
+  {
+    setDefaultCommand(new ArmStopCMD());
   }
   
 }

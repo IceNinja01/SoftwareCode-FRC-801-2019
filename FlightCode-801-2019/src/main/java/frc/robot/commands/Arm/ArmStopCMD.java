@@ -9,32 +9,26 @@ package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.Arm.Position;
 
-public class DiskPickCMD extends Command
-{
-
-  public DiskPickCMD() {
+public class ArmStopCMD extends Command {
+  public ArmStopCMD()
+  {
     requires(Robot.arm);
   }
 
   @Override
   protected void initialize()
   {
-    Robot.arm.updatePID();
-    Robot.arm.updateMotionMagic();
-    Robot.arm.goTo(Position.DISKPICK);
+    Robot.arm.stop();
   }
 
   @Override
-  protected void execute()
-  {
-    Robot.arm.updatePosition();
+  protected void execute() {
   }
 
   @Override
   protected boolean isFinished() {
-    return Robot.arm.isCloseEnough();
+    return true;
   }
 
   @Override
@@ -44,7 +38,8 @@ public class DiskPickCMD extends Command
   }
 
   @Override
-  protected void interrupted() {
+  protected void interrupted()
+  {
     end();
   }
 }

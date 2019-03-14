@@ -19,6 +19,8 @@ public class Constants {
 	public static double BackRightBias = Robot.prefs.getDouble("BackRightBias", 0.0);
 	*/
 	public static final int[] AngleBias = {1626, 1644, 947, 2001};
+
+	public static final int ArmMotorBias = 0; // TODO: Find out bias
 	
 	public static final int rightLiftMotorID = 8;
 	public static final int leftLiftMotorID = 9;
@@ -26,11 +28,13 @@ public class Constants {
 	public static final int rightInsideElevatorMotorID = 10;
 	public static final int leftElevatorCarriageMotorID = 11;
 	
-	public static final int ArmPositionMotorID = 12;
+	// FIXME !!!ARMPOSITIONMOTORID SHOULD BE 12!!! FIXME
+	public static final int ArmPositionMotorID = 0; // FIXME Please don't keep this FIXME
 	public static final int GatherMotorUpperID = 13;
 	public static final int GatherMotorLowerID = 14;
 
-	public static final int RightFrontSteer = 0;
+	// FIXME !!!RightFrontSteer SHOULD BE 0!!! FIXME
+	public static final int RightFrontSteer = 12; // FIXME Please don't keep this FIXME
 	public static final int LeftFrontSteer = 1;
 	public static final int LeftRearSteer = 2;
 	public static final int RightRearSteer = 3;
@@ -53,7 +57,5 @@ public class Constants {
 	public static double CarriageLowerPosition = 0.0;
 	public static double CarriageMiddlePosition = 0.0;
 	public static double CarriageUpperPosition = 0.0;
-    
-
 
 }
