@@ -64,13 +64,15 @@ public class Elevator extends Subsystem
 
   private NetworkTableEntry elevatorEncoderPos;
   private NetworkTableEntry carriageEncoderPos;
-  private NetworkTableEntry setPoint_Elevator; 
-  private NetworkTableEntry setPoint_Carriage; 
+  private NetworkTableEntry newSetPoint_Elevator; 
+  private NetworkTableEntry newSetPoint_Carriage; 
   
   private final int smartMotionSlot = 0;
   private final int maxEncoderError = 0;
   private final double closeEnough = 0.05;
 
+  private double setPoint_Elevator; 
+  private double setPoint_Carriage;
 
   public void init()
   {
@@ -124,7 +126,7 @@ public class Elevator extends Subsystem
   maxVel_Elevator = ElevatorMotorMP.add("maxVel_Elevator", 5700).withPosition(0, 0).getEntry();
   minVel_Elevator = ElevatorMotorMP.add("minVel_Elevator", 10).withPosition(0, 1).getEntry();
   maxAcc_Elevator = ElevatorMotorMP.add("maxAcc_Elevator", 7500).withPosition(0, 2).getEntry();
-  setPoint_Elevator = ElevatorMotorMP.add("ElevatorSetPos", 0).withPosition(0, 3).getEntry();
+  newSetPoint_Elevator = ElevatorMotorMP.add("ElevatorSetPos", 0).withPosition(0, 3).getEntry();
   elevatorEncoderPos = ElevatorMotorMP.add("ElevatorGetPos", 0).withPosition(0, 4).getEntry();
 
   ElevatorMotorMP.add("SendNewPosition", new ElevatorManualPositionCMD()).withPosition(0, 5); 
@@ -149,7 +151,7 @@ public class Elevator extends Subsystem
   maxVel_Carriage = CarriageMotorMP.add("maxVel_Carriage", 5700).withPosition(0, 0).getEntry();
   minVel_Carriage = CarriageMotorMP.add("minVel_Carriage", 10).withPosition(0, 1).getEntry();
   maxAcc_Carriage = CarriageMotorMP.add("maxAcc_Carriage", 7500).withPosition(0, 2).getEntry();
-  setPoint_Carriage = CarriageMotorMP.add("CarriageSetPos", 0).withPosition(0, 3).getEntry();
+  newSetPoint_Carriage = CarriageMotorMP.add("CarriageSetPos", 0).withPosition(0, 3).getEntry();
   carriageEncoderPos = CarriageMotorMP.add("CarriageGetPos", 0).withPosition(0, 4).getEntry();
 
   CarriageMotorMP.add("SendNewPosition", new CarriageManualPositionCMD()).withPosition(0, 5); 
@@ -207,30 +209,32 @@ public class Elevator extends Subsystem
   
    public void elevatorRun()
   {
-      double setPoint = setPoint_Elevator.getDouble(0.0);
+      setPoint_Elevator = newSetPoint_Elevator.getDouble(0.0);
       elevatorEncoderPos();
-      rightInsideElevatorMotorPID.setReference(setPoint, ControlType.kSmartMotion);;
+      rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kSmartMotion);
   } 
 
   public void elevatorRun(double setPoint)
   {
-      setPoint_Elevator.setDouble(setPoint);
+      setPoint_Elevator = setPoint;
+      newSetPoint_Elevator.setDouble(setPoint_Elevator);
       elevatorEncoderPos();
-      rightInsideElevatorMotorPID.setReference(setPoint, ControlType.kSmartMotion);;
+      rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kSmartMotion);
   } 
 
   public void carriageRun()
   {
-      double setPoint = setPoint_Carriage.getDouble(0.0);
+      setPoint_Carriage = newSetPoint_Carriage.getDouble(0.0);
       elevatorEncoderPos();
-      leftElevatorCarriageMotorPID.setReference(setPoint, ControlType.kSmartMotion);;
+      leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kSmartMotion);
   } 
 
   public void carriageRun(double setPoint)
   {
-      setPoint_Carriage.setDouble(setPoint);
+      setPoint_Carriage = setPoint;
+      newSetPoint_Carriage.setDouble(setPoint_Carriage);
       elevatorEncoderPos();
-      leftElevatorCarriageMotorPID.setReference(setPoint, ControlType.kSmartMotion);;
+      leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kSmartMotion);
   } 
 
 
@@ -242,14 +246,20 @@ public class Elevator extends Subsystem
 
   public boolean elevatorIsMoving()
   {
-    return Math.abs(rightInsideElevatorMotorEncoder.getPosition() - setPoint_Elevator.getDouble(0.0) ) > closeEnough; 
+    return Math.abs(rightInsideElevatorMotorEncoder.getPosition() - newSetPoint_Elevator.getDouble(0.0) ) > closeEnough; 
   }
 
 
   public boolean carriageIsMoving()
   {
-    return Math.abs(leftElevatorCarriageMotorEncoder.getPosition() - setPoint_Carriage.getDouble(0.0) ) > closeEnough;
+    return Math.abs(leftElevatorCarriageMotorEncoder.getPosition() - newSetPoint_Carriage.getDouble(0.0) ) > closeEnough;
   }
+
+
+  public void hold() {
+    rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kSmartMotion);
+    leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kSmartMotion);
+  } 
 
   public void stop() {
     rightInsideElevatorMotor.stopMotor();
