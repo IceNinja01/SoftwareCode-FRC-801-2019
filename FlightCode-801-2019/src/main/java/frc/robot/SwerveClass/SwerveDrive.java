@@ -26,7 +26,7 @@ public class SwerveDrive extends MotorSafety {
 	private String motorName[] = {"FrontRight","FrontLeft","BackLeft","BackRight"};
 
 	private double[] oldAngle = {0,0,0,0};
-	private double maxRPM = 5700.0;
+	private double maxRPM = 0.5;
 	private double maxTurn = 1.0;
 
 	private SwervePOD[] SwervePOD  = new SwervePOD[4];

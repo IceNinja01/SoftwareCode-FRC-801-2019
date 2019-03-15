@@ -134,15 +134,17 @@ public class SwervePOD {
 
 	public void setBias(){
 		int absolutePosition = getAbsAngle();	
+		turnMotor.setSelectedSensorPosition(0, 0, 10);
 
-		if (absolutePosition > Constants.AngleBias[0])
-		{
-			turnMotor.setSelectedSensorPosition(24576 - (absolutePosition-Constants.AngleBias[motorName.ordinal()]), 0, 10);
-		}
-		else
-		{
-			turnMotor.setSelectedSensorPosition(Constants.AngleBias[motorName.ordinal()]-absolutePosition, 0, 10);
-		}
+		// if (absolutePosition > Constants.AngleBias[0])
+		// {
+		// 	turnMotor.setSelectedSensorPosition(24576 - (absolutePosition-Constants.AngleBias[motorName.ordinal()]), 0, 10);
+		// }
+		// else
+		// {
+		// 	turnMotor.setSelectedSensorPosition(Constants.AngleBias[motorName.ordinal()]-absolutePosition, 0, 10);
+		// }
+
 	}
 
 	public void setInvertTurn(boolean invert){
@@ -168,6 +170,8 @@ public class SwervePOD {
 		drivePID.setFF(kFF);
 		drivePID.setOutputRange(kMinOutput, kMaxOutput);
 		driveMotor.setInverted(d_motorInvert);
+		driveMotor.setIdleMode(IdleMode.kCoast);
+
 	}
 
 	public void invertDriveMotor(boolean invert){

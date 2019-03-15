@@ -29,11 +29,11 @@ public class Constants {
 	public static final int leftElevatorCarriageMotorID = 11;
 	
 	public static final int ArmPositionMotorID = 12;
-	public static final int GatherMotorUpperID = 13;
+	public static final int GatherMotorUpperID = 0;  // depricated
 	public static final int GatherMotorLowerID = 14;
 
 	//Chassis
-	public static final int RightFrontSteer = 8;
+	public static final int RightFrontSteer = 13;
 	public static final int LeftFrontSteer = 1;
 	public static final int LeftRearSteer = 2;
 	public static final int RightRearSteer = 3;
