@@ -4,9 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Utilities.PID;
@@ -32,7 +29,7 @@ public class SwervePOD {
 	private CANEncoder driveMotorEnc;
 	private CANPIDController drivePID;
 
-	private Team801TalonSRX turnMotor;
+	private TalonSRX turnMotor;
 	private PID turnMotorPID;
 
 	private int nativeUnits;
@@ -44,11 +41,15 @@ public class SwervePOD {
 	private boolean kMotorInvert = false;
 	private boolean kSensorPhase = true;
 
-	private PIDSource pidTurnSource;
-
-	private PIDController pidTurnController;
-
 	private boolean d_motorInvert = false;
+
+	// private int setUnits;
+
+	// private int delta;
+
+	// private int setUnitsWrap;
+
+	// private int setAngle;
 
 	//**********************************
   	// Constructor functions
@@ -66,7 +67,7 @@ public class SwervePOD {
 		driveMotorEnc = driveMotor.getEncoder();
 		drivePID = driveMotor.getPIDController();
 
-		turnMotor  = new Team801TalonSRX(Turn);	
+		turnMotor  = new TalonSRX(Turn);	
 		this.motorName = motorName;
 	}
 	
@@ -120,6 +121,18 @@ public class SwervePOD {
 		//  * Grab the 360 degree position of the MagEncoder's absolute
 		//  * position, and intitally set the relative sensor to match.
 		//  */
+
+// 		// //set coast mode
+		turnMotor.setNeutralMode(NeutralMode.Coast);
+		turnMotor.setInverted(kMotorInvert);
+//		//set Voltage for turn motors
+		turnMotor.set(ControlMode.PercentOutput, 0.0);
+		setBias();
+
+
+	}
+
+	public void setBias(){
 		int absolutePosition = getAbsAngle();	
 
 		if (absolutePosition > Constants.AngleBias[0])
@@ -130,15 +143,10 @@ public class SwervePOD {
 		{
 			turnMotor.setSelectedSensorPosition(Constants.AngleBias[motorName.ordinal()]-absolutePosition, 0, 10);
 		}
-		
-// 		// //set coast mode
-		turnMotor.setNeutralMode(NeutralMode.Coast);
-		turnMotor.setInverted(kMotorInvert);
-		/* 0.001 represents 0.1% - default value is 0.04 or 4% */
-		turnMotor.configNeutralDeadband(0.001, 10);
-//		//set Voltage for turn motors
-		turnMotor.set(ControlMode.PercentOutput, 0.0);
+	}
 
+	public void setInvertTurn(boolean invert){
+		turnMotor.setInverted(invert);
 	}
 	
 	/**
@@ -194,7 +202,7 @@ public class SwervePOD {
 	}
 	
 	public void setSpeed(double speed) {
-		SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
+		// SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
 		drivePID.setReference(speed, ControlType.kVelocity);
 	}
 
@@ -202,24 +210,47 @@ public class SwervePOD {
 		// double error = pidTurnController.getError();
 		double error = turnMotorPID.getError();
 
-		SmartDashboard.putNumber("Turn_PIDError ", error);
 		return error;
 	}
 
-	public void getPIDOut(){
-		// SmartDashboard.putNumber("Turn_PIDOut", pidTurnController.get());
+	// public void getPIDOut(){
 
-		SmartDashboard.putNumber("Turn_PIDOut", turnMotorPID.getOutput());
-	}
+	// 	SmartDashboard.putNumber("Turn_PIDOut", turnMotorPID.getOutput());
+	// }
 	
 	public void setAngle(double angle) {
 		// Set new position of motor
-		// turnMotor.set(ControlMode.PercentOutput, -0.2);
+
 
 		turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
-		// pidTurnController.setSetpoint(angle);
-		
+
+
 	}
+
+	public void disablePIDTurn(){
+		turnMotor.set(ControlMode.PercentOutput, 0.0);
+		turnMotorPID.reset();
+	}
+
+
+	// public int getSetNativeUnits(double setAng){
+	// 	setAngle = toNativeUnits(setAng);
+	// 	setUnitsWrap = wrapUnits(getNativeUnits());
+	// 	delta = setAngle - setUnitsWrap;
+	// 	setUnits = 0;
+	// 	if(delta>0){
+	// 		setUnits = getNativeUnits() + delta;
+	// 	}
+	// 	else{
+	// 		setUnits = getNativeUnits() - delta;
+	// 	}
+	// 	SmartDashboard.putNumber("1_SetUnits", setUnits);
+	// 	SmartDashboard.putNumber("1_Delta", delta);
+	// 	SmartDashboard.putNumber("1_setUnitsWrap", setUnitsWrap);
+	// 	SmartDashboard.putNumber("1_setAngleUnits", setAngle);
+
+	// 	return setUnits;
+	// }
 
 	public void setDriveEncoder(int counts_per_rev) {
 		driveMotor.setParameter(CANSparkMaxLowLevel.ConfigParameter.kEncoderCountsPerRev, counts_per_rev);
@@ -251,7 +282,7 @@ public class SwervePOD {
 		return driveMotor.getBusVoltage();
 	}
 
-	public double getTurnVolatge(){
+	public double getTurnVoltage(){
 		return turnMotor.getMotorOutputVoltage();
 	}
 
@@ -268,8 +299,10 @@ public class SwervePOD {
 		return speed;
 	}
 
-	public int getPosition(){
-		return (int) driveMotorEnc.getPosition();
+	public double getPosition(){
+		double position = driveMotorEnc.getPosition();
+		position = (position/5.1)*(4*Math.PI);
+		return position;
 	}
 
 	public void stop() {

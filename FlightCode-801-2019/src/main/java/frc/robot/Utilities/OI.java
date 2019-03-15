@@ -12,9 +12,14 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.buttons.POVButton;
 import frc.robot.Utilities.XBOXJoystick;
 import frc.robot.commands.Arm.*;
+import frc.robot.commands.Chassis.ToggleFieldDrive;
 import frc.robot.commands.Elevator.*;
 import frc.robot.commands.Gather.*;
 import frc.robot.commands.Lift.*;
+import frc.robot.commands.Pincher.RetractCMD;
+import frc.robot.commands.Pincher.StabCMD;
+import frc.robot.commands.commandgroups.ElevatorBottomArmPlayCMD;
+import frc.robot.commands.commandgroups.ElevatorMiddleArmPlayCMD;
 import frc.robot.commands.commandgroups.RetractTopPlatformAndDriveFwd;
 
 /**
@@ -54,27 +59,32 @@ public class OI {
     Button elevatorGatherButton = new JoystickButton(manipulator, 6);     // Right Top Bumper
 
     // Lift Mapping
-    Button liftTopPlatformButton = new JoystickButton(driver, 8);       // Right Bottom bumper
-    Button retractAndDriveButton = new JoystickButton(driver, 7);   // Left Bottom bumper
+    Button liftTopPlatformButton = new JoystickButton(driver, 10);       // Right Bottom bumper
+    Button retractAndDriveButton = new JoystickButton(driver, 9);   // Left Bottom bumper
 
     // Gather Mapping
-    Button gatherButton = new JoystickButton(driver, 5);    // Left bumper
-    Button ejectButton = new JoystickButton(driver, 5);     // Right bumper
-    Button stabButton = new POVButton(driver, 0);           // POV UP
-    Button retractButton = new POVButton(driver, 180);      // POV Down
+    Button gatherButton = new JoystickButton(driver, 8);    // Left bumper
+    Button ejectButton = new JoystickButton(driver, 7);     // Right bumper
+    Button stabButton = new JoystickButton(driver, 6);           // POV UP
+    Button retractButton = new JoystickButton(driver, 5);      // POV Down
 
     // Arm mapping
-    Button playButton = new JoystickButton(driver, 1);      // 'A' button
+    Button playButton = new JoystickButton(driver, 2);      // 'A' button
     Button diskPickButton = new JoystickButton(driver, 4);  // 'Y' button
-    Button stowButton = new JoystickButton(driver, 3);      // 'X' button
-    Button ballButton = new JoystickButton(driver, 2);      // 'B' button
+    Button stowButton = new JoystickButton(driver, 0);      // 'X' button
+    Button ballButton = new JoystickButton(driver, 3);      // 'B' button
+
+    Button toggleRobotDrive = new JoystickButton(driver, 1);
     
   public OI() {
 
+    //Chassis driving
+    toggleRobotDrive.whileHeld(new ToggleFieldDrive());
+
     // elevator mapping
-    elevatorBottomButton.whenPressed( new ElevatorBottomCMD() );
+    elevatorBottomButton.whenPressed( new ElevatorBottomArmPlayCMD() );
     elevatorLowerPortButton.whenPressed( new ElevatorLowerPortCMD() );
-    elevatorMiddlePortButton.whenPressed( new ElevatorMiddlePortCMD() );
+    elevatorMiddlePortButton.whenPressed( new ElevatorMiddleArmPlayCMD() );
     elevatorUpperPortButton.whenPressed( new ElevatorUpperPortCMD() );
     elevatorGatherButton.whenPressed( new ElevatorGatherCMD() );
     
@@ -83,8 +93,8 @@ public class OI {
     retractAndDriveButton.whenPressed( new RetractTopPlatformAndDriveFwd() );
     
     // Gather Mapping
-    gatherButton.whenPressed( new GatherCMD() );
-    ejectButton.whenPressed( new EjectCMD() );
+    gatherButton.whileHeld( new GatherCMD() );
+    ejectButton.whileHeld( new EjectCMD() );
     stabButton.whenPressed( new StabCMD() );
     retractButton.whenPressed( new RetractCMD() );
     

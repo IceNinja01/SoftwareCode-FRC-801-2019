@@ -5,44 +5,43 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Elevator;
+package frc.robot.commands.Lift;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Robot;
 import frc.robot.Constants;
+import frc.robot.Robot;
+//Retracts the Lift three inches, used after the robot is on the platform
+public class LiftRetractTopPositionCMD extends Command {
 
-public class ElevatorMiddlePortCMD extends Command {
-  public ElevatorMiddlePortCMD() {
+public LiftRetractTopPositionCMD() {
     // Use requires() here to declare subsystem dependencies
-    requires(Robot.elevator);
+    requires(Robot.lift);
+ 
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
 
-    Robot.elevator.elevatorRun(Constants.ElevatorLowerPosition);
-    Robot.elevator.carriageRun(Constants.CarriageMiddlePosition);
+    Robot.lift.lift(Constants.LiftRetractTopPosition); //25" - 3" = 22.0"
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    // updates both elevator and carriage dashboard readings
-    Robot.elevator.elevatorEncoderPos();  
+    Robot.lift.encoderPos();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !Robot.elevator.elevatorIsMoving() 
-            && !Robot.elevator.carriageIsMoving();
+    return Robot.lift.isDeltaPosition();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.elevator.stop();
+    Robot.lift.stop();
   }
 
   // Called when another command which requires one or more of the same
@@ -51,4 +50,5 @@ public class ElevatorMiddlePortCMD extends Command {
   protected void interrupted() {
     end();
   }
+
 }

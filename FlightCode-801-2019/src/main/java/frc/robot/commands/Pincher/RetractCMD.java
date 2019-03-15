@@ -10,8 +10,8 @@ package frc.robot.commands.Pincher;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class ClosePincherCMD extends Command {
-  public ClosePincherCMD() {
+public class RetractCMD extends Command {
+  public RetractCMD() {
 
           // Use requires() here to declare subsystem dependencies
           requires(Robot.pincher);

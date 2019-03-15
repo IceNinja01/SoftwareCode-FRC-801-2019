@@ -10,8 +10,8 @@ package frc.robot.commands.Pincher;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class OpenPincherCMD extends Command {
-  public OpenPincherCMD() {
+public class StabCMD extends Command {
+  public StabCMD() {
 
           // Use requires() here to declare subsystem dependencies
           requires(Robot.pincher);
@@ -28,5 +28,5 @@ public class OpenPincherCMD extends Command {
   protected boolean isFinished() {
     return false;
   }
-    
-    }
+  
+}

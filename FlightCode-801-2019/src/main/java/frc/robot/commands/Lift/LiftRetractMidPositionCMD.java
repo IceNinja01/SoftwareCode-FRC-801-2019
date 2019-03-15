@@ -8,23 +8,21 @@
 package frc.robot.commands.Lift;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Constants;
 import frc.robot.Robot;
 //Retracts the Lift three inches, used after the robot is on the platform
-public class LiftRetract extends Command {
-  private double setPoint;
+public class LiftRetractMidPositionCMD extends Command {
 
-public LiftRetract(double setPoint) {
+public LiftRetractMidPositionCMD() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.lift);
-    this.setPoint = setPoint;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.lift.updatePID();
-    Robot.lift.updateSmartMotion();
-    Robot.lift.lift(setPoint); //25" - 3" = 22.0"
+
+    Robot.lift.lift(Constants.LiftRetractMidPosition); //25" - 3" = 22.0"
   }
 
   // Called repeatedly when this Command is scheduled to run

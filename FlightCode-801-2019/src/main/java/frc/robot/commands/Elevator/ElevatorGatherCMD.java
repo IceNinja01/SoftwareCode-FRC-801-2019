@@ -20,8 +20,7 @@ public class ElevatorGatherCMD extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.elevator.updatePID();
-    Robot.elevator.updateSmartMotion();
+
     Robot.elevator.elevatorRun(Constants.ElevatorGatherPosition);
     Robot.elevator.carriageRun(Constants.CarriageGatherPosition);
   }

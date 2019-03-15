@@ -59,7 +59,20 @@ public class Chassis extends PIDSubsystem {
 	private NetworkTableEntry kMaxOutput_turn;
 	private NetworkTableEntry angle_input;
 	private NetworkTableEntry velocity_input;
+	private double kP_d = 0.0001;
+	private double kD_d = 0.0;
+	private double kI_d = 0.0;
+	private double kIz_d = 0.0;
+	private double kFF_d = 0.0;
+	private double kMaxOutput_d = 1.0;
 
+	private double kP_t = 0.001;
+	private double kD_t = 0.0;
+	private double kI_t = 0.0;
+	private double kIz_t = 0.0;
+	private double kFF_t = 0.0;
+	private double kMaxOutput_t = 1.0;
+	private double maxLimit= 1.0;
 
 	public Chassis(){
 		super(0.02, 0.0000001, 0.8, 0.001);
@@ -80,14 +93,14 @@ public class Chassis extends PIDSubsystem {
 		leftBackPod.invertDriveMotor(true);
 		rightBackPod.invertDriveMotor(true);
 		// rightFrontPod.setInvertTurn(true);
-		chassisSwerveDrive = new SwerveDrive(rightFrontPod, leftFrontPod, leftBackPod, rightBackPod, 10);
+		chassisSwerveDrive = new SwerveDrive(rightFrontPod, leftFrontPod, leftBackPod, rightBackPod, 1);
 
-		chassisSwerveDrive.configPIDDrive(0.0002, 0.00000, 0.0, 0.0, 0.0, -1.0, 1.0);
+		chassisSwerveDrive.configPIDDrive(Constants.kP_Drive, 0.00000, 0.0, 0.0, 0.0, -1.0, 1.0);
 
-		chassisSwerveDrive.configPIDTurn(0.02, 0.0001, 0.00001, 0, 0.0001, -0.2, 0.2, 5);
-		leftBackPod.configPIDTurn(0.02,  0.0001, 0.0001, 0, 0.0001, -0.2, 0.2, 5);
-		leftFrontPod.configPIDTurn(0.05,  0.0001, 0.0001, 0, 0.0001, -1.0, 1.0, 5);
-		chassisSwerveDrive.setDriveCurrentLimit(20, 40);
+		chassisSwerveDrive.configPIDTurn(Constants.kP_Turn, 0.00000, 0.0000, 0, 0.0001, -0.5, 0.5, 2);
+		// leftBackPod.configPIDTurn(0.02,  0.0001, 0.0001, 0, 0.0001, -0.2, 0.2, 5);
+		// leftFrontPod.configPIDTurn(0.05,  0.0001, 0.0001, 0, 0.0001, -1.0, 1.0, 5);
+		// chassisSwerveDrive.setDriveCurrentLimit(20, 40);
 		
 		chassisSwerveDrive.brakeOff();
 		rightFrontPod.setBias();
@@ -116,45 +129,55 @@ public class Chassis extends PIDSubsystem {
 		ShuffleboardLayout driveMotors = Shuffleboard.getTab(ChassisTitle)
 		.getLayout("DriveMotors", BuiltInLayouts.kList)
 		.withSize(2, 4)
-		.withPosition(2, 0);
-		kP_drive = driveMotors.add("kP_drive", .0005).getEntry();
-		kI_drive = driveMotors.add("kI_drive", 1e-6).getEntry();
-		kD_drive = driveMotors.add("kD_drive", 0).getEntry();
-		kIz_drive = driveMotors.add("kIz_drive", 0).getEntry(); 
-		kFF_drive = driveMotors.add("kFF_drive", 0).getEntry(); 
-		kMaxOutput_drive = driveMotors.add("kMaxOutput_drive", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+		.withPosition(0, 0);
+		kP_drive = driveMotors.add("kP_drive", kP_d).withPosition(0, 0).getEntry();
+		kI_drive = driveMotors.add("kI_drive", kD_d).withPosition(0, 1).getEntry();
+		kD_drive = driveMotors.add("kD_drive", kI_d).withPosition(0, 2).getEntry();
+		kIz_drive = driveMotors.add("kIz_drive", kIz_d).withPosition(0, 3).getEntry(); 
+		kFF_drive = driveMotors.add("kFF_drive", kFF_d).withPosition(0, 4).getEntry(); 
+		kMaxOutput_drive = driveMotors.add("kMaxOutput_drive", kMaxOutput_d)
+		.withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1))
+		.withPosition(0, 5).getEntry();
 		
 		//SteerMotors
 		ShuffleboardLayout steerMotors = Shuffleboard.getTab(ChassisTitle)
 		 .getLayout("SteerMotors", BuiltInLayouts.kList)
 		 .withSize(2, 4)
-		 .withPosition(4, 0);
-		kP_turn = steerMotors.add("kP_turn", 0.01).getEntry();
-		kI_turn = steerMotors.add("kI_turn", 0.001).getEntry();
-		kD_turn = steerMotors.add("kD_turn", 0).getEntry();
-		kIz_turn = steerMotors.add("kIz_turn", 0).getEntry(); 
-		kFF_turn = steerMotors.add("kFF_turn", 0.0001).getEntry(); 
-		kMaxOutput_turn = steerMotors.add("kMaxOutput_turn", 1.0).getEntry(); 
+		 .withPosition(2, 0);
+		kP_turn = steerMotors.add("kP_turn", kP_t).withPosition(0, 0).getEntry();
+		kD_turn = steerMotors.add("kD_turn", kD_t).withPosition(0, 1).getEntry();
+		kI_turn = steerMotors.add("kI_turn", kI_t).withPosition(0, 2).getEntry();
+		kIz_turn = steerMotors.add("kIz_turn", kIz_t).withPosition(0, 3).getEntry(); 
+		kFF_turn = steerMotors.add("kFF_turn", kFF_t).withPosition(0, 4).getEntry(); 
+		kMaxOutput_turn = steerMotors.add("kMaxOutput_turn", kMaxOutput_t)
+		.withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1))
+		.withPosition(0, 5).getEntry(); 
 
 		// kMaxOutput_turn = tab_chassis.add("kMaxOutput_turn", 1).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min_", 0, "max_", 1)).getEntry();
 		 // specify widget properties here
 
-
 		ShuffleboardLayout chassisCommands = Shuffleboard.getTab(ChassisTitle)
 			.getLayout("ChassisCommands", BuiltInLayouts.kList)
 			.withSize(2, 2)
-			.withPosition(0, 0)
+			.withPosition(4, 0)
 			.withProperties(Map.of("Label position", "HIDDEN")); // hide labels for commands
-		chassisCommands.add(new UpdateChassisPID());
-		chassisCommands.add(new DriveFwd(0, 0, 0));
+		chassisCommands.add(new UpdateChassisPID()).withPosition(0, 0);
+		chassisCommands.add(new DriveFwd(0, 0, 0)).withPosition(0, 1);
 
 	}
 	
 	public void motorDrive(double x, double y, double z) {
-	    	
+			
+		if(Robot.elevator.rightInsideElevatorMotorEncoder.getPosition()>Constants.ElevatorUpperPosition){
+			maxLimit = 0.5;
+		}
+		else{
+			maxLimit = 1.0;
+		}
 		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, 1.0);
 		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, 1.0);
 		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
+		
 		
 		if(robotOrient){ //Field oriented
 			chassisSwerveDrive.drive(x,y,z,getGyroAngle());
@@ -166,8 +189,9 @@ public class Chassis extends PIDSubsystem {
 	 }
 
 	 public void setPIDDrive(){
-		chassisSwerveDrive.configPIDDrive(kP_drive.getDouble(0.0005), kD_drive.getDouble(0.0001), kI_drive.getDouble(0.0001), 0.0, 0.0, 
-		-kMaxOutput_drive.getDouble(1.0), kMaxOutput_drive.getDouble(1.0));
+		chassisSwerveDrive.configPIDDrive(kP_drive.getDouble(kP_d), kD_drive.getDouble(kD_d), 
+			kI_drive.getDouble(kI_d), kIz_drive.getDouble(kIz_d), kFF_drive.getDouble(kFF_d), 
+			-kMaxOutput_drive.getDouble(kMaxOutput_d), kMaxOutput_drive.getDouble(kMaxOutput_d));
 	 }
 
 	 public void setPIDTurn(){
@@ -200,7 +224,7 @@ public class Chassis extends PIDSubsystem {
 	}
 
 	public boolean isDistance(double setPoint){
-		return chassisSwerveDrive.isDistance(setPoint_drive.getDouble(10.0));
+		return chassisSwerveDrive.isDistance(setPoint_drive.getDouble(0.0));
 	}
 
 

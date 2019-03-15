@@ -18,7 +18,7 @@ public class Constants {
 	public static double BackLeftBias = Robot.prefs.getDouble("BackLeftBias", 0.0);
 	public static double BackRightBias = Robot.prefs.getDouble("BackRightBias", 0.0);
 	*/
-	public static final int[] AngleBias = {1626, 1644, 947, 2001};
+	public static final int[] AngleBias = {820, 1906, 1366, 3600};
 
 	public static final int ArmMotorBias = 0; // TODO: Find out bias
 	
@@ -32,6 +32,7 @@ public class Constants {
 	public static final int GatherMotorUpperID = 13;
 	public static final int GatherMotorLowerID = 14;
 
+	//Chassis
 	public static final int RightFrontSteer = 0;
 	public static final int LeftFrontSteer = 1;
 	public static final int LeftRearSteer = 2;
@@ -41,7 +42,17 @@ public class Constants {
 	public static final int LeftFrontDrive = 5;
 	public static final int LeftRearDrive = 6;
 	public static final int RightRearDrive = 7;
+	//PID constants
+	public static final double kP_Drive = 0;
+	public static final double kI_Drive = 0;
+	public static final double kD_Drive = 0;
+	public static final double kIz_Drive = 0;
 
+	public static final double kP_Turn = 0.01;
+
+
+	////End Chassis
+////====================================////
 	public static double rotations_per_deg = 1;
 
 	public static double ElevatorBottomPosition = 0.0;
@@ -52,8 +63,15 @@ public class Constants {
 
 	public static double CarriageBottomPosition = 0.0;
 	public static double CarriageGatherPosition = 0.0;
-	public static double CarriageLowerPosition = 0.0;
-	public static double CarriageMiddlePosition = 0.0;
+	public static double CarriageLowerPosition = 6.0;
+	public static double CarriageMiddlePosition = 25.0;
 	public static double CarriageUpperPosition = 0.0;
+
+	public static double LiftTopPlatformPosition = 26.0;
+	public static double LiftRetractTopPosition = 22.0;
+	public static double LiftMidPlatformPosition = 12.0;
+	public static double LiftRetractMidPosition = 9.0;
+
+	
 
 }

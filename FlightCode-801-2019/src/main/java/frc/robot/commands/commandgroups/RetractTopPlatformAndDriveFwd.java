@@ -10,7 +10,7 @@ package frc.robot.commands.commandgroups;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.commands.Chassis.DriveFwd;
-import frc.robot.commands.Lift.LiftRetract;
+import frc.robot.commands.Lift.LiftRetractTopPositionCMD;
 
 public class RetractTopPlatformAndDriveFwd extends CommandGroup {
   /**
@@ -19,7 +19,7 @@ public class RetractTopPlatformAndDriveFwd extends CommandGroup {
   public RetractTopPlatformAndDriveFwd() {
     requires(Robot.chassis);
     requires(Robot.lift);
-    addParallel( new LiftRetract(22.0));
+    addParallel( new LiftRetractTopPositionCMD());
     addSequential( new  DriveFwd(0.0, 200.0, 6.0));
   }
 }

@@ -10,6 +10,7 @@ package frc.robot.commands.Elevator;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.Arm.Position;
 
 public class ElevatorBottomCMD extends Command {
   public ElevatorBottomCMD() {
@@ -20,10 +21,10 @@ public class ElevatorBottomCMD extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.elevator.updatePID();
-    Robot.elevator.updateSmartMotion();
+
     Robot.elevator.elevatorRun(Constants.ElevatorBottomPosition);
     Robot.elevator.carriageRun(Constants.CarriageBottomPosition);
+
   }
 
   // Called repeatedly when this Command is scheduled to run

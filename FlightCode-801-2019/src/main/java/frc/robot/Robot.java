@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utilities.OI;
+import frc.robot.commands.BlueLightOn;
+import frc.robot.commands.RedLightOn;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Pincher;
@@ -39,10 +41,13 @@ public class Robot extends TimedRobot {
   public static Chassis chassis = new Chassis();
   public static PowerDistributionPanel pdp = new PowerDistributionPanel();
   public static Pincher pincher = new Pincher();
+  
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
-  private Relay lightRelay = new Relay(0);
+  private SendableChooser<Command> chooser =new SendableChooser<>();;
+  private Command lightsCommand;
+  public static Relay lightRelay = new Relay(0);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -56,16 +61,15 @@ public class Robot extends TimedRobot {
     arm.init();
     gather.init();
     pincher.init();
-
     
     oi = new OI();
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
-    SmartDashboard.putData("Auto mode", m_chooser);
-    // lightRelay.set(Relay.Value.kOn);
-    // lightRelay.set(Relay.Value.kForward);
+    chooser.setDefaultOption("Blue Lights", new BlueLightOn());
+    chooser.addOption("Red Lights", new RedLightOn());
+    SmartDashboard.putData("Light", chooser);
     lightRelay.set(Relay.Value.kOff);
-		// lightRelay.set(Relay.Value.kForward);
+
   }
 
   /**
@@ -78,7 +82,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    lightRelay.set(Relay.Value.kOff);
+
     chassis.chassisSwerveDrive.getUpdate();
     SmartDashboard.putNumber("GyroAngle", chassis.getGyroAngle());
   }
@@ -90,6 +94,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    lightRelay.set(Relay.Value.kOff);
   }
 
   @Override
@@ -111,7 +116,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_chooser.getSelected();
-
+    lightsCommand = chooser.getSelected();
+    lightsCommand.start();
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
      * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
@@ -135,6 +141,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
