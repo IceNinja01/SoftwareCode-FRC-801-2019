@@ -38,7 +38,7 @@ public class Pincher extends Subsystem {
 	public void openPinchers() {
 		
 		pincher.set(DoubleSolenoid.Value.kReverse);
-
+	
 	}	
 
 }

@@ -22,11 +22,11 @@ public class Chassis extends Subsystem {
 
 	public void init(){
 		rightFrontPod = new SwervePOD(Constants.RightFrontDrive, Constants.RightFrontSteer, MotorName.RightFront);
-		rightFrontPod.configPIDDrive(0.00001, 0.000001, 0.0, 0.0, 0.0, -1.0, 1.0);
+		rightFrontPod.configPIDDrive(0.0002, 0.0, 0.0, 0.0, 0.1, -1.0, 1.0);
 
-		rightFrontPod.configPIDTurn(0.0035, 0.00000, 0.0000, 0, 0.0001, -1.0, 1.0, 5);
+		rightFrontPod.configPIDTurn(0.005, 0.00000, 0.0000, 0, 0.0001, -0.5, 0.5, 2);
 		// rightFrontPod.brakeOff();
-		
+		// rightFrontPod.invertDriveMotor(true);
 		chassisSwerveDrive = new SwerveDriveTwoMotors(rightFrontPod, 5);
 		chassisSwerveDrive.setDriveCurrentLimit(10, 40);
 	}
@@ -38,11 +38,11 @@ public class Chassis extends Subsystem {
 	
 	public void motorDrive(double x, double y, double z, double angleCMD) {
 	    	
-	        x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, 1.0);
-	        y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, 1.0);
+	        x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.1, 1.0);
+	        y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.1, 1.0);
 	        z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
 	        
-	        chassisSwerveDrive.drive(x,y,z,angleCMD);
+	        chassisSwerveDrive.drive(x,y,z,0.0);
 	 }
 
 	public void stop() {
@@ -57,7 +57,6 @@ public class Chassis extends Subsystem {
 
 	public void getError() {
 		rightFrontPod.getTurnPIDError();
-		rightFrontPod.getPIDOut();
 
 	}
 

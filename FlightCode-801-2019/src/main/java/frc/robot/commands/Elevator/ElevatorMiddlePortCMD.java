@@ -20,8 +20,7 @@ public class ElevatorMiddlePortCMD extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.elevator.updatePID();
-    Robot.elevator.updateSmartMotion();
+
     Robot.elevator.elevatorRun(Constants.ElevatorMiddlePosition);
     Robot.elevator.carriageRun(Constants.CarriageMiddlePosition);
   }

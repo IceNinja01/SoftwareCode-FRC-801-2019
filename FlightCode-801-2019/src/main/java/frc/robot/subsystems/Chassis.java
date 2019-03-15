@@ -72,6 +72,7 @@ public class Chassis extends PIDSubsystem {
 	private double kIz_t = 0.0;
 	private double kFF_t = 0.0;
 	private double kMaxOutput_t = 1.0;
+	private double maxLimit;
 
 	public Chassis(){
 		super(0.02, 0.0000001, 0.8, 0.001);
@@ -166,10 +167,16 @@ public class Chassis extends PIDSubsystem {
 	}
 	
 	public void motorDrive(double x, double y, double z) {
-	    	
-		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, 1.0);
-		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, 1.0);
-		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
+			
+		if(Robot.elevator.rightInsideElevatorMotorEncoder.getPosition()>Constants.ElevatorUpperPosition){
+			maxLimit = 0.5;
+		}
+		else{
+			maxLimit = 1.0;
+		}
+		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, maxLimit);
+		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, maxLimit);
+		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, maxLimit);
 		
 		
 		if(robotOrient){ //Field oriented

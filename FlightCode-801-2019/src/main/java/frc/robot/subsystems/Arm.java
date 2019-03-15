@@ -42,12 +42,12 @@ public class Arm extends Subsystem
   public static final double kMaxVelocity = 1;      // One rotation per second
   public static final double kMaxAcceleration = 1;  // One rotation per second per second
   
-  public static final int kPlayPos = 0;       // Degrees. A Button
-  public static final int kDiskPickPos = 80;  // Degrees. Y Button
-  public static final int kStowPos = 135;     // Degrees. X Button
-  public static final int kBallPos = 0;       // Degrees. B Button TODO: What?
+  public static final int kPlayPos = 135;       // Degrees. A Button
+  public static final int kDiskPickPos = 55;  // Degrees. Y Button
+  public static final int kStowPos = 0;     // Degrees. X Button
+  public static final int kBallPos = 80;       // Degrees. B Button TODO: What?
 
-  public static final int kDebugMotorTurn = 6; // The test stand has a 6 times gear ratio
+  public static final int kDebugMotorTurn = 48/42; // The test stand has a 6 times gear ratio
 
   private NetworkTableEntry kP_Arm;
   private NetworkTableEntry kI_Arm;

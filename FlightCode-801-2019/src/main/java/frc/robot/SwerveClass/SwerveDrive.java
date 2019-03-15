@@ -166,7 +166,7 @@ public class SwerveDrive extends MotorSafety {
 
 				if(Math.abs(angleError[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
 			    	//reverse translational motors 
-			    	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
+			    	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 			    	
 			    	//find new angle
 			    	wheelAngles[i] -= 180.0; //subtract 180 degrees
@@ -179,14 +179,14 @@ public class SwerveDrive extends MotorSafety {
 				}      
 			    else
 			    {
-			    	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
+			    	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
 				}
 
 				///===============================================================///
 				//end shortest path
 
 
-				SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
+				// SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 
 				//Turn Motors
 			    if(wheelSpeeds[i]>0.1){

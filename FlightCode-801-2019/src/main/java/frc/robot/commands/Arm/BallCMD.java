@@ -21,7 +21,6 @@ public class BallCMD extends Command
   @Override
   protected void initialize()
   {
-    Robot.arm.updatePID();
     Robot.arm.updateMotionMagic();
     Robot.arm.goTo(Position.BALL);
   }

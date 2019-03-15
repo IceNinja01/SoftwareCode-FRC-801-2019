@@ -10,6 +10,7 @@ import frc.robot.Constants;
 import frc.robot.commands.Elevator.CarriageManualPositionCMD;
 import frc.robot.commands.Elevator.ElevatorManualPositionCMD;
 import frc.robot.commands.Elevator.ElevatorStopCMD;
+import frc.robot.commands.Elevator.UpdateElevatorPIDCMD;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -106,7 +107,7 @@ public class Elevator extends Subsystem
   //ElevatorMotor
   ShuffleboardLayout ElevatorMotorPID = Shuffleboard.getTab(ElevatorTitle)
     .getLayout("ElevatorMotorPID", BuiltInLayouts.kList)
-    .withSize(2, 5)
+    .withSize(2, 6)
     .withPosition(0, 0);
   kP_Elevator = ElevatorMotorPID.add("kP_Elevator", .0001).withPosition(0, 0).getEntry();
   kI_Elevator = ElevatorMotorPID.add("kI_Elevator", 0.0).withPosition(0, 1).getEntry();
@@ -114,7 +115,8 @@ public class Elevator extends Subsystem
   kIz_Elevator = ElevatorMotorPID.add("kIz_Elevator", 0.0).withPosition(0, 3).getEntry(); 
   kFF_Elevator = ElevatorMotorPID.add("kFF_Elevator", 0.0).withPosition(0, 4).getEntry(); 
   kMaxOutput_Elevator = ElevatorMotorPID.add("kMaxOutput_Elevator", 1).withPosition(0, 5).getEntry();
-  
+  ElevatorMotorPID.add("UpdatePID_Elevator", new UpdateElevatorPIDCMD());
+
   ShuffleboardLayout ElevatorMotorMP = Shuffleboard.getTab(ElevatorTitle)
     .getLayout("ElevatorMotorPM", BuiltInLayouts.kList)
     .withSize(2, 5)
@@ -151,6 +153,8 @@ public class Elevator extends Subsystem
   carriageEncoderPos = CarriageMotorMP.add("CarriageGetPos", 0).withPosition(0, 4).getEntry();
 
   CarriageMotorMP.add("SendNewPosition", new CarriageManualPositionCMD()).withPosition(0, 5); 
+
+
 
   }
   /**

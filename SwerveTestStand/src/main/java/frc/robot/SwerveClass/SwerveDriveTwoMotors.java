@@ -1,11 +1,12 @@
 package frc.robot.SwerveClass;
 
 import edu.wpi.first.wpilibj.MotorSafety;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utilities.Utils;
 
 //This code use Ether's calculations to perform the inverse kinamatics equations for swerve RPM
-//https://www.chiefdelphi.com/t/paper-4-wheel-independent-RPM-independent-steering-swerve/107383
+//https://www.chiefdelphi.com/t/paper-1-wheel-independent-RPM-independent-steering-swerve/107383
 
 
 
@@ -18,14 +19,14 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 
 	protected double temp, STR, FWD, RCW;
 	protected double A,B,C,D, max;
-	protected double L = 28.5; //Lenght of robot wheel base
-	protected double W = 28.5; //Width of robot wheel base
+	protected double L = 27.75; //Lenght of robot wheel base
+	protected double W = 27.75; //Width of robot wheel base
 	protected double R = Math.sqrt(L*L+W*W);
 	protected double timeUs;
 	private String motorName[] = {"FrontRight","FrontLeft","BackLeft","BackRight"};
 
 	private double[] oldAngle = {0,0,0,0};
-	private double maxRPM = 1000.0;
+	private double maxRPM = 20000.0;
 	private double maxTurn = 1.0;
 
 	private SwervePOD[] SwervePOD  = new SwervePOD[4];
@@ -36,12 +37,27 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 
 	private RollingAverage xavg;
 	private RollingAverage yavg;
-	private RollingAverage zavg;	
+	private RollingAverage zavg;
+	private double[] position = new double[4];
+	private double omega; 
+	private Timer time = new Timer();
+	private double old_time = 0.0;
+	private double new_time = 0.0;
+	private double dt;
+	private double velocity;
+	private double new_vel;
+	private double old_vel;
+	private double old_omega;
+	private double new_omega;
+	private double delta_vel;
+	private double delta_omega;
 	
-	public  SwerveDriveTwoMotors(SwervePOD FrontRightPOD,
-			int avgSize) {
+	public  SwerveDriveTwoMotors(SwervePOD rightFrontPOD, int avgSize) {
 		
-		SwervePOD[0] = FrontRightPOD;
+		SwervePOD[0] = rightFrontPOD;
+		// SwervePOD[1] = leftFrontPod;
+		// SwervePOD[2] = leftBackPod;
+		// SwervePOD[3] = rightBackPod;
 
 		
 		// Initializes the _avg variables to size avgSize
@@ -50,6 +66,23 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 		zavg = new RollingAverage(avgSize);
 		
 	}
+
+	//Configure each POD Drive motors
+	public void configPIDDrive(double kP, double kI, double kD, double kIz, double kFF, double kMinOutput, double kMaxOutput) {
+		for(int i=0;i<1;i++){
+			SwervePOD[i].configPIDDrive(kP, kI, kD, kIz, kFF, kMinOutput, kMaxOutput);
+		}
+
+	}
+
+	//Configure each POD Turn motors
+	public void configPIDTurn(double kP, double kI, double kD, int kIz, double kFF, double kMinOutput, double kMaxOutput, int deadBand) {
+		for(int i=0;i<1;i++){
+			SwervePOD[i].configPIDTurn(kP, kI, kD, kIz, kFF, kMinOutput, kMaxOutput, deadBand);
+		}
+	}
+
+
 	 /**
 	   * RPM method for Swerve wheeled robots.
 	   *	  
@@ -113,54 +146,61 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	    	wheelSpeeds[3]/=max;
 	    }
 
-			double[] degs = new double[4];
+			double[] degs = new double[1];
 		    for(int i=0;i<1;i++){
 		    	degs[i] = SwervePOD[i].getAngleDeg();
 		    	SmartDashboard.putNumber("OLDAngle", oldAngle[i]);
 		    	// angleJoyStickDiff[i]=(wheelAngles[i]- oldAngle[i]);
 		    	angleError[i] = wheelAngles[i] - degs[i];
-				
+				if(angleError[i]<0){ //wraping for 10 -350 = -310, so add 360 = 20
+					angleError[i] +=360;
+				}
+
+				if(angleError[i]>270){ //wraping for 350 -10 = 310, so 360 - 310 =20 
+					angleError[i] = 360 - angleError[i];
+				}
 				////====================================================//
 				//need to get shortest path to work correctly///
 
 
-				// if(Math.abs(angleError[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
-			    // 	//reverse translational motors 
-			    // 	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
+				if(Math.abs(angleError[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
+			    	//reverse translational motors 
+			    	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 			    	
-			    // 	//find new angle
-			    // 	wheelAngles[i] -= 180.0; //subtract 180 degrees
-			    // 	if(wheelAngles[i] < 0){ //wrap to new angle between 0-360
-			    // 		wheelAngles[i] += 360.0;
-			    // 	}
-			    // 	//now the angle is set to move to the shortest path, which is just 180 degrees 
-			    // 	//from the current heading
+			    	//find new angle
+			    	wheelAngles[i] -= 180.0; //subtract 180 degrees
+			    	if(wheelAngles[i] < 0){ //wrap to new angle between 0-360
+			    		wheelAngles[i] += 360.0;
+			    	}
+			    	//now the angle is set to move to the shortest path, which is just 180 degrees 
+			    	//from the current heading
 			    	
-				// }      
-			    // else
-			    // {
-			    // 	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
-				// }
+				}      
+			    else
+			    {
+			    	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
+				}
 
 				///===============================================================///
 				//end shortest path
 
 
-				SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
-				SwervePOD[i].getSpeed();
-				SwervePOD[i].getAngleDeg();
+				// SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
+
 				//Turn Motors
 			    if(wheelSpeeds[i]>0.1){
 					SwervePOD[i].setAngle(wheelAngles[i]);
 			    	oldAngle[i] = wheelAngles[i];
-			    }
+				}
+				else{
+					SwervePOD[i].disablePIDTurn();
+				}
+				
 			SmartDashboard.putNumber("Angle", wheelAngles[i]);
 			SmartDashboard.putNumber("Int", i);
-
 			SwervePOD[i].getAbsAngle();
-
 	    }
-			getspeed();
+			getRobotVelocity_AngularVelocity();
 	    	SmartDashboard.putNumber("JoyAngle", angleJoyStickDiff[0]);
 
 		if (m_safetyHelper != null) {
@@ -170,21 +210,68 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	}
 	// Get the speed of the robot and angle from motor values. The angle is calculated from motors.
 	// Use gyro for true angle measurements.
-	private void getspeed() {
+	private void getSpeed() {
 		double vel_X = 0;
 		double vel_Y = 0;
-		double velocity = 0;
+		velocity = 0;
 		for(int i=0;i<1;i++){
-			vel_X += SwervePOD[i].getSpeed()*Math.cos(SwervePOD[i].getAngleDeg());
-			vel_Y +=  SwervePOD[i].getSpeed()*Math.sin(SwervePOD[i].getAngleDeg());
+			vel_X += SwervePOD[i].getSpeed()*Math.cos(Utils.convertDegtoRad(SwervePOD[i].getAngleDeg()));
+			vel_Y +=  SwervePOD[i].getSpeed()*Math.sin(Utils.convertDegtoRad(SwervePOD[i].getAngleDeg()));
 		}
-		vel_X /= 4;
-		vel_Y /= 4;
-		double omega = Utils.wrapAngle0To360Deg(Math.atan2(vel_Y,vel_X)*180/Math.PI);
+		vel_X /= 1;
+		vel_Y /= 1;
+		omega = Utils.wrapAngle0To360Deg(Math.atan2(vel_Y,vel_X)*180/Math.PI);
 		velocity = Math.sqrt(vel_Y*vel_Y + vel_X*vel_X);
 		SmartDashboard.putNumber("Velocity", velocity);
 		SmartDashboard.putNumber("Angle_Omega", omega);
+	}
 
+	private void getRobotVelocity_AngularVelocity(){
+		getSpeed();
+		old_time = new_time;
+		new_time = Timer.getFPGATimestamp();
+		dt = new_time-old_time;
+		old_vel = new_vel;
+		new_vel = velocity;
+		old_omega = new_omega;
+		new_omega = omega;
+		delta_vel = new_vel - old_vel;
+		delta_vel /= dt;
+		delta_omega = new_omega - old_omega;
+		delta_omega /=dt;
+	}
+
+	public void getRobotDisplacedPosition(){
+
+	}
+
+	public void getUpdate(){
+		for(int i=0;i<1;i++){
+		SwervePOD[i].getSpeed();
+		SwervePOD[i].getAngleDeg();
+		}
+	}
+
+	public void getEncoder(){
+		
+		for(int i=0; i < 1; i++){
+			position[i] = SwervePOD[i].getPosition();
+		}
+	}
+
+	public boolean isDistance(double setPoint){
+		double avg = 0;
+		getEncoder();
+		for(int i=0; i < 1; i++){
+			avg += position[i];
+		}
+		avg /=1;
+		if(avg>=setPoint){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	public void turnMotors(double angle_CMD) {
@@ -192,7 +279,8 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	    	SwervePOD[i].setAngle(angle_CMD);
 	    }
 	}
-	
+
+	//Used driving by Command, velocity and angle
 	public void turnMotorsRPM(double angle_CMD , double speed){
 	    for(int i=0;i<1;i++){
 	    	SwervePOD[i].setAngle(angle_CMD);
@@ -295,5 +383,15 @@ public class SwerveDriveTwoMotors extends MotorSafety {
 	      m_safetyHelper.feed();
 	    }
 	}
+
+	public void getDriveVoltage() {
+		for(int i=0;i<1;i++){
+			SwervePOD[i].getDriveVoltage();
+		}
+	}
+
+	public void getTurnVoltage() {
+	}
+
 	
 }
