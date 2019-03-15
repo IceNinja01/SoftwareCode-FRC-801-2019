@@ -21,7 +21,6 @@ public class PlayCMD extends Command
   @Override
   protected void initialize()
   {
-    Robot.arm.updateMotionMagic();
     Robot.arm.goTo(Position.PLAY);
   }
 
