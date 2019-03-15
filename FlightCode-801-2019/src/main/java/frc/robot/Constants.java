@@ -18,7 +18,7 @@ public class Constants {
 	public static double BackLeftBias = Robot.prefs.getDouble("BackLeftBias", 0.0);
 	public static double BackRightBias = Robot.prefs.getDouble("BackRightBias", 0.0);
 	*/
-	public static final int[] AngleBias = {820, 1906, 1366, 3600};
+	public static final int[] AngleBias = {1502, 2149, 1366, 104};
 
 	public static final int ArmMotorBias = 0; // TODO: Find out bias
 	
@@ -33,7 +33,7 @@ public class Constants {
 	public static final int GatherMotorLowerID = 14;
 
 	//Chassis
-	public static final int RightFrontSteer = 0;
+	public static final int RightFrontSteer = 8;
 	public static final int LeftFrontSteer = 1;
 	public static final int LeftRearSteer = 2;
 	public static final int RightRearSteer = 3;

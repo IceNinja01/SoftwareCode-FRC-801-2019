@@ -21,7 +21,7 @@ public class Pincher extends Subsystem {
 	}
 
 	public void init() {
-		pincher = new DoubleSolenoid(0,1); 
+		pincher = new DoubleSolenoid(21,0,1); 
 		
 	}
 	

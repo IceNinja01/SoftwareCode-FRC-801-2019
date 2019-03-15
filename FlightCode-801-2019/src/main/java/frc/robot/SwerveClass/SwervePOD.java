@@ -135,14 +135,15 @@ public class SwervePOD {
 	public void setBias(){
 		int absolutePosition = getAbsAngle();	
 
-		if (absolutePosition > Constants.AngleBias[0])
-		{
-			turnMotor.setSelectedSensorPosition(24576 - (absolutePosition-Constants.AngleBias[motorName.ordinal()]), 0, 10);
-		}
-		else
-		{
-			turnMotor.setSelectedSensorPosition(Constants.AngleBias[motorName.ordinal()]-absolutePosition, 0, 10);
-		}
+		turnMotor.setSelectedSensorPosition(0, 0, 10);
+		// if (absolutePosition > Constants.AngleBias[0])
+		// {
+		// 	turnMotor.setSelectedSensorPosition(24576 - (absolutePosition-Constants.AngleBias[motorName.ordinal()]), 0, 10);
+		// }
+		// else
+		// {
+		// 	turnMotor.setSelectedSensorPosition(Constants.AngleBias[motorName.ordinal()]-absolutePosition, 0, 10);
+		// }
 	}
 
 	public void setInvertTurn(boolean invert){
@@ -203,9 +204,11 @@ public class SwervePOD {
 	}
 	
 	public void setSpeed(double speed) {
-		SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
-		drivePID.setReference(speed, ControlType.kVelocity);
-		SmartDashboard.putNumber("OutPut PWM " + motorName, driveMotor.getAppliedOutput());	
+		// SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
+		driveMotor.set(speed);
+		// drivePID.setReference(speed, ControlType.kVelocity);
+		// SmartDashboard.putNumber("OutPut PWM " + motorName, driveMotor.getAppliedOutput());	
+		// SmartDashboard.putNumber("Motor PID Error" + motorName, driveMotorEnc.getVelocity()-speed);
 
 	}
 
@@ -298,7 +301,7 @@ public class SwervePOD {
 		//(kMaxRPM  / 600) * (kSensorUnitsPerRotation / kGearRatio)
 		double speed = driveMotorEnc.getVelocity();
 		speed = (speed/5.1)*(4*Math.PI)*(1/60.0)*(1/12.0);
-		SmartDashboard.putNumber("Motor Speed", speed);
+		SmartDashboard.putNumber("Motor Speed" + motorName, speed);
 		return speed;
 	}
 

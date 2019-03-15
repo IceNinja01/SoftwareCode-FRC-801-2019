@@ -26,7 +26,7 @@ public class SwerveDrive extends MotorSafety {
 	private String motorName[] = {"FrontRight","FrontLeft","BackLeft","BackRight"};
 
 	private double[] oldAngle = {0,0,0,0};
-	private double maxRPM = 12.0;
+	private double maxRPM = 5700.0;
 	private double maxTurn = 1.0;
 
 	private SwervePOD[] SwervePOD  = new SwervePOD[4];
@@ -150,43 +150,43 @@ public class SwerveDrive extends MotorSafety {
 			double[] degs = new double[4];
 		    for(int i=0;i<4;i++){
 		    	degs[i] = SwervePOD[i].getAngleDeg();
-		    	SmartDashboard.putNumber("OLDAngle", oldAngle[i]);
-		    	// angleJoyStickDiff[i]=(wheelAngles[i]- oldAngle[i]);
-		    	angleError[i] = wheelAngles[i] - degs[i];
-				if(angleError[i]<0){ //wraping for 10 -350 = -340, so add 360 = 20
-					angleError[i] +=360;
-				}
+		    	// SmartDashboard.putNumber("OLDAngle", oldAngle[i]);
+		    	// // angleJoyStickDiff[i]=(wheelAngles[i]- oldAngle[i]);
+		    	// angleError[i] = wheelAngles[i] - degs[i];
+				// if(angleError[i]<0){ //wraping for 10 -350 = -340, so add 360 = 20
+				// 	angleError[i] +=360;
+				// }
 
-				if(angleError[i]>270){ //wraping for 350 -10 = 340, so 360 - 340 =20 
-					angleError[i] = 360 - angleError[i];
-				}
-				////====================================================//
-				//need to get shortest path to work correctly///
+				// if(angleError[i]>270){ //wraping for 350 -10 = 340, so 360 - 340 =20 
+				// 	angleError[i] = 360 - angleError[i];
+				// }
+				// ////====================================================//
+				// //need to get shortest path to work correctly///
 
 
-				if(Math.abs(angleError[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
-			    	//reverse translational motors 
-			    	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
+				// if(Math.abs(angleError[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
+			    // 	//reverse translational motors 
+			    // 	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
 			    	
-			    	//find new angle
-			    	wheelAngles[i] -= 180.0; //subtract 180 degrees
-			    	if(wheelAngles[i] < 0){ //wrap to new angle between 0-360
-			    		wheelAngles[i] += 360.0;
-			    	}
-			    	//now the angle is set to move to the shortest path, which is just 180 degrees 
-			    	//from the current heading
+			    // 	//find new angle
+			    // 	wheelAngles[i] -= 180.0; //subtract 180 degrees
+			    // 	if(wheelAngles[i] < 0){ //wrap to new angle between 0-360
+			    // 		wheelAngles[i] += 360.0;
+			    // 	}
+			    // 	//now the angle is set to move to the shortest path, which is just 180 degrees 
+			    // 	//from the current heading
 			    	
-				}      
-			    else
-			    {
-			    	SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
-				}
+				// }      
+			    // else
+			    // {
+			    	// SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
+				// }
 
 				///===============================================================///
 				//end shortest path
 
 
-				// SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
+				SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 
 				//Turn Motors
 			    if(wheelSpeeds[i]>0.1){
