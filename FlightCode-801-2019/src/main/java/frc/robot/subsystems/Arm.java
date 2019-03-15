@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.commands.Arm.ArmManualPositionCMD;
 import frc.robot.commands.Arm.ArmStopCMD;
 
@@ -169,7 +170,7 @@ public class Arm extends Subsystem
     switch (pos)
     {
       case PLAY:
-        targetPosition = 0;
+        targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kPlayPos/360));;
         break;
       case DISKPICK:
         targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kDiskPickPos/360));
@@ -225,5 +226,6 @@ public class Arm extends Subsystem
   {
     setDefaultCommand(new ArmStopCMD());
   }
+
   
 }

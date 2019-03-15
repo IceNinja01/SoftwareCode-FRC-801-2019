@@ -48,7 +48,7 @@ public class Lift extends Subsystem {
   private NetworkTableEntry rightEncoderPos,leftEncoderPos,setPoint_lift; 
   private NetworkTableEntry kP_lift, kI_lift, kD_lift, kIz_lift, kFF_lift, kMaxOutput_lift;
   private NetworkTableEntry maxVel_lift, minVel_lift, maxAcc_lift, encoderError;
-  private ShuffleboardTab tab = Shuffleboard.getTab(LiftTitle);
+  private ShuffleboardTab LiftTab = Shuffleboard.getTab(LiftTitle);
   
   private final int smartMotionSlot = 0;
   private final int maxEncoderError = 0;
@@ -90,10 +90,9 @@ public class Lift extends Subsystem {
   }
 
   public void initDashboard(){
-    setPoint_lift = tab.add("SetPoint", 10.0).getEntry(); //input is in Inches
     // PID Constants Area
-    ShuffleboardLayout LiftMotorPID = Shuffleboard.getTab(LiftTitle)
-      .getLayout("ArmMotorPID", BuiltInLayouts.kList)
+    ShuffleboardLayout LiftMotorPID = LiftTab
+      .getLayout("LiftMotorPID", BuiltInLayouts.kList)
       .withSize(2, 5)
       .withPosition(0, 0);
     kP_lift = LiftMotorPID.add("kP", kP).withPosition(0, 0).getEntry();
@@ -105,8 +104,8 @@ public class Lift extends Subsystem {
     .withProperties(Map.of("min", 0, "max", 1)).withPosition(0, 5).getEntry();
     // Smart Motion Coefficients
     // Motion Magic Constants Area
-    ShuffleboardLayout LiftMotorMotion = Shuffleboard.getTab(LiftTitle)
-    .getLayout("ArmMotorMP", BuiltInLayouts.kList)
+    ShuffleboardLayout LiftMotorMotion = LiftTab
+    .getLayout("LiftMotorMP", BuiltInLayouts.kList)
     .withSize(2, 5)
     .withPosition(2, 0);
     maxVel_lift = LiftMotorMotion.add("maxVel(RPM)", maxVel).withPosition(0, 0).getEntry(); // rpm
@@ -115,9 +114,11 @@ public class Lift extends Subsystem {
     leftEncoderPos = LiftMotorMotion.add("LeftEncPos", 0).withPosition(0, 3).getEntry();
     rightEncoderPos = LiftMotorMotion.add("rightEncoderPos", 0).withPosition(0, 4).getEntry();
     encoderError = LiftMotorMotion.add("LRencoderDelta", 0).withPosition(0, 5).getEntry();
+    setPoint_lift = LiftMotorMotion.add("SetPoint", 0.0).getEntry(); //input is in Inches
+    LiftMotorMotion.add("SendNewPosition", new LiftUpDownToggleCMD()).withPosition(0, 8).withSize(2, 1); ;
 
 
-    tab.add(new LiftUpDownToggleCMD()).withPosition(2, 2).withSize(2, 1);    
+
   }
       /**
        * Smart Motion coefficients are set on a CANPIDController object

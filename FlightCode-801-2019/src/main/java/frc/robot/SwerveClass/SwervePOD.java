@@ -168,6 +168,7 @@ public class SwervePOD {
 		drivePID.setFF(kFF);
 		drivePID.setOutputRange(kMinOutput, kMaxOutput);
 		driveMotor.setInverted(d_motorInvert);
+		driveMotor.setIdleMode(IdleMode.kCoast);
 	}
 
 	public void invertDriveMotor(boolean invert){
@@ -197,13 +198,15 @@ public class SwervePOD {
 		absolutePosition &= 0xFFF;
 		// if (kSensorPhase) { absolutePosition *= -1; }
 		// if (kMotorInvert) { absolutePosition *= -1; }
-		// SmartDashboard.putNumber("AbsoluteEnc " + motorName, absolutePosition);	
+		SmartDashboard.putNumber("AbsoluteEnc " + motorName, absolutePosition);	
 		return absolutePosition;
 	}
 	
 	public void setSpeed(double speed) {
-		// SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
+		SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
 		drivePID.setReference(speed, ControlType.kVelocity);
+		SmartDashboard.putNumber("OutPut PWM " + motorName, driveMotor.getAppliedOutput());	
+
 	}
 
 	public double getTurnPIDError(){

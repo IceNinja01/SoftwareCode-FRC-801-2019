@@ -72,7 +72,7 @@ public class Chassis extends PIDSubsystem {
 	private double kIz_t = 0.0;
 	private double kFF_t = 0.0;
 	private double kMaxOutput_t = 1.0;
-	private double maxLimit;
+	private double maxLimit= 1.0;
 
 	public Chassis(){
 		super(0.02, 0.0000001, 0.8, 0.001);
@@ -93,14 +93,14 @@ public class Chassis extends PIDSubsystem {
 		leftBackPod.invertDriveMotor(true);
 		rightBackPod.invertDriveMotor(true);
 		// rightFrontPod.setInvertTurn(true);
-		chassisSwerveDrive = new SwerveDrive(rightFrontPod, leftFrontPod, leftBackPod, rightBackPod, 10);
+		chassisSwerveDrive = new SwerveDrive(rightFrontPod, leftFrontPod, leftBackPod, rightBackPod, 1);
 
-		chassisSwerveDrive.configPIDDrive(0.0002, 0.00000, 0.0, 0.0, 0.0, -1.0, 1.0);
+		chassisSwerveDrive.configPIDDrive(Constants.kP_Drive, 0.00000, 0.0, 0.0, 0.0, -1.0, 1.0);
 
-		chassisSwerveDrive.configPIDTurn(0.002, 0.0001, 0.00001, 0, 0.0001, -0.2, 0.2, 6);
+		chassisSwerveDrive.configPIDTurn(Constants.kP_Turn, 0.00000, 0.0000, 0, 0.0001, -0.5, 0.5, 2);
 		// leftBackPod.configPIDTurn(0.02,  0.0001, 0.0001, 0, 0.0001, -0.2, 0.2, 5);
 		// leftFrontPod.configPIDTurn(0.05,  0.0001, 0.0001, 0, 0.0001, -1.0, 1.0, 5);
-		chassisSwerveDrive.setDriveCurrentLimit(20, 40);
+		// chassisSwerveDrive.setDriveCurrentLimit(20, 40);
 		
 		chassisSwerveDrive.brakeOff();
 		rightFrontPod.setBias();
@@ -174,9 +174,9 @@ public class Chassis extends PIDSubsystem {
 		else{
 			maxLimit = 1.0;
 		}
-		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, maxLimit);
-		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, maxLimit);
-		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, maxLimit);
+		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, 1.0);
+		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, 1.0);
+		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
 		
 		
 		if(robotOrient){ //Field oriented

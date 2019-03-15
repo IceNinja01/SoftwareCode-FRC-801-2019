@@ -21,7 +21,7 @@ public class ElevatorMiddlePortCMD extends Command {
   @Override
   protected void initialize() {
 
-    Robot.elevator.elevatorRun(Constants.ElevatorMiddlePosition);
+    Robot.elevator.elevatorRun(Constants.ElevatorLowerPosition);
     Robot.elevator.carriageRun(Constants.CarriageMiddlePosition);
   }
 

@@ -91,8 +91,8 @@ public class Elevator extends Subsystem
     leftElevatorCarriageMotorEncoder = leftElevatorCarriageMotor.getEncoder();
     rightInsideElevatorMotorEncoder.setPosition(0.0);
     leftElevatorCarriageMotorEncoder.setPosition(0.0);
-    rightInsideElevatorMotorEncoder.setPositionConversionFactor(1.0);
-    leftElevatorCarriageMotorEncoder.setPositionConversionFactor(1.0);
+    rightInsideElevatorMotorEncoder.setPositionConversionFactor(1.413);
+    leftElevatorCarriageMotorEncoder.setPositionConversionFactor(1.413);
     ///Shuffle Board Start////
     initDashboard();
     // initNetWorkVars();
