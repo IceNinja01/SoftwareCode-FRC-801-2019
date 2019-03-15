@@ -37,7 +37,7 @@ public class Elevator extends Subsystem
   public static CANEncoder leftElevatorCarriageMotorEncoder;
 
   private String ElevatorTitle = "Elevator";
-  private ShuffleboardTab tab = Shuffleboard.getTab(ElevatorTitle);
+  private ShuffleboardTab elevatorTab = Shuffleboard.getTab(ElevatorTitle);
 
   private NetworkTableEntry kP_Elevator;
   private NetworkTableEntry kI_Elevator;
@@ -104,7 +104,7 @@ public class Elevator extends Subsystem
     public void initDashboard()
   {
   //ElevatorMotor
-  ShuffleboardLayout ElevatorMotorPID = Shuffleboard.getTab(ElevatorTitle)
+  ShuffleboardLayout ElevatorMotorPID = elevatorTab
     .getLayout("ElevatorMotorPID", BuiltInLayouts.kList)
     .withSize(2, 5)
     .withPosition(0, 0);
@@ -115,7 +115,7 @@ public class Elevator extends Subsystem
   kFF_Elevator = ElevatorMotorPID.add("kFF_Elevator", 0.0).getEntry(); 
   kMaxOutput_Elevator = ElevatorMotorPID.add("kMaxOutput_Elevator", 1).getEntry();
   
-  ShuffleboardLayout ElevatorMotorMP = Shuffleboard.getTab(ElevatorTitle)
+  ShuffleboardLayout ElevatorMotorMP = elevatorTab
     .getLayout("ElevatorMotorPM", BuiltInLayouts.kList)
     .withSize(2, 5)
     .withPosition(2, 0);
@@ -129,7 +129,7 @@ public class Elevator extends Subsystem
   
   
   //CarriageMotor
-  ShuffleboardLayout CarriageMotorPID = Shuffleboard.getTab(ElevatorTitle)
+  ShuffleboardLayout CarriageMotorPID = elevatorTab
    .getLayout("CarriageMotorPID", BuiltInLayouts.kList)
    .withSize(2, 5)
    .withPosition(4, 0);
@@ -140,7 +140,7 @@ public class Elevator extends Subsystem
   kFF_Carriage = CarriageMotorPID.add("kFF_Carriage", 0.0).getEntry(); 
   kMaxOutput_Carriage = CarriageMotorPID.add("kMaxOutput_Carriage", 1.0).getEntry(); 
   
-  ShuffleboardLayout CarriageMotorMP = Shuffleboard.getTab(ElevatorTitle)
+  ShuffleboardLayout CarriageMotorMP = elevatorTab
     .getLayout("CarriageMotorPM", BuiltInLayouts.kList)
     .withSize(2, 5)
     .withPosition(6, 0);
@@ -241,7 +241,7 @@ public class Elevator extends Subsystem
     return Math.abs(rightInsideElevatorMotorEncoder.getPosition() - setPoint_Elevator.getDouble(0.0) ) > closeEnough; 
   }
 
-  
+
   public boolean carriageIsMoving()
   {
     return Math.abs(leftElevatorCarriageMotorEncoder.getPosition() - setPoint_Carriage.getDouble(0.0) ) > closeEnough;
