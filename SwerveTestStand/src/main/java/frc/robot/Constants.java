@@ -18,7 +18,7 @@ public class Constants {
 	public static double BackLeftBias = Robot.prefs.getDouble("BackLeftBias", 0.0);
 	public static double BackRightBias = Robot.prefs.getDouble("BackRightBias", 0.0);
 	*/
-    public static final int[] AngleBias = {1475, 0, 0, 0};
+    public static final int[] AngleBias = {0, 0, 0, 0};
 	public static final int rightLiftMotorID = 8;
 	public static final int leftLiftMotorID = 9;
 	

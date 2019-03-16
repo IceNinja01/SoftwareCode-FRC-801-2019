@@ -96,9 +96,8 @@ public class Elevator extends Subsystem
     rightInsideElevatorMotorEncoder.setPositionConversionFactor(1.413);
     leftElevatorCarriageMotorEncoder.setPositionConversionFactor(1.413);
     ///Shuffle Board Start////
+
     initDashboard();
-    // initNetWorkVars();
-    //Set PID and Motion Constants
     updatePID();
     updateSmartMotion();
     hold();  // set starting smartmotion setpoints to the init position
@@ -113,7 +112,7 @@ public class Elevator extends Subsystem
     .getLayout("ElevatorMotorPID", BuiltInLayouts.kList)
     .withSize(2, 6)
     .withPosition(0, 0);
-  kP_Elevator = ElevatorMotorPID.add("kP_Elevator", .0001).withPosition(0, 0).getEntry();
+  kP_Elevator = ElevatorMotorPID.add("kP_Elevator", .001).withPosition(0, 0).getEntry();
   kI_Elevator = ElevatorMotorPID.add("kI_Elevator", 0.0).withPosition(0, 1).getEntry();
   kD_Elevator = ElevatorMotorPID.add("kD_Elevator", 0.0).withPosition(0, 2).getEntry();
   kIz_Elevator = ElevatorMotorPID.add("kIz_Elevator", 0.0).withPosition(0, 3).getEntry(); 
@@ -126,7 +125,7 @@ public class Elevator extends Subsystem
     .withSize(2, 5)
     .withPosition(2, 0);
   maxVel_Elevator = ElevatorMotorMP.add("maxVel_Elevator", 5700).withPosition(0, 0).getEntry();
-  minVel_Elevator = ElevatorMotorMP.add("minVel_Elevator", 10).withPosition(0, 1).getEntry();
+  minVel_Elevator = ElevatorMotorMP.add("minVel_Elevator", 0).withPosition(0, 1).getEntry();
   maxAcc_Elevator = ElevatorMotorMP.add("maxAcc_Elevator", 7500).withPosition(0, 2).getEntry();
   newSetPoint_Elevator = ElevatorMotorMP.add("ElevatorSetPos", 0).withPosition(0, 3).getEntry();
   elevatorEncoderPos = ElevatorMotorMP.add("ElevatorGetPos", 0).withPosition(0, 4).getEntry();
@@ -139,7 +138,7 @@ public class Elevator extends Subsystem
    .getLayout("CarriageMotorPID", BuiltInLayouts.kList)
    .withSize(2, 5)
    .withPosition(4, 0);
-  kP_Carriage = CarriageMotorPID.add("kP_Carriage", 0.0001).withPosition(0, 0).getEntry();
+  kP_Carriage = CarriageMotorPID.add("kP_Carriage", 0.001).withPosition(0, 0).getEntry();
   kI_Carriage = CarriageMotorPID.add("kI_Carriage", 0.0).withPosition(0, 1).getEntry();
   kD_Carriage = CarriageMotorPID.add("kD_Carriage", 0).withPosition(0, 2).getEntry();
   kIz_Carriage = CarriageMotorPID.add("kIz_Carriage", 0).withPosition(0, 3).getEntry(); 
@@ -188,14 +187,14 @@ public class Elevator extends Subsystem
   
   public void updatePID()
   {
-    rightInsideElevatorMotorPID.setP(kP_Elevator.getDouble(0.0001));
+    rightInsideElevatorMotorPID.setP(kP_Elevator.getDouble(0.001));
     rightInsideElevatorMotorPID.setI(kI_Elevator.getDouble(0.0));
     rightInsideElevatorMotorPID.setD(kD_Elevator.getDouble(0.0));
     rightInsideElevatorMotorPID.setIZone(kIz_Elevator.getDouble(0.0));
     rightInsideElevatorMotorPID.setFF(kFF_Elevator.getDouble(0.0));
     rightInsideElevatorMotorPID.setOutputRange(-kMaxOutput_Carriage.getDouble(1.0), kMaxOutput_Elevator.getDouble(1.0));
   
-    leftElevatorCarriageMotorPID.setP(kP_Carriage.getDouble(0.0001));
+    leftElevatorCarriageMotorPID.setP(kP_Carriage.getDouble(0.001));
     leftElevatorCarriageMotorPID.setI(kI_Carriage.getDouble(0.0));
     leftElevatorCarriageMotorPID.setD(kD_Carriage.getDouble(0.0));
     leftElevatorCarriageMotorPID.setIZone(kIz_Carriage.getDouble(0.0));

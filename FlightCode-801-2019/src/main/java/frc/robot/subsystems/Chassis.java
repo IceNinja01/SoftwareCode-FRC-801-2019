@@ -95,9 +95,9 @@ public class Chassis extends PIDSubsystem {
 		// rightFrontPod.setInvertTurn(true);
 		chassisSwerveDrive = new SwerveDrive(rightFrontPod, leftFrontPod, leftBackPod, rightBackPod, 1);
 
-		chassisSwerveDrive.configPIDDrive(Constants.kP_Drive, 0.00000, 0.0, 0.0, 0.0, -1.0, 1.0);
+		chassisSwerveDrive.configPIDDrive(0.0001, 0.00000, 0.0, 0.0, .0001818, -1.0, 1.0);
 
-		chassisSwerveDrive.configPIDTurn(Constants.kP_Turn, 0.00000, 0.0000, 0, 0.0001, -0.5, 0.5, 2);
+		chassisSwerveDrive.configPIDTurn(0.002, 0.00000, 0.0000, 0, 0.0001, -0.5, 0.5, 5);
 		// leftBackPod.configPIDTurn(0.02,  0.0001, 0.0001, 0, 0.0001, -0.2, 0.2, 5);
 		// leftFrontPod.configPIDTurn(0.05,  0.0001, 0.0001, 0, 0.0001, -1.0, 1.0, 5);
 		// chassisSwerveDrive.setDriveCurrentLimit(20, 40);
@@ -225,6 +225,10 @@ public class Chassis extends PIDSubsystem {
 
 	public boolean isDistance(double setPoint){
 		return chassisSwerveDrive.isDistance(setPoint_drive.getDouble(0.0));
+	}
+
+	public void getUpdateSpeed(){
+		chassisSwerveDrive.getUpdate();
 	}
 
 
