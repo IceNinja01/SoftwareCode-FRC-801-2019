@@ -10,8 +10,8 @@ package frc.robot.commands.Elevator;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class CarriageManualPositionCMD extends Command {
-  public CarriageManualPositionCMD() {
+public class UpdateCarriagePIDCMD extends Command {
+  public UpdateCarriagePIDCMD() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.elevator);
   }
@@ -19,19 +19,19 @@ public class CarriageManualPositionCMD extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.elevator.carriageRun();
+    Robot.elevator.updatePID();
+    Robot.elevator.updateSmartMotion();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.elevator.elevatorEncoderPos();
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !Robot.elevator.carriageIsMoving();
+    return true;
   }
 
   // Called once after isFinished returns true

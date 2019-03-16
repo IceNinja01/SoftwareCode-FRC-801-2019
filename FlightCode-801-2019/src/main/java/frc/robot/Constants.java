@@ -60,20 +60,46 @@ public class Constants {
 	public static double ElevatorGatherPosition = 0.0;
 	public static double ElevatorLowerPosition = 0.0;
 	public static double ElevatorMiddlePosition = 0.0;
-	public static double ElevatorUpperPosition = 0.0;
+	public static double ElevatorUpperPosition = 19.0;
 
 	public static double CarriageInitPosition = 0.0;
 	public static double CarriageBottomPosition = 0.0;
 	public static double CarriageGatherPosition = 0.0;
 	public static double CarriageLowerPosition = 6.0;
 	public static double CarriageMiddlePosition = 25.0;
-	public static double CarriageUpperPosition = 0.0;
+	public static double CarriageUpperPosition = 25.0;
 
 	public static double LiftTopPlatformPosition = 26.0;
 	public static double LiftRetractTopPosition = 22.0;
 	public static double LiftMidPlatformPosition = 12.0;
 	public static double LiftRetractMidPosition = 9.0;
 
-	
+
+	public static double ElevatorMotorPID_kP = 0.001;
+	public static double ElevatorMotorPID_kI = 0.0;
+	public static double ElevatorMotorPID_kD = 0.0;
+	public static double ElevatorMotorPID_kIZone = 0.0;
+	public static double ElevatorMotorPID_kFF = 0.0;
+	public static double ElevatorMotorPID_kOutputRangeMax = 1.0 ;
+	public static double ElevatorMotorPID_kOutputRangeMin = -1.0;
+  
+	public static double CarriageMotorPID_kPC = 0.001;
+	public static double CarriageMotorPID_kI = 0.0;
+	public static double CarriageMotorPID_kD = 0.0;
+	public static double CarriageMotorPID_kIZone = 0.0;
+	public static double CarriageMotorPID_kFF = 0.0;
+	public static double CarriageMotorPID_kOutputRangeMax = 1.0; 
+	public static double CarriageMotorPID_kOutputRangeMmin = -1.0; 
+
+    public static double ElevatorMotorMotionMaxVelocity = 2500;
+	public static double ElevatorMotorMotionMinOutputVelocity = 25;
+    public static double ElevatorMotorMotionMaxAccel = 5000;
+    public static double ElevatorMotorMotionAllowedClosedLoopError = 0.25;
+  
+    public static double CarriageMotorMotionMaxVelocity = 2500;
+	public static double CarriageMotorMotionMinOutputVelocity = 25;
+	public static double CarriageMotorMotionMaxAccel = 5000;
+	public static double CarriageMotorMotionAllowedClosedLoopError = 0.25;
+
 
 }
