@@ -4,8 +4,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.first.hal.sim.mockdata.RoboRioDataJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Utilities.PID;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -116,7 +118,7 @@ public class SwervePOD {
 		turnMotor.configPeakOutputForward(kMaxOutput, 10);
 		turnMotor.configPeakOutputReverse(kMinOutput, 10);
 		// /* 0.001 represents 0.1% - default value is 0.04 or 4% */
-		turnMotor.configNeutralDeadband(0.001, 10);
+		//  turnMotor.configNeutralDeadband(0.001, 10);
 		// /**
 		//  * Grab the 360 degree position of the MagEncoder's absolute
 		//  * position, and intitally set the relative sensor to match.
@@ -189,7 +191,7 @@ public class SwervePOD {
 		SmartDashboard.putNumber("RelativeEnc " + motorName, nativeUnits);
 		double degrees = toDeg(nativeUnits);
 		SmartDashboard.putNumber("AngleEncoder "+ motorName, degrees);
-		return nativeUnits;
+		return degrees;
 	}
 
 	public int getAbsAngle(){
@@ -228,7 +230,7 @@ public class SwervePOD {
 	public void setAngle(double angle) {
 		// Set new position of motor
 
-
+		//angle = Math.toDegrees(Math.atan2(Robot.oi.manipulator.getRawAxis(0), Robot.oi.manipulator.getRawAxis(1)));
 		turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
 
 
@@ -342,7 +344,7 @@ public class SwervePOD {
 	}
 
 	private int wrapUnits(int units){
-		int offset = (units);
+		int offset = (units) + 24576;
 		offset %= 24576;
 		return offset;
 	}

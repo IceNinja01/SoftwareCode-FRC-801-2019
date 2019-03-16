@@ -150,16 +150,28 @@ public class SwerveDrive extends MotorSafety {
 			double[] degs = new double[4];
 		    for(int i=0;i<4;i++){
 		    	degs[i] = SwervePOD[i].getAngleDeg();
-		    	// SmartDashboard.putNumber("OLDAngle", oldAngle[i]);
-		    	// // angleJoyStickDiff[i]=(wheelAngles[i]- oldAngle[i]);
-		    	// angleError[i] = wheelAngles[i] - degs[i];
-				// if(angleError[i]<0){ //wraping for 10 -350 = -340, so add 360 = 20
-				// 	angleError[i] +=360;
-				// }
 
-				// if(angleError[i]>270){ //wraping for 350 -10 = 340, so 360 - 340 =20 
-				// 	angleError[i] = 360 - angleError[i];
-				// }
+		    	 angleError[i] = wheelAngles[i] - degs[i];
+				 if(angleError[i]<0)
+				 {      
+				 	angleError[i] += 360;
+				 }
+
+				 angleError[i] -= 180;
+
+				 boolean shouldInvert = true;
+
+				if(angleError[i] > 90 )
+				{
+					//wraping for 350 -10 = 340, so 360 - 340 =20 
+					 angleError[i] -= 180;
+					 shouldInvert = false;
+				}
+				else if ( angleError[i] < -90 ) 
+				{
+					angleError[i] += 180;
+					shouldInvert = false;
+				}
 				// ////====================================================//
 				// //need to get shortest path to work correctly///
 
@@ -185,25 +197,27 @@ public class SwerveDrive extends MotorSafety {
 				///===============================================================///
 				//end shortest path
 
-					if(i >= 2){
-						wheelAngles[i] -= 180.0; //subtract 180 degrees
-						if(wheelAngles[i] < 0){
-							wheelAngles[i] += 360.0;//wrap to new angle between 0-360
-						} 
+				// 	if(i >= 2){
+				// 		wheelAngles[i] -= 180.0; //subtract 180 degrees
+				// 		if(wheelAngles[i] < 0){
+				// 			wheelAngles[i] += 360.0;//wrap to new angle between 0-360
+				// 		} 
 							
-					}
+				// 	}
 
-				SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
+				// SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 
 				//Turn Motors
-			    if(wheelSpeeds[i]>0.1){
-					SwervePOD[i].setAngle(wheelAngles[i]);
-			    	oldAngle[i] = wheelAngles[i];
+			    if(wheelSpeeds[i] > 0.1){
+					SwervePOD[i].setAngle( Utils.wrapAngle0To360Deg( angleError[i] + degs[i]));
+					oldAngle[i] =  Utils.wrapAngle0To360Deg(angleError[i] + degs[i]);
 				}
 				else{
 					SwervePOD[i].disablePIDTurn();
 				}
 				
+		        SwervePOD[i].setSpeed(shouldInvert ? maxRPM*wheelSpeeds[i] : -maxRPM*wheelSpeeds[i]);
+
 			SmartDashboard.putNumber("Angle", wheelAngles[i]);
 			SmartDashboard.putNumber("Int", i);
 			SwervePOD[i].getAbsAngle();

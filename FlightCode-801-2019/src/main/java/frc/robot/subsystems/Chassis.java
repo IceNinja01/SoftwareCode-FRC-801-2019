@@ -99,7 +99,7 @@ public class Chassis extends PIDSubsystem {
 
 		chassisSwerveDrive.configPIDDrive(0.0001, 0.00000, 0.0, 0.0, .0001818, -1.0, 1.0);
 
-		chassisSwerveDrive.configPIDTurn(0.004, 0.00000, 0.0000, 0, 0.0000, -0.25, 0.25, 5);
+		chassisSwerveDrive.configPIDTurn(0.005, 0.0001, 0.0000, 0, 0.0000, -1, 1, 0);
 		// leftBackPod.configPIDTurn(0.01, 0.00000, 0.0000, 0, 0.0001, -0.5, 0.5, 3);
 		// rightFrontPod.configPIDTurn(0.01, 0.00000, 0.0000, 0, 0.0001, -0.5, 0.5, 3);
 		// chassisSwerveDrive.setDriveCurrentLimit(20, 40);
