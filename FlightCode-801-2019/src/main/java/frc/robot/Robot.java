@@ -85,6 +85,7 @@ public class Robot extends TimedRobot {
 
     chassis.chassisSwerveDrive.getUpdate();
     SmartDashboard.putNumber("GyroAngle", chassis.getGyroAngle());
+    SmartDashboard.putNumber("ArmEncoder", arm.getCurrentPosition());
   }
 
   /**

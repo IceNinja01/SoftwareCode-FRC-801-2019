@@ -185,6 +185,13 @@ public class SwerveDrive extends MotorSafety {
 				///===============================================================///
 				//end shortest path
 
+					if(i >= 2){
+						wheelAngles[i] -= 180.0; //subtract 180 degrees
+						if(wheelAngles[i] < 0){
+							wheelAngles[i] += 360.0;//wrap to new angle between 0-360
+						} 
+							
+					}
 
 				SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 

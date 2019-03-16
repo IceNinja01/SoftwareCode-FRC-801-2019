@@ -21,6 +21,8 @@ public class Constants {
 	public static final int[] AngleBias = {1502, 2149, 1366, 104};
 
 	public static final int ArmMotorBias = 0; // TODO: Find out bias
+	public static double ArmAngleBias = 2776;    //absolute angle bias
+
 	
 	public static final int rightLiftMotorID = 8;
 	public static final int leftLiftMotorID = 9;
@@ -59,18 +61,18 @@ public class Constants {
 	public static double ElevatorBottomPosition = 0.0;
 	public static double ElevatorGatherPosition = 0.0;
 	public static double ElevatorLowerPosition = 0.0;
-	public static double ElevatorMiddlePosition = 0.0;
-	public static double ElevatorUpperPosition = 19.0;
+	public static double ElevatorMiddlePosition = 4.0;
+	public static double ElevatorUpperPosition = 32.0;
 
 	public static double CarriageInitPosition = 0.0;
 	public static double CarriageBottomPosition = 0.0;
 	public static double CarriageGatherPosition = 0.0;
 	public static double CarriageLowerPosition = 6.0;
-	public static double CarriageMiddlePosition = 25.0;
-	public static double CarriageUpperPosition = 25.0;
+	public static double CarriageMiddlePosition = 30.0;
+	public static double CarriageUpperPosition = 30.0;
 
-	public static double LiftTopPlatformPosition = 26.0;
-	public static double LiftRetractTopPosition = 22.0;
+	public static double LiftTopPlatformPosition = 27.0;
+	public static double LiftRetractTopPosition = 10.0;
 	public static double LiftMidPlatformPosition = 12.0;
 	public static double LiftRetractMidPosition = 9.0;
 
@@ -100,6 +102,7 @@ public class Constants {
 	public static double CarriageMotorMotionMinOutputVelocity = 25;
 	public static double CarriageMotorMotionMaxAccel = 5000;
 	public static double CarriageMotorMotionAllowedClosedLoopError = 0.25;
+
 
 
 }

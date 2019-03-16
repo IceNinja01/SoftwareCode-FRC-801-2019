@@ -63,8 +63,8 @@ public class OI {
     Button retractAndDriveButton = new JoystickButton(driver, 9);   // Left Bottom bumper
 
     // Gather Mapping
-    Button gatherButton = new JoystickButton(driver, 8);    // Left bumper
-    Button ejectButton = new JoystickButton(driver, 7);     // Right bumper
+    Button gatherButton = new JoystickButton(driver, 7);    // Left bumper
+    Button ejectButton = new JoystickButton(driver, 8);     // Right bumper
     Button stabButton = new JoystickButton(driver, 6);           // POV UP
     Button retractButton = new JoystickButton(driver, 5);      // POV Down
 

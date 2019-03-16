@@ -19,8 +19,10 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Utilities.Utils;
 import frc.robot.commands.Arm.ArmManualPositionCMD;
 import frc.robot.commands.Arm.ArmStopCMD;
 
@@ -43,10 +45,10 @@ public class Arm extends Subsystem
   public static final double kMaxVelocity = 1;      // One rotation per second
   public static final double kMaxAcceleration = 1;  // One rotation per second per second
   
-  public static final int kPlayPos = 135;       // Degrees. A Button
-  public static final int kDiskPickPos = 55;  // Degrees. Y Button
-  public static final int kStowPos = 0;     // Degrees. X Button
-  public static final int kBallPos = 80;       // Degrees. B Button TODO: What?
+  public static final int kPlayPos = 2063;       // Degrees. A Button
+  public static final int kDiskPickPos = 2776;  // Degrees. Y Button
+  public static final int kStowPos = 1165;     // Degrees. X Button
+  public static final int kBallPos = 2776;       // Degrees. B Button TODO: What?
 
   public static final int kDebugMotorTurn = 48/42; // The test stand has a 6 times gear ratio
 
@@ -170,16 +172,23 @@ public class Arm extends Subsystem
     switch (pos)
     {
       case PLAY:
-        targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kPlayPos/360));;
+        // targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kPlayPos/360));;
+        targetPosition = kPlayPos;
         break;
       case DISKPICK:
-        targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kDiskPickPos/360));
+        // targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kDiskPickPos/360));
+        targetPosition = kDiskPickPos;
+
         break;
       case STOW:
-        targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kStowPos/360));
+        // targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kStowPos/360));
+        targetPosition = kStowPos;
+
         break;
       case BALL:
-        targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kBallPos/360));
+        // targetPosition = (int)(kEncoderTicks*kDebugMotorTurn*(kBallPos/360));
+        targetPosition = kBallPos;
+
         break;
     }
 
@@ -202,9 +211,13 @@ public class Arm extends Subsystem
 
   public double getCurrentPosition()
   {
+    int absolutePosition = armMotor.getSensorCollection().getPulseWidthPosition();
     int position = armMotor.getSelectedSensorPosition();
-    double positionDegrees = (position/kEncoderTicks)*360;
+    double positionDegrees = (position)*(360.0/4096.0);
+    positionDegrees = Utils.wrapAngle0To360Deg(positionDegrees) - Constants.ArmAngleBias;
+    positionDegrees = Utils.wrapAngle0To360Deg(positionDegrees);
     armEncoderPos.setNumber(positionDegrees);
+    SmartDashboard.putNumber("ArmEncoderAbs", absolutePosition);
     return positionDegrees;
   }
 

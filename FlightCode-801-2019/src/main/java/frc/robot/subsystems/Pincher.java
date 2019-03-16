@@ -31,13 +31,13 @@ public class Pincher extends Subsystem {
 	////Pinchers code below
 	public void closePinchers() {
 		
-		pincher.set(DoubleSolenoid.Value.kForward);
+		pincher.set(DoubleSolenoid.Value.kReverse);
 
 	}
 	
 	public void openPinchers() {
 		
-		pincher.set(DoubleSolenoid.Value.kReverse);
+		pincher.set(DoubleSolenoid.Value.kForward);
 	
 	}	
 

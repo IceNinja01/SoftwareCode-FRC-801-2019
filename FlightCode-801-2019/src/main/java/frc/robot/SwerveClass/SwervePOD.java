@@ -189,13 +189,14 @@ public class SwervePOD {
 		SmartDashboard.putNumber("RelativeEnc " + motorName, nativeUnits);
 		double degrees = toDeg(nativeUnits);
 		SmartDashboard.putNumber("AngleEncoder "+ motorName, degrees);
-		return degrees;
+		return nativeUnits;
 	}
 
 	public int getAbsAngle(){
 		int absolutePosition = turnMotor.getSensorCollection().getPulseWidthPosition();
 
 		/* Mask out overflows, keep bottom 12 bits */
+	
 		absolutePosition &= 0xFFF;
 		// if (kSensorPhase) { absolutePosition *= -1; }
 		// if (kMotorInvert) { absolutePosition *= -1; }
@@ -341,7 +342,7 @@ public class SwervePOD {
 	}
 
 	private int wrapUnits(int units){
-		int offset = Math.abs(units);
+		int offset = (units);
 		offset %= 24576;
 		return offset;
 	}
