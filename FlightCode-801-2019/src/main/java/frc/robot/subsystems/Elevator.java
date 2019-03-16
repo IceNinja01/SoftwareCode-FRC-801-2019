@@ -71,8 +71,8 @@ public class Elevator extends Subsystem
   private final int maxEncoderError = 0;
   private final double closeEnough = 0.05;
 
-  private double setPoint_Elevator; 
-  private double setPoint_Carriage;
+  private double setPoint_Elevator  = Constants.ElevatorInitPosition; 
+  private double setPoint_Carriage = Constants.CarriageInitPosition;
 
   public void init()
   {
@@ -101,6 +101,8 @@ public class Elevator extends Subsystem
     //Set PID and Motion Constants
     updatePID();
     updateSmartMotion();
+    hold();  // set starting smartmotion setpoints to the init position
+    elevatorEncoderPos();
   }
   
   

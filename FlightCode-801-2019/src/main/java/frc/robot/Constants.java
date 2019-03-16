@@ -55,12 +55,14 @@ public class Constants {
 ////====================================////
 	public static double rotations_per_deg = 1;
 
+	public static double ElevatorInitPosition = 0.0;
 	public static double ElevatorBottomPosition = 0.0;
 	public static double ElevatorGatherPosition = 0.0;
 	public static double ElevatorLowerPosition = 0.0;
 	public static double ElevatorMiddlePosition = 0.0;
 	public static double ElevatorUpperPosition = 0.0;
 
+	public static double CarriageInitPosition = 0.0;
 	public static double CarriageBottomPosition = 0.0;
 	public static double CarriageGatherPosition = 0.0;
 	public static double CarriageLowerPosition = 6.0;
