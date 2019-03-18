@@ -23,6 +23,7 @@ public class ElevatorMiddlePortCMD extends Command {
 
     Robot.elevator.elevatorRun(Constants.ElevatorLowerPosition);
     Robot.elevator.carriageRun(Constants.CarriageMiddlePosition);
+    System.out.println("sent run command init from command");
   }
 
   // Called repeatedly when this Command is scheduled to run

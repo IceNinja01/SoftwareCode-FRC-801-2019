@@ -16,7 +16,6 @@ import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -51,16 +50,6 @@ public class Lift extends Subsystem {
   private ShuffleboardTab LiftTab = Shuffleboard.getTab(LiftTitle);
   
   private final int smartMotionSlot = 0;
-  private final int maxEncoderError = 0;
-  private double kP = 0.001;
-  private double kD = 0.0;
-  private double kI = 0.0;
-  private double kIz = 0.0;
-  private double kFF = 0.0;
-  private double kMaxOutput = 1.0;
-  private double maxVel = 5700;
-  private double maxAcc = 7500;
-  private double minVel = 0;
   
   public void init(){
       rightLiftMotor = new CANSparkMax(Constants.rightLiftMotorID, MotorType.kBrushless);
@@ -95,30 +84,30 @@ public class Lift extends Subsystem {
       .getLayout("LiftMotorPID", BuiltInLayouts.kList)
       .withSize(2, 5)
       .withPosition(0, 0);
-    kP_lift = LiftMotorPID.add("kP", kP).withPosition(0, 0).getEntry();
-    kI_lift = LiftMotorPID.add("kI_lift", kI).withPosition(0, 1).getEntry();
-    kD_lift = LiftMotorPID.add("kD_lift", kD).withPosition(0, 2).getEntry();
-    kIz_lift = LiftMotorPID.add("kIz_liftz", kIz).withPosition(0, 3).getEntry(); 
-    kFF_lift = LiftMotorPID.add("kFF_lift", kFF).withPosition(0, 4).getEntry(); 
-    kMaxOutput_lift = LiftMotorPID.add("kMaxOutput", kMaxOutput).withWidget(BuiltInWidgets.kNumberSlider) 
+    kP_lift = LiftMotorPID.add("kP", Constants.LiftMotorPID_kP).withPosition(0, 0).getEntry();
+    kI_lift = LiftMotorPID.add("kI_lift", Constants.LiftMotorPID_kI).withPosition(0, 1).getEntry();
+    kD_lift = LiftMotorPID.add("kD_lift", Constants.LiftMotorPID_kD).withPosition(0, 2).getEntry();
+    kIz_lift = LiftMotorPID.add("kIz_liftz", Constants.LiftMotorPID_kIZone).withPosition(0, 3).getEntry(); 
+    kFF_lift = LiftMotorPID.add("kFF_lift", Constants.LiftMotorPID_kFF).withPosition(0, 4).getEntry(); 
+    kMaxOutput_lift = LiftMotorPID.add("kMaxOutput", Constants.LiftMotorPID_kOutputRangeMax).withWidget(BuiltInWidgets.kNumberSlider) 
     .withProperties(Map.of("min", 0, "max", 1)).withPosition(0, 5).getEntry();
+
+
     // Smart Motion Coefficients
     // Motion Magic Constants Area
     ShuffleboardLayout LiftMotorMotion = LiftTab
     .getLayout("LiftMotorMP", BuiltInLayouts.kList)
     .withSize(2, 5)
     .withPosition(2, 0);
-    maxVel_lift = LiftMotorMotion.add("maxVel(RPM)", maxVel).withPosition(0, 0).getEntry(); // rpm
-    maxAcc_lift = LiftMotorMotion.add("maxAcc", maxAcc).withPosition(0, 1).getEntry(); //accelaeration
-    minVel_lift = LiftMotorMotion.add("minVel", minVel).withPosition(0, 2).getEntry();
+    maxVel_lift = LiftMotorMotion.add("maxVel(RPM)", Constants.LiftMotorMotionMaxVelocity).withPosition(0, 0).getEntry(); // rpm
+    maxAcc_lift = LiftMotorMotion.add("maxAcc", Constants.LiftMotorMotionMaxAccel).withPosition(0, 1).getEntry(); //accelaeration
+    minVel_lift = LiftMotorMotion.add("minVel", Constants.LiftMotorMotionMinOutputVelocity).withPosition(0, 2).getEntry();
     leftEncoderPos = LiftMotorMotion.add("LeftEncPos", 0).withPosition(0, 3).getEntry();
     rightEncoderPos = LiftMotorMotion.add("rightEncoderPos", 0).withPosition(0, 4).getEntry();
     encoderError = LiftMotorMotion.add("LRencoderDelta", 0).withPosition(0, 5).getEntry();
     setPoint_lift = LiftMotorMotion.add("SetPoint", 0.0).getEntry(); //input is in Inches
-    LiftMotorMotion.add("SendNewPosition", new LiftUpDownToggleCMD()).withPosition(0, 8).withSize(2, 1); ;
-
-
-
+    LiftMotorMotion.add("SendNewPosition", new LiftUpDownToggleCMD()).withPosition(0, 8).withSize(2, 1);
+    
   }
       /**
        * Smart Motion coefficients are set on a CANPIDController object
@@ -136,29 +125,28 @@ public class Lift extends Subsystem {
     rightLiftPID.setSmartMotionMaxVelocity(maxVel_lift.getDouble(2000), smartMotionSlot);
     rightLiftPID.setSmartMotionMinOutputVelocity(minVel_lift.getDouble(10), smartMotionSlot);
     rightLiftPID.setSmartMotionMaxAccel(maxAcc_lift.getDouble(1500), smartMotionSlot);
-    rightLiftPID.setSmartMotionAllowedClosedLoopError(maxEncoderError, smartMotionSlot);
+    rightLiftPID.setSmartMotionAllowedClosedLoopError(Constants.LiftMotorMotionAllowedClosedLoopError, smartMotionSlot);
 
     leftLiftPID.setSmartMotionMaxVelocity(maxVel_lift.getDouble(2000), smartMotionSlot);
     leftLiftPID.setSmartMotionMinOutputVelocity(minVel_lift.getDouble(0), smartMotionSlot);
     leftLiftPID.setSmartMotionMaxAccel(maxAcc_lift.getDouble(1500), smartMotionSlot);
-    leftLiftPID.setSmartMotionAllowedClosedLoopError(maxEncoderError, smartMotionSlot);
+    leftLiftPID.setSmartMotionAllowedClosedLoopError(Constants.LiftMotorMotionAllowedClosedLoopError, smartMotionSlot);
   }
 
   public void updatePID(){
-    rightLiftPID.setP(kP_lift.getDouble(kP));
-    rightLiftPID.setI(kI_lift.getDouble(kI));
-    rightLiftPID.setD(kD_lift.getDouble(kD));
-    rightLiftPID.setIZone(kIz_lift.getDouble(kIz));
-    rightLiftPID.setFF(kFF_lift.getDouble(kFF));
-    rightLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(kMaxOutput), kMaxOutput_lift.getDouble(kMaxOutput));
-
-    leftLiftPID.setP(kP_lift.getDouble(0.0005));
-    leftLiftPID.setI(kI_lift.getDouble(1e-6));
-    leftLiftPID.setD(kD_lift.getDouble(0.0));
-    leftLiftPID.setI(kI_lift.getDouble(0.0));
-    leftLiftPID.setIZone(kIz_lift.getDouble(0.0));
-    leftLiftPID.setFF(kFF_lift.getDouble(0.0));
-    leftLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(kMaxOutput), kMaxOutput_lift.getDouble(kMaxOutput));
+    rightLiftPID.setP(kP_lift.getDouble(Constants.LiftMotorPID_kP));
+    rightLiftPID.setI(kI_lift.getDouble(Constants.LiftMotorPID_kI));
+    rightLiftPID.setD(kD_lift.getDouble(Constants.LiftMotorPID_kD));
+    rightLiftPID.setIZone(kIz_lift.getDouble(Constants.LiftMotorPID_kIZone));
+    rightLiftPID.setFF(kFF_lift.getDouble(Constants.LiftMotorPID_kFF));
+    rightLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax), kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax));
+ 
+    leftLiftPID.setP(kP_lift.getDouble(Constants.LiftMotorPID_kP));
+    leftLiftPID.setI(kI_lift.getDouble(Constants.LiftMotorPID_kI));
+    leftLiftPID.setD(kD_lift.getDouble(Constants.LiftMotorPID_kD));
+    leftLiftPID.setIZone(kIz_lift.getDouble(Constants.LiftMotorPID_kIZone));
+    leftLiftPID.setFF(kFF_lift.getDouble(Constants.LiftMotorPID_kFF));
+    leftLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax), kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax));
   }
 
   @Override

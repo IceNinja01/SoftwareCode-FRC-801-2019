@@ -27,7 +27,6 @@ public class SwerveDrive extends MotorSafety {
 
 	private double[] oldAngle = {0,0,0,0};
 	private double maxRPM = 0.5;
-	private double maxTurn = 1.0;
 
 	private SwervePOD[] SwervePOD  = new SwervePOD[4];
     private double[] wheelAngles = new double[4];
@@ -172,40 +171,6 @@ public class SwerveDrive extends MotorSafety {
 					angleError[i] += 180;
 					shouldInvert = false;
 				}
-				// ////====================================================//
-				// //need to get shortest path to work correctly///
-
-
-				// if(Math.abs(angleError[i]) > 90){ //new angle is greater than a 90degree turn, so find shortest path
-			    // 	//reverse translational motors 
-			    // 	SwervePOD[i].setSpeed(maxRPM*wheelSpeeds[i]);
-			    	
-			    // 	//find new angle
-			    // 	wheelAngles[i] -= 180.0; //subtract 180 degrees
-			    // 	if(wheelAngles[i] < 0){ //wrap to new angle between 0-360
-			    // 		wheelAngles[i] += 360.0;
-			    // 	}
-			    // 	//now the angle is set to move to the shortest path, which is just 180 degrees 
-			    // 	//from the current heading
-			    	
-				// }      
-			    // else
-			    // {
-			    	// SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
-				// }
-
-				///===============================================================///
-				//end shortest path
-
-				// 	if(i >= 2){
-				// 		wheelAngles[i] -= 180.0; //subtract 180 degrees
-				// 		if(wheelAngles[i] < 0){
-				// 			wheelAngles[i] += 360.0;//wrap to new angle between 0-360
-				// 		} 
-							
-				// 	}
-
-				// SwervePOD[i].setSpeed(-maxRPM*wheelSpeeds[i]);
 
 				//Turn Motors
 			    if(wheelSpeeds[i] > 0.1){
@@ -238,7 +203,7 @@ public class SwerveDrive extends MotorSafety {
 		velocity = 0;
 		for(int i=0;i<4;i++){
 			vel_X += SwervePOD[i].getSpeed()*Math.cos(Utils.convertDegtoRad(SwervePOD[i].getAngleDeg()));
-			vel_Y +=  SwervePOD[i].getSpeed()*Math.sin(Utils.convertDegtoRad(SwervePOD[i].getAngleDeg()));
+			vel_Y += SwervePOD[i].getSpeed()*Math.sin(Utils.convertDegtoRad(SwervePOD[i].getAngleDeg()));
 		}
 		vel_X /= 4;
 		vel_Y /= 4;

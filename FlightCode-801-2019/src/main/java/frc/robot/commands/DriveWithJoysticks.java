@@ -20,7 +20,7 @@ public class DriveWithJoysticks extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     			
-    	Robot.chassis.motorDrive(x,y,z);
+    	Robot.chassis.motorDrive(x,y,z, Robot.elevator.elevatorIsUp());
     }
 
     // Make this return true when this Command no longer needs to run execute()

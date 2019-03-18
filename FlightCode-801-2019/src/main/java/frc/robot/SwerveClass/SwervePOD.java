@@ -232,8 +232,6 @@ public class SwervePOD {
 
 		//angle = Math.toDegrees(Math.atan2(Robot.oi.manipulator.getRawAxis(0), Robot.oi.manipulator.getRawAxis(1)));
 		turnMotor.set(ControlMode.PercentOutput, turnMotorPID.getOutput(getAngleDeg(), angle));
-
-
 	}
 
 	public void disablePIDTurn(){

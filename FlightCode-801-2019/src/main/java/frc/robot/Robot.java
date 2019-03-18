@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utilities.OI;
@@ -45,7 +44,7 @@ public class Robot extends TimedRobot {
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
-  private SendableChooser<Command> chooser =new SendableChooser<>();;
+  private SendableChooser<Command> chooser = new SendableChooser<>();
   private Command lightsCommand;
   public static Relay lightRelay = new Relay(0);
 
@@ -83,7 +82,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
 
-    chassis.chassisSwerveDrive.getUpdate();
+    //chassis.chassisSwerveDrive.getUpdate();
     SmartDashboard.putNumber("GyroAngle", chassis.getGyroAngle());
     SmartDashboard.putNumber("ArmEncoder", arm.getCurrentPosition());
   }

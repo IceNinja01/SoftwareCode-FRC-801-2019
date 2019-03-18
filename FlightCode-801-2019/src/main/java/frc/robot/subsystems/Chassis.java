@@ -84,26 +84,30 @@ public class Chassis extends PIDSubsystem {
 	}
 
 	public void init(){
-		rightFrontPod = new SwervePOD(Constants.RightFrontDrive, Constants.RightFrontSteer, MotorName.RightFront);
-		leftFrontPod = new SwervePOD(Constants.LeftFrontDrive, Constants.LeftFrontSteer, MotorName.LeftFront);
-		leftBackPod = new SwervePOD(Constants.LeftRearDrive, Constants.LeftRearSteer, MotorName.LeftBack);
-		rightBackPod = new SwervePOD(Constants.RightRearDrive, Constants.RightRearSteer, MotorName.RightBack);
+		rightFrontPod = new SwervePOD(Constants.RightFrontDriveMotorID, Constants.RightFrontSteerMotorID, MotorName.RightFront);
+		leftFrontPod = new SwervePOD(Constants.LeftFrontDriveMotorID, Constants.LeftFrontSteerMotorID, MotorName.LeftFront);
+		leftBackPod = new SwervePOD(Constants.LeftRearDriveMotorID, Constants.LeftRearSteerMotorID, MotorName.LeftBack);
+		rightBackPod = new SwervePOD(Constants.RightRearDriveMotorID, Constants.RightRearSteerMotorID, MotorName.RightBack);
 
 		
 		leftBackPod.invertDriveMotor(true);
 		rightBackPod.invertDriveMotor(true);
-		//leftBackPod.setInvertTurn(true);
-		// rightBackPod.setInvertTurn(true);
-		// rightFrontPod.setInvertTurn(true);
+
 		chassisSwerveDrive = new SwerveDrive(rightFrontPod, leftFrontPod, leftBackPod, rightBackPod, 1);
 
-		chassisSwerveDrive.configPIDDrive(0.0001, 0.00000, 0.0, 0.0, .0001818, -1.0, 1.0);
+		//chassisSwerveDrive.configPIDDrive(0.0001, 0.00000, 0.0, 0.0, .0001818, -1.0, 1.0);
+		chassisSwerveDrive.configPIDDrive( Constants.kP_DriveMotors, Constants.kI_DriveMotors, 
+				Constants.kD_DriveMotors, Constants.kIz_DriveMotors, Constants.kFF_DriveMotors, 
+				Constants.kOutputRangeMmin_DriveMotors,Constants.kOutputRangeMax_DriveMotors );
 
-		chassisSwerveDrive.configPIDTurn(0.005, 0.0001, 0.0000, 0, 0.0000, -1, 1, 0);
-		// leftBackPod.configPIDTurn(0.01, 0.00000, 0.0000, 0, 0.0001, -0.5, 0.5, 3);
-		// rightFrontPod.configPIDTurn(0.01, 0.00000, 0.0000, 0, 0.0001, -0.5, 0.5, 3);
-		// chassisSwerveDrive.setDriveCurrentLimit(20, 40);
-		
+
+		//chassisSwerveDrive.configPIDTurn(0.005, 0.0001, 0.0000, 0, 0.0000, -1, 1, 0);
+		chassisSwerveDrive.configPIDTurn( Constants.kP_TurnMotors, Constants.kI_TurnMotors, 
+				Constants.kD_TurnMotors, Constants.kIz_TurnMotors, Constants.kFF_TurnMotors, 
+				Constants.kOutputRangeMmin_TurnMotors, Constants.kOutputRangeMax_TurnMotors, 
+				Constants.deadBand_TurnMotors );
+
+
 		chassisSwerveDrive.brakeOff();
 		rightFrontPod.setBias();
 		leftFrontPod.setBias();
@@ -168,17 +172,17 @@ public class Chassis extends PIDSubsystem {
 
 	}
 	
-	public void motorDrive(double x, double y, double z) {
+	public void motorDrive(double x, double y, double z, boolean elevatorUp ) {
 			
-		if(Robot.elevator.rightInsideElevatorMotorEncoder.getPosition()>Constants.ElevatorUpperPosition){
+		if(elevatorUp){
 			maxLimit = 0.5;
 		}
 		else{
 			maxLimit = 1.0;
 		}
-		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, 1.0);
-		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, 1.0);
-		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, 1.0);
+		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, maxLimit);
+		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, maxLimit);
+		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, maxLimit);
 		
 		
 		if(robotOrient){ //Field oriented
@@ -187,7 +191,6 @@ public class Chassis extends PIDSubsystem {
 		else{//Robot oriented
 			chassisSwerveDrive.drive(x,y,z,0.0);
 		}
-
 	 }
 
 	 public void setPIDDrive(){

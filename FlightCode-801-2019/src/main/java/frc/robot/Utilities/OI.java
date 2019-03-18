@@ -31,7 +31,7 @@ public class OI {
   public XBOXJoystick driver = new XBOXJoystick(0);
   public XBOXJoystick manipulator = new XBOXJoystick(1);
 
-  //
+    //
     //	      5	    _                            _    6
     //	       _.-'` `-._                    _,-' `'-._
     //	    ,-'          `-.,____________,.-'    .-.   `-.
