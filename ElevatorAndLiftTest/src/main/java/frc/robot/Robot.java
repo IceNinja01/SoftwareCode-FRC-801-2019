@@ -7,15 +7,22 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.Elevator;
+import frc.robot.Utilities.OI;
+import frc.robot.commands.BlueLightOn;
+import frc.robot.commands.RedLightOn;
+import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Lift;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Pincher;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Gather;
+import frc.robot.subsystems.Arm;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,15 +32,21 @@ import frc.robot.subsystems.ExampleSubsystem;
  * project.
  */
 public class Robot extends TimedRobot {
-
-
-  public static Elevator elevator;
-  public static Lift lift;
   public static OI oi;
+  public static Lift lift = new Lift();
+  public static Elevator elevator = new Elevator();
+  public static Gather gather = new Gather();
+  public static Arm arm = new Arm();
+  public static Chassis chassis = new Chassis();
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel();
+  public static Pincher pincher = new Pincher();
+  
 
   Command m_autonomousCommand;
-  SendableChooser<Command> chooser = new SendableChooser<>();
-
+  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  private SendableChooser<Command> chooser = new SendableChooser<>();
+  private Command lightsCommand;
+  public static Relay lightRelay = new Relay(0);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -41,13 +54,20 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    elevator = new Elevator();
-    Elevator.init();
+    chassis.init();
+    elevator.init();
+    lift.init();
+    arm.init();
+    gather.init();
+    pincher.init();
+    
     oi = new OI();
-
-    chooser.setDefaultOption("Default Auto", new ExampleCommand());
+    // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
-    SmartDashboard.putData("Auto mode", chooser);
+    chooser.setDefaultOption("Blue Lights", new BlueLightOn());
+    chooser.addOption("Red Lights", new RedLightOn());
+    SmartDashboard.putData("Light", chooser);
+    lightRelay.set(Relay.Value.kOff);
 
   }
 
@@ -61,10 +81,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-//  chassis.getAngle();
-//  chassis.getError();
-  }
 
+    //chassis.chassisSwerveDrive.getUpdate();
+    SmartDashboard.putNumber("GyroAngle", chassis.getGyroAngle());
+    SmartDashboard.putNumber("ArmEncoder", arm.getCurrentPosition());
+  }
 
   /**
    * This function is called once each time the robot enters Disabled mode.
@@ -73,6 +94,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    lightRelay.set(Relay.Value.kOff);
   }
 
   @Override
@@ -93,8 +115,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = chooser.getSelected();
-
+    m_autonomousCommand = m_chooser.getSelected();
+    lightsCommand = chooser.getSelected();
+    lightsCommand.start();
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
      * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
@@ -118,6 +141,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

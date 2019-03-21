@@ -101,15 +101,15 @@ public class Elevator extends Subsystem
     //ElevatorMotor
     ShuffleboardLayout ElevatorMotorPID = elevatorTab
       .getLayout("ElevatorMotorPID", BuiltInLayouts.kList)
-      .withSize(2, 6)
+      .withSize(2, 8)
       .withPosition(0, 0);
-    kP_Elevator = ElevatorMotorPID.add( "kP_Elevator", 0.0 ).withPosition(0, 0).getEntry();
-    kI_Elevator = ElevatorMotorPID.add( "kI_Elevator", 0.0 ).withPosition(0, 1).getEntry();
-    kD_Elevator = ElevatorMotorPID.add( "kD_Elevator", 0.0 ).withPosition(0, 2).getEntry();
-    kIz_Elevator = ElevatorMotorPID.add( "kIz_Elevator", 0.0 ).withPosition(0, 3).getEntry(); 
-    kFF_Elevator = ElevatorMotorPID.add( "kFF_Elevator", 0.0 ).withPosition(0, 4).getEntry(); 
-    kMaxOutput_Elevator = ElevatorMotorPID.add( "kMaxOutput_Elevator", 0.0 ).withPosition(0, 5).getEntry();
-    kMinOutput_Elevator = ElevatorMotorPID.add( "kMinOutput_Elevator", 0.0 ).withPosition(0, 6).getEntry();
+    kP_Elevator = ElevatorMotorPID.add( "kP_Elevator", 0.0 ).getEntry();
+    kI_Elevator = ElevatorMotorPID.add( "kI_Elevator", 0.0 ).getEntry();
+    kD_Elevator = ElevatorMotorPID.add( "kD_Elevator", 0.0 ).getEntry();
+    kIz_Elevator = ElevatorMotorPID.add( "kIz_Elevator", 0.0 ).getEntry(); 
+    kFF_Elevator = ElevatorMotorPID.add( "kFF_Elevator", 0.0 ).getEntry(); 
+    kMaxOutput_Elevator = ElevatorMotorPID.add( "kMaxOutput_Elevator", 0.0 ).getEntry();
+    kMinOutput_Elevator = ElevatorMotorPID.add( "kMinOutput_Elevator", 0.0 ).getEntry();
   
     ElevatorMotorPID.add("UpdatePID_Elevator", new UpdateElevatorPIDCMD()).withPosition(0, 7);
   
@@ -130,15 +130,15 @@ public class Elevator extends Subsystem
   
     ShuffleboardLayout ElevatorMotorMP = Shuffleboard.getTab(ElevatorTitle)
       .getLayout("ElevatorMotorPM", BuiltInLayouts.kList)
-      .withSize(2, 5)
+      .withSize(2, 8)
       .withPosition(2, 0);
-    maxVel_Elevator = ElevatorMotorMP.add( "maxVel_Elevator", 0.0 ).withPosition(0, 0).getEntry();
-    minVel_Elevator = ElevatorMotorMP.add( "minVel_Elevator", 0.0 ).withPosition(0, 1).getEntry();
-    maxAcc_Elevator = ElevatorMotorMP.add( "maxAcc_Elevator", 0.0 ).withPosition(0, 2).getEntry();
-    newSetPoint_Elevator = ElevatorMotorMP.add( "ElevatorSetPos", 0.0 ).withPosition(0, 3).getEntry();
-    elevatorEncoderPos = ElevatorMotorMP.add( "ElevatorGetPos", 0.0 ).withPosition(0, 4).getEntry();
+    maxVel_Elevator = ElevatorMotorMP.add( "maxVel_Elevator", 0.0 ).getEntry();
+    minVel_Elevator = ElevatorMotorMP.add( "minVel_Elevator", 0.0 ).getEntry();
+    maxAcc_Elevator = ElevatorMotorMP.add( "maxAcc_Elevator", 0.0 ).getEntry();
+    newSetPoint_Elevator = ElevatorMotorMP.add( "ElevatorSetPos", 0.0 ).getEntry();
+    elevatorEncoderPos = ElevatorMotorMP.add( "ElevatorGetPos", 0.0 ).getEntry();
   
-    ElevatorMotorMP.add( "SendNewPosition", new ElevatorManualPositionCMD()).withPosition(0, 5);
+    ElevatorMotorMP.add( "SendNewPosition", new ElevatorManualPositionCMD());
   
     maxVel_Elevator.setNumber( Constants.ElevatorMotorMotionMaxVelocity );
     minVel_Elevator.setNumber( Constants.ElevatorMotorMotionMinOutputVelocity );
@@ -155,17 +155,17 @@ public class Elevator extends Subsystem
     //CarriageMotor
     ShuffleboardLayout CarriageMotorPID = elevatorTab
      .getLayout("CarriageMotorPID", BuiltInLayouts.kList)
-     .withSize(2, 5)
+     .withSize(2, 8)
      .withPosition(4, 0);
-    kP_Carriage = CarriageMotorPID.add( "kP_Carriage", 0.0 ).withPosition(0, 0).getEntry();
-    kI_Carriage = CarriageMotorPID.add( "kI_Carriage", 0.0 ).withPosition(0, 1).getEntry();
-    kD_Carriage = CarriageMotorPID.add( "kD_Carriage", 0.0 ).withPosition(0, 2).getEntry();
-    kIz_Carriage = CarriageMotorPID.add( "kIz_Carriage", 0.0 ).withPosition(0, 3).getEntry(); 
-    kFF_Carriage = CarriageMotorPID.add( "kFF_Carriage", 0.0 ).withPosition(0, 4).getEntry(); 
-    kMaxOutput_Carriage = CarriageMotorPID.add( "kMaxOutput_Carriage", 0.0 ).withPosition(0, 5).getEntry(); 
-    kMinOutput_Carriage = CarriageMotorPID.add( "kMinOutput_Carriage", 0.0 ).withPosition(0, 6).getEntry();
+    kP_Carriage = CarriageMotorPID.add( "kP_Carriage", 0.0 ).getEntry();
+    kI_Carriage = CarriageMotorPID.add( "kI_Carriage", 0.0 ).getEntry();
+    kD_Carriage = CarriageMotorPID.add( "kD_Carriage", 0.0 ).getEntry();
+    kIz_Carriage = CarriageMotorPID.add( "kIz_Carriage", 0.0 ).getEntry(); 
+    kFF_Carriage = CarriageMotorPID.add( "kFF_Carriage", 0.0 ).getEntry(); 
+    kMaxOutput_Carriage = CarriageMotorPID.add( "kMaxOutput_Carriage", 0.0 ).getEntry(); 
+    kMinOutput_Carriage = CarriageMotorPID.add( "kMinOutput_Carriage", 0.0 ).getEntry();
   
-    CarriageMotorPID.add("UpdatePID_Carriage", new UpdateCarriagePIDCMD() ).withPosition(0, 7);
+    CarriageMotorPID.add("UpdatePID_Carriage", new UpdateCarriagePIDCMD() );
   
     kP_Carriage.setNumber( Constants.CarriageMotorPID_kP );
     kI_Carriage.setNumber( Constants.CarriageMotorPID_kI );
@@ -184,15 +184,15 @@ public class Elevator extends Subsystem
     
     ShuffleboardLayout CarriageMotorMP = elevatorTab
       .getLayout("CarriageMotorPM", BuiltInLayouts.kList)
-      .withSize(2, 5)
+      .withSize(2, 8)
       .withPosition(6, 0);
-    maxVel_Carriage = CarriageMotorMP.add( "maxVel_Carriage", 0.0 ).withPosition(0, 0).getEntry();
-    minVel_Carriage = CarriageMotorMP.add( "minVel_Carriage", 0.0 ).withPosition(0, 1).getEntry();
-    maxAcc_Carriage = CarriageMotorMP.add( "maxAcc_Carriage", 0.0 ).withPosition(0, 2).getEntry();
-    newSetPoint_Carriage = CarriageMotorMP.add( "CarriageSetPos", 0.0 ).withPosition(0, 3).getEntry();
-    carriageEncoderPos = CarriageMotorMP.add( "CarriageGetPos", 0.0 ).withPosition(0, 4).getEntry();
+    maxVel_Carriage = CarriageMotorMP.add( "maxVel_Carriage", 0.0 ).getEntry();
+    minVel_Carriage = CarriageMotorMP.add( "minVel_Carriage", 0.0 ).getEntry();
+    maxAcc_Carriage = CarriageMotorMP.add( "maxAcc_Carriage", 0.0 ).getEntry();
+    newSetPoint_Carriage = CarriageMotorMP.add( "CarriageSetPos", 0.0 ).getEntry();
+    carriageEncoderPos = CarriageMotorMP.add( "CarriageGetPos", 0.0 ).getEntry();
   
-    CarriageMotorMP.add( "SendNewPosition", new CarriageManualPositionCMD() ).withPosition(0, 5);
+    CarriageMotorMP.add( "SendNewPosition", new CarriageManualPositionCMD() );
   
     maxVel_Carriage.setNumber( Constants.CarriageMotorMotionMaxVelocity );
     minVel_Carriage.setNumber( Constants.ElevatorMotorMotionMinOutputVelocity );

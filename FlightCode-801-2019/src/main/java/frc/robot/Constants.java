@@ -103,30 +103,30 @@ public class Constants {
 	public static double CarriageUpperPosition = 30.0;
 	
 	// Elevator Motor Settings.
-	public static double ElevatorMotorPID_kP = 0.0005;
-	public static double ElevatorMotorPID_kI = 0.0001;
-	public static double ElevatorMotorPID_kD = 0.0;
+	public static double ElevatorMotorPID_kP = 0.0002;
+	public static double ElevatorMotorPID_kI = 0.0000;
+	public static double ElevatorMotorPID_kD = 0.0000;
 	public static double ElevatorMotorPID_kIZone = 0.0;
 	public static double ElevatorMotorPID_kFF = 0.0;
 	public static double ElevatorMotorPID_kOutputRangeMax = 1.0 ;
 	public static double ElevatorMotorPID_kOutputRangeMin = -1.0;
   
-	public static double CarriageMotorPID_kP = 0.0005;
-	public static double CarriageMotorPID_kI = 0.0001;
+	public static double CarriageMotorPID_kP = 0.0002;
+	public static double CarriageMotorPID_kI = 0.0000;
 	public static double CarriageMotorPID_kD = 0.0;
 	public static double CarriageMotorPID_kIZone = 0.0;
 	public static double CarriageMotorPID_kFF = 0.0;
 	public static double CarriageMotorPID_kOutputRangeMax = 1.0; 
 	public static double CarriageMotorPID_kOutputRangeMmin = -1.0; 
 
-    public static double ElevatorMotorMotionMaxVelocity = 2500;
+    public static double ElevatorMotorMotionMaxVelocity = 1000;
 	public static double ElevatorMotorMotionMinOutputVelocity = 0.0;
-    public static double ElevatorMotorMotionMaxAccel = 2500;
+    public static double ElevatorMotorMotionMaxAccel = 2000;
     public static double ElevatorMotorMotionAllowedClosedLoopError = 0.0;
   
-    public static double CarriageMotorMotionMaxVelocity = 2500;
+    public static double CarriageMotorMotionMaxVelocity = 1000;
 	public static double CarriageMotorMotionMinOutputVelocity = 0.0;
-	public static double CarriageMotorMotionMaxAccel = 2500;
+	public static double CarriageMotorMotionMaxAccel = 2000;
 	public static double CarriageMotorMotionAllowedClosedLoopError = 0.0;
 
 }
