@@ -14,15 +14,9 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Utilities.OI;
-import frc.robot.commands.BlueLightOn;
-import frc.robot.commands.RedLightOn;
-import frc.robot.subsystems.Chassis;
-import frc.robot.subsystems.Lift;
-import frc.robot.subsystems.Pincher;
+
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Gather;
-import frc.robot.subsystems.Arm;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -32,15 +26,10 @@ import frc.robot.subsystems.Arm;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static OI oi;
-  public static Lift lift = new Lift();
+ 
   public static Elevator elevator = new Elevator();
-  public static Gather gather = new Gather();
-  public static Arm arm = new Arm();
-  public static Chassis chassis = new Chassis();
-  public static PowerDistributionPanel pdp = new PowerDistributionPanel();
-  public static Pincher pincher = new Pincher();
   
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -54,18 +43,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    chassis.init();
     elevator.init();
-    lift.init();
-    arm.init();
-    gather.init();
-    pincher.init();
     
-    oi = new OI();
-    // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
-    // chooser.addOption("My Auto", new MyAutoCommand());
-    chooser.setDefaultOption("Blue Lights", new BlueLightOn());
-    chooser.addOption("Red Lights", new RedLightOn());
     SmartDashboard.putData("Light", chooser);
     lightRelay.set(Relay.Value.kOff);
 
@@ -81,10 +60,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    elevator.elevatorEncoderPos();
+    elevator.getCurrent();
+    SmartDashboard.putNumber("Current", pdp.getTotalCurrent());
     //chassis.chassisSwerveDrive.getUpdate();
-    SmartDashboard.putNumber("GyroAngle", chassis.getGyroAngle());
-    SmartDashboard.putNumber("ArmEncoder", arm.getCurrentPosition());
+
   }
 
   /**
