@@ -5,43 +5,43 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Arm;
+package frc.robot.commands.Lift;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class ArmManualPositionCMD extends Command
-{
- 
-  public ArmManualPositionCMD() {
-    requires(Robot.arm);
+public class LiftStopCMD extends Command {
+  public LiftStopCMD() {
+    // Use requires() here to declare subsystem dependencies
+    requires(Robot.lift);
   }
 
+  // Called just before this Command runs the first time
   @Override
-  protected void initialize()
-  {
-    Robot.arm.updatePID();
-    Robot.arm.updateMotionMagic();
-    Robot.arm.goToManual();
+  protected void initialize() {
+    Robot.lift.stop();
+
   }
 
+  // Called repeatedly when this Command is scheduled to run
   @Override
-  protected void execute()
-  {
-    Robot.arm.updatePosition();
+  protected void execute() {
   }
 
+  // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Robot.arm.isCloseEnough();
+    return false;
   }
 
+  // Called once after isFinished returns true
   @Override
-  protected void end()
-  {
-    Robot.arm.stop();
+  protected void end() {
+    Robot.lift.stop();
   }
 
+  // Called when another command which requires one or more of the same
+  // subsystems is scheduled to run
   @Override
   protected void interrupted() {
     end();

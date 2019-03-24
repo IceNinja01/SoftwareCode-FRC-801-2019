@@ -5,45 +5,28 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Arm;
+package frc.robot.commands.Pincher;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class ArmManualPositionCMD extends Command
-{
- 
-  public ArmManualPositionCMD() {
-    requires(Robot.arm);
-  }
+public class RetractCMD extends Command {
+  public RetractCMD() {
 
-  @Override
-  protected void initialize()
-  {
-    Robot.arm.updatePID();
-    Robot.arm.updateMotionMagic();
-    Robot.arm.goToManual();
-  }
-
-  @Override
-  protected void execute()
-  {
-    Robot.arm.updatePosition();
-  }
+          // Use requires() here to declare subsystem dependencies
+          requires(Robot.pincher);
+        }
+    
+        // Called once when the command executes
+        protected void initialize() {
+          
+          Robot.pincher.closePinchers();
+          
+        }
 
   @Override
   protected boolean isFinished() {
-    return Robot.arm.isCloseEnough();
+    return false;
   }
-
-  @Override
-  protected void end()
-  {
-    Robot.arm.stop();
-  }
-
-  @Override
-  protected void interrupted() {
-    end();
-  }
-}
+    
+    }
