@@ -17,14 +17,12 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
@@ -71,7 +69,7 @@ public class Elevator extends Subsystem
   private NetworkTableEntry newSetPoint_Carriage; 
   
   private final int smartMotionSlot = 0;
-  private final double closeEnough = 0.5;
+  private final double closeEnough = 0.05;
 
   private double setPoint_Elevator  = Constants.ElevatorInitPosition; 
   private double setPoint_Carriage = Constants.CarriageInitPosition;
@@ -81,14 +79,8 @@ public class Elevator extends Subsystem
     // initialize motor
     rightInsideElevatorMotor = new CANSparkMax(Constants.rightInsideElevatorMotorID, MotorType.kBrushless);
     leftElevatorCarriageMotor = new CANSparkMax(Constants.leftElevatorCarriageMotorID, MotorType.kBrushless);
-    // rightInsideElevatorMotor.restoreFactoryDefaults();
-    // leftElevatorCarriageMotor.restoreFactoryDefaults();
-
-    rightInsideElevatorMotor.setSmartCurrentLimit(60, 45);
-    leftElevatorCarriageMotor.setSmartCurrentLimit(60,45);
-
-    rightInsideElevatorMotor.setIdleMode(IdleMode.kCoast);
-    leftElevatorCarriageMotor.setIdleMode(IdleMode.kCoast);
+    rightInsideElevatorMotor.restoreFactoryDefaults();
+    leftElevatorCarriageMotor.restoreFactoryDefaults();
     
     // initialze PID controller and encoder objects
     rightInsideElevatorMotorPID = rightInsideElevatorMotor.getPIDController();
@@ -281,9 +273,7 @@ public class Elevator extends Subsystem
   {
       setPoint_Carriage = newSetPoint_Carriage.getDouble(0.0);
       elevatorEncoderPos();
-            leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
-
-      // leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kSmartMotion);
+      leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kSmartMotion);
   } 
 
   public void carriageRun(double setPoint)
@@ -331,15 +321,6 @@ public class Elevator extends Subsystem
     rightInsideElevatorMotor.stopMotor();
     leftElevatorCarriageMotor.stopMotor();;
   } 
-
-  public void getCurrent(){
-    
-    SmartDashboard.putNumber("ElevatorCurrent", rightInsideElevatorMotor.getOutputCurrent());
-    SmartDashboard.putNumber("CarriageCurrent", leftElevatorCarriageMotor.getOutputCurrent());
-    SmartDashboard.putNumber("ElevatorTemp", rightInsideElevatorMotor.getMotorTemperature());
-    SmartDashboard.putNumber("CarriageTemp", leftElevatorCarriageMotor.getMotorTemperature());
-
-  }
 }
 
 

@@ -5,52 +5,52 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Elevator;
+package frc.robot.commands.Chassis;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.subsystems.Arm.Position;
 
-public class ElevatorBottomCMD extends Command {
-  public ElevatorBottomCMD() {
+public class UpdateChassisPID extends Command {
+
+
+  //Used to drive by angle and velocity, stops at setpoint
+  public UpdateChassisPID() {
     // Use requires() here to declare subsystem dependencies
-    requires(Robot.elevator);
+    requires(Robot.chassis);
+
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-
-    Robot.elevator.elevatorRun(Constants.ElevatorBottomPosition);
-    Robot.elevator.carriageRun(Constants.CarriageBottomPosition);
-
+    //reset encoders
+    Robot.chassis.setPIDDrive();
+    Robot.chassis.setPIDTurn();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    // updates both elevator and carriage dashboard readings
-    Robot.elevator.elevatorEncoderPos();  
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !Robot.elevator.elevatorIsMoving() 
-            && !Robot.elevator.carriageIsMoving();
+    return false;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.elevator.hold();
+    Robot.chassis.stop();
+
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    Robot.elevator.stop();;
+    end();
   }
+
 }

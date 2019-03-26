@@ -127,6 +127,6 @@ public class Constants {
     public static double CarriageMotorMotionMaxVelocity = 1000;
 	public static double CarriageMotorMotionMinOutputVelocity = 0.0;
 	public static double CarriageMotorMotionMaxAccel = 2000;
-	public static double CarriageMotorMotionAllowedClosedLoopError = 0.2;
+	public static double CarriageMotorMotionAllowedClosedLoopError = 0.0;
 
 }
