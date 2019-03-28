@@ -36,6 +36,8 @@ public class DriveFwd extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    Robot.chassis.motorDrive_CMD(angle, velocity);
+
   }
 
   // Make this return true when this Command no longer needs to run execute()

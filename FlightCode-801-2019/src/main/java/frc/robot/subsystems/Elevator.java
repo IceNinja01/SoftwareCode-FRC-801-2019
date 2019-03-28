@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 import frc.robot.Constants;
 import frc.robot.commands.Elevator.CarriageManualPositionCMD;
+import frc.robot.commands.Elevator.ElevatorBottomCMD;
 import frc.robot.commands.Elevator.ElevatorManualPositionCMD;
 import frc.robot.commands.Elevator.ElevatorStopCMD;
 import frc.robot.commands.Elevator.UpdateElevatorPIDCMD;
@@ -84,8 +85,8 @@ public class Elevator extends Subsystem
     // rightInsideElevatorMotor.restoreFactoryDefaults();
     // leftElevatorCarriageMotor.restoreFactoryDefaults();
 
-    rightInsideElevatorMotor.setSmartCurrentLimit(60, 45);
-    leftElevatorCarriageMotor.setSmartCurrentLimit(60,45);
+    rightInsideElevatorMotor.setSmartCurrentLimit(50, 50);
+    leftElevatorCarriageMotor.setSmartCurrentLimit(50, 50);
 
     rightInsideElevatorMotor.setIdleMode(IdleMode.kCoast);
     leftElevatorCarriageMotor.setIdleMode(IdleMode.kCoast);
@@ -157,7 +158,7 @@ public class Elevator extends Subsystem
     rightInsideElevatorMotorPID.setSmartMotionMinOutputVelocity( Constants.ElevatorMotorMotionMinOutputVelocity, smartMotionSlot );
     rightInsideElevatorMotorPID.setSmartMotionMaxAccel( Constants.ElevatorMotorMotionMaxAccel, smartMotionSlot );
     rightInsideElevatorMotorPID.setSmartMotionAllowedClosedLoopError( Constants.ElevatorMotorMotionAllowedClosedLoopError, smartMotionSlot);
-    rightInsideElevatorMotorPID.setReference(Constants.ElevatorInitPosition, ControlType.kSmartMotion);
+    rightInsideElevatorMotorPID.setReference(Constants.ElevatorInitPosition, ControlType.kPosition);
   
     
     //CarriageMotor
@@ -211,7 +212,7 @@ public class Elevator extends Subsystem
     leftElevatorCarriageMotorPID.setSmartMotionMinOutputVelocity( Constants.CarriageMotorMotionMinOutputVelocity, smartMotionSlot );
     leftElevatorCarriageMotorPID.setSmartMotionMaxAccel( Constants.ElevatorMotorMotionMaxAccel, smartMotionSlot );
     leftElevatorCarriageMotorPID.setSmartMotionAllowedClosedLoopError( Constants.CarriageMotorMotionAllowedClosedLoopError, smartMotionSlot);
-    leftElevatorCarriageMotorPID.setReference(Constants.CarriageInitPosition, ControlType.kSmartMotion);
+    leftElevatorCarriageMotorPID.setReference(Constants.CarriageInitPosition, ControlType.kPosition);
 
   }
   /**
@@ -260,21 +261,21 @@ public class Elevator extends Subsystem
   
   @Override
   protected void initDefaultCommand() {
-    setDefaultCommand(new ElevatorStopCMD());
+    setDefaultCommand(new ElevatorBottomCMD());
   }
   
    public void elevatorRun()
   {
       setPoint_Elevator = newSetPoint_Elevator.getDouble(0.0);
       elevatorEncoderPos();
-      rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kSmartMotion);
+      rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kPosition);
   } 
 
   public void elevatorRun(double setPoint)
   {
       setPoint_Elevator = setPoint;
       newSetPoint_Elevator.setDouble(setPoint_Elevator);
-      rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kSmartMotion);
+      rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kPosition);
   } 
 
   public void carriageRun()
@@ -283,7 +284,7 @@ public class Elevator extends Subsystem
       elevatorEncoderPos();
             leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
 
-      // leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kSmartMotion);
+      // leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
   } 
 
   public void carriageRun(double setPoint)
@@ -291,7 +292,7 @@ public class Elevator extends Subsystem
       setPoint_Carriage = setPoint;
       newSetPoint_Carriage.setDouble(setPoint_Carriage);
       elevatorEncoderPos();
-      leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kSmartMotion);
+      leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
   } 
 
 
@@ -322,8 +323,8 @@ public class Elevator extends Subsystem
 
 
   public void hold() {
-    rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kSmartMotion);
-    leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kSmartMotion);
+    rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kPosition);
+    leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
   } 
 
   
@@ -332,7 +333,7 @@ public class Elevator extends Subsystem
     leftElevatorCarriageMotor.stopMotor();;
   } 
 
-  public void getCurrent(){
+  public void updateSmartDashboard(){
     
     SmartDashboard.putNumber("ElevatorCurrent", rightInsideElevatorMotor.getOutputCurrent());
     SmartDashboard.putNumber("CarriageCurrent", leftElevatorCarriageMotor.getOutputCurrent());

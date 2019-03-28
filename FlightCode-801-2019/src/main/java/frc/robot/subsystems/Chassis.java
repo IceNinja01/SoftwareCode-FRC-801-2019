@@ -107,6 +107,7 @@ public class Chassis extends PIDSubsystem {
 				Constants.kOutputRangeMmin_TurnMotors, Constants.kOutputRangeMax_TurnMotors, 
 				Constants.deadBand_TurnMotors );
 
+		chassisSwerveDrive.currentDriveLimit(50, 50);
 
 		chassisSwerveDrive.brakeOff();
 		rightFrontPod.setBias();
@@ -172,13 +173,13 @@ public class Chassis extends PIDSubsystem {
 
 	}
 	
-	public void motorDrive(double x, double y, double z, boolean elevatorUp ) {
+	public void motorDrive(double x, double y, double z) {
 			
-		if(elevatorUp){
-			maxLimit = 0.5;
+		if(Robot.elevator.elevatorIsUp()){
+			chassisSwerveDrive.setMaxRPM(0.5);
 		}
 		else{
-			maxLimit = 1.0;
+			chassisSwerveDrive.setMaxRPM(1.0);
 		}
 		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, maxLimit);
 		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, maxLimit);
@@ -205,7 +206,7 @@ public class Chassis extends PIDSubsystem {
 	 }
 
 	 public void motorDrive_CMD(double angle, double velocity){
-		 chassisSwerveDrive.turnMotorsRPM(angle_input.getDouble(0.0), velocity_input.getDouble(0.0));
+		 chassisSwerveDrive.turnMotorsRPM(angle, velocity);
 	 }
 
 	public void stop() {   
@@ -276,6 +277,11 @@ public class Chassis extends PIDSubsystem {
 
 	public double getHeadingCmd() {
 		return headingCMD;
+	}
+
+	public void updateSD() {
+
+		  SmartDashboard.putNumber("GyroAngle", getGyroAngle());
 	}
 
 }

@@ -7,9 +7,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,9 +19,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Utilities.OI;
 import frc.robot.commands.BlueLightOn;
 import frc.robot.commands.RedLightOn;
+import frc.robot.commands.UpdateSD;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Pincher;
+import frc.robot.subsystems.SDUpdater;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Gather;
 import frc.robot.subsystems.Arm;
@@ -40,12 +44,14 @@ public class Robot extends TimedRobot {
   public static Chassis chassis = new Chassis();
   public static PowerDistributionPanel pdp = new PowerDistributionPanel();
   public static Pincher pincher = new Pincher();
+  public static SDUpdater SDUpdater = new SDUpdater();
   
-
+  Command updateData;
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
   private SendableChooser<Command> chooser = new SendableChooser<>();
   private Command lightsCommand;
+  private Alliance team;
   public static Relay lightRelay = new Relay(0);
 
   /**
@@ -64,11 +70,12 @@ public class Robot extends TimedRobot {
     oi = new OI();
     // m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
-    chooser.setDefaultOption("Blue Lights", new BlueLightOn());
-    chooser.addOption("Red Lights", new RedLightOn());
-    SmartDashboard.putData("Light", chooser);
+    // chooser.setDefaultOption("Blue Lights", new BlueLightOn());
+    // chooser.addOption("Red Lights", new RedLightOn());
+    // SmartDashboard.putData("Light", chooser);
     lightRelay.set(Relay.Value.kOff);
-
+    updateData = new UpdateSD();
+    updateData.start();
   }
 
   /**
@@ -115,9 +122,20 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_chooser.getSelected();
-    lightsCommand = chooser.getSelected();
-    lightsCommand.start();
+    team = DriverStation.getInstance().getAlliance();
+    switch(team){
+    case  Red:
+      lightsCommand = new RedLightOn();
+    case Blue:
+      lightsCommand = new BlueLightOn();
+    }
+    // m_autonomousCommand = m_chooser.getSelected();
+    // lightsCommand = chooser.getSelected();
+    
+    if (lightsCommand != null){
+      lightsCommand.start();
+    }
+    chassis.setGyroBias();
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",
      * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand

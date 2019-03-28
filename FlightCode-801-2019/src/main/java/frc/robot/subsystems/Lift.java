@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.commands.Lift.LiftStopCMD;
 import frc.robot.commands.Lift.LiftUpDownToggleCMD;
@@ -56,6 +57,9 @@ public class Lift extends Subsystem {
       leftLiftMotor = new CANSparkMax(Constants.leftLiftMotorID, MotorType.kBrushless);
       rightLiftMotor.restoreFactoryDefaults();
       leftLiftMotor.restoreFactoryDefaults();
+
+      rightLiftMotor.setSmartCurrentLimit(50, 50);
+      leftLiftMotor.setSmartCurrentLimit(50, 50);
 
       rightLiftEncoder = rightLiftMotor.getEncoder();
       leftLiftEncoder = leftLiftMotor.getEncoder();
@@ -184,6 +188,13 @@ public class Lift extends Subsystem {
   public void lift(double setPoint) {
     rightLiftPID.setReference(setPoint, ControlType.kSmartMotion);
     leftLiftPID.setReference(setPoint, ControlType.kSmartMotion);
+  }
+ 
+  public void getSmartDashboard(){
+    encoderPos();
+    SmartDashboard.putNumber("LiftCurrent_LMotor", leftLiftMotor.getOutputCurrent());
+    SmartDashboard.putNumber("LiftCurrent_RMotor", rightLiftMotor.getOutputCurrent());
+
   }
   
 }

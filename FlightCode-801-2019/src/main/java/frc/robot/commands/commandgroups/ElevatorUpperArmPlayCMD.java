@@ -11,15 +11,17 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.Arm.PlayCMD;
 import frc.robot.commands.Elevator.ElevatorBottomCMD;
 import frc.robot.commands.Elevator.ElevatorLowerPortCMD;
+import frc.robot.commands.Elevator.ElevatorMiddlePortCMD;
+import frc.robot.commands.Elevator.ElevatorUpperPortCMD;
 
-public class ElevatorLowerArmPlayCMD extends CommandGroup {
+public class ElevatorUpperArmPlayCMD extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public ElevatorLowerArmPlayCMD() {
+  public ElevatorUpperArmPlayCMD() {
 
     addParallel(new PlayCMD());
-    addSequential(new ElevatorLowerPortCMD());
+    addSequential(new ElevatorUpperPortCMD());
     
   }
 }

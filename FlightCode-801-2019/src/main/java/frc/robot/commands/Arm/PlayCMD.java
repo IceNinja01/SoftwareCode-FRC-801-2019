@@ -32,7 +32,7 @@ public class PlayCMD extends Command
 
   @Override
   protected boolean isFinished() {
-    return Robot.arm.isCloseEnough();
+    return false;
   }
 
   @Override

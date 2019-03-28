@@ -20,6 +20,6 @@ public class RetractTopPlatformAndDriveFwd extends CommandGroup {
     requires(Robot.chassis);
     requires(Robot.lift);
     addParallel( new LiftRetractTopPositionCMD());
-    addSequential( new  DriveFwd(0.0, 200.0, 6.0));
+    addSequential( new  DriveFwd(0.0, 0.2, 6.0));
   }
 }

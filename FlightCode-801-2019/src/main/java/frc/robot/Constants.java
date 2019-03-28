@@ -21,7 +21,7 @@ public class Constants {
 	public static final int[] AngleBias = {1502, 2149, 1366, 104};
 
 	public static final int ArmMotorBias = 0; // TODO: Find out bias
-	public static double ArmAngleBias = 2776;    //absolute angle bias
+	public static double ArmAngleBias = 0;    //absolute angle bias
 
 	// Motor CAN Bus ID's
 	public static final int rightLiftMotorID = 8;

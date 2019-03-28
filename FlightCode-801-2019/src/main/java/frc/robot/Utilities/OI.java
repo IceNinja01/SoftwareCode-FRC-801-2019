@@ -19,7 +19,7 @@ import frc.robot.commands.Lift.*;
 import frc.robot.commands.Pincher.RetractCMD;
 import frc.robot.commands.Pincher.StabCMD;
 import frc.robot.commands.commandgroups.ElevatorBottomArmPlayCMD;
-import frc.robot.commands.commandgroups.ElevatorMiddleArmPlayCMD;
+import frc.robot.commands.commandgroups.ElevatorUpperArmPlayCMD;
 import frc.robot.commands.commandgroups.RetractTopPlatformAndDriveFwd;
 
 /**
@@ -83,9 +83,9 @@ public class OI {
 
     // elevator mapping
     elevatorBottomButton.whenPressed( new ElevatorBottomArmPlayCMD() );
-    elevatorLowerPortButton.whenPressed( new ElevatorLowerPortCMD() );
-    elevatorMiddlePortButton.whenPressed( new ElevatorMiddleArmPlayCMD() );
-    elevatorUpperPortButton.whenPressed( new ElevatorUpperPortCMD() );
+    elevatorLowerPortButton.whileHeld( new ElevatorLowerPortCMD() );
+    elevatorMiddlePortButton.whileHeld( new ElevatorUpperArmPlayCMD() );
+    elevatorUpperPortButton.whileHeld( new ElevatorUpperPortCMD() );
     elevatorGatherButton.whenPressed( new ElevatorGatherCMD() );
     
     // Lift Mapping

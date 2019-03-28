@@ -75,6 +75,12 @@ public class SwerveDrive extends MotorSafety {
 
 	}
 
+	public void currentDriveLimit(int stallLimit, int freeLimit){
+		for(int i=0;i<4;i++){
+			SwervePOD[i].setDriveCurrentLimit(stallLimit,freeLimit);
+		}
+	}
+
 	//Configure each POD Turn motors
 	public void configPIDTurn(double kP, double kI, double kD, int kIz, double kFF, double kMinOutput, double kMaxOutput, int deadBand) {
 		for(int i=0;i<4;i++){

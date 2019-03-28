@@ -45,10 +45,10 @@ public class Arm extends Subsystem
   public static final double kMaxVelocity = 1;      // One rotation per second
   public static final double kMaxAcceleration = 1;  // One rotation per second per second
   
-  public static final int kPlayPos = 250;       // Degrees. A Button
-  public static final int kDiskPlacePos = 172;  // Degrees. Y Button
-  public static final int kStowPos = 120;     // Degrees. X Button
-  public static final int kBallPos = 208;       // Degrees. B Button TODO: What?
+  public static final int kPlayPos = 310;       // Degrees. A Button
+  public static final int kDiskPlacePos = 225;  // Degrees. Y Button
+  public static final int kStowPos = 167;     // Degrees. X Button
+  public static final int kBallPos = 245;       // Degrees. B Button TODO: What?
 
   public static final int kDebugMotorTurn = 48/42; // The test stand has a 6 times gear ratio
 
@@ -89,7 +89,7 @@ public class Arm extends Subsystem
 
     // FIXME: Test if this is the correct thing for how it should work
 		armMotor.setSensorPhase(false);
-		armMotor.setInverted(false);
+		armMotor.setInverted(true);
 
 		armMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
 		armMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
@@ -184,19 +184,16 @@ public class Arm extends Subsystem
       targetPosition =(int) (Utils.wrapAngle0To360Deg(kDiskPlacePos - Constants.ArmAngleBias));
       targetPosition *= kEncoderTicks*kDebugMotorTurn;
       targetPosition /= 360;
-
         break;
       case STOW:
       targetPosition =(int) (Utils.wrapAngle0To360Deg(kStowPos - Constants.ArmAngleBias));
       targetPosition *= kEncoderTicks*kDebugMotorTurn;
       targetPosition /= 360;
-
         break;
       case BALL:
       targetPosition =(int) (Utils.wrapAngle0To360Deg(kBallPos - Constants.ArmAngleBias));
       targetPosition *= kEncoderTicks*kDebugMotorTurn;
       targetPosition /= 360;
-
         break;
     }
 
@@ -206,10 +203,11 @@ public class Arm extends Subsystem
   public void goTo(double degrees)
   {
     armMotor.setNeutralMode(NeutralMode.Coast);
-
     int setPoint = (int) (Utils.wrapAngle0To360Deg(degrees - Constants.ArmAngleBias));
     setPoint *= kEncoderTicks*kDebugMotorTurn;
     setPoint /= 360;
+    targetPosition = setPoint;
+
     SmartDashboard.putNumber("armCMDSetpoint", setPoint);
     armMotor.set(ControlMode.MotionMagic, setPoint);
   }
@@ -230,8 +228,6 @@ public class Arm extends Subsystem
     double positionDegrees = (position)*(360.0/4096.0);
     positionDegrees = positionDegrees - Constants.ArmAngleBias;
     positionDegrees = Utils.wrapAngle0To360Deg(positionDegrees);
-
-
     armEncoderPos.setNumber(positionDegrees);
     SmartDashboard.putNumber("ArmEncoderAbs", absolutePosition);
     return positionDegrees;
@@ -255,6 +251,11 @@ public class Arm extends Subsystem
   {
     setDefaultCommand(new ArmStopCMD());
   }
+
+public void updateSD() {
+
+    SmartDashboard.putNumber("ArmEncoder", getCurrentPosition());
+}
 
   
 }

@@ -5,21 +5,18 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.commandgroups;
+package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.CommandGroup;
-import frc.robot.commands.Arm.PlayCMD;
-import frc.robot.commands.Elevator.ElevatorBottomCMD;
-import frc.robot.commands.Elevator.ElevatorLowerPortCMD;
+import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.commands.UpdateSD;
 
-public class ElevatorLowerArmPlayCMD extends CommandGroup {
-  /**
-   * Add your docs here.
-   */
-  public ElevatorLowerArmPlayCMD() {
+public class SDUpdater extends Subsystem
+{
+	public boolean isTele;
+	
+    public void initDefaultCommand()
+    {
+    	setDefaultCommand(new UpdateSD());
+    }
 
-    addParallel(new PlayCMD());
-    addSequential(new ElevatorLowerPortCMD());
-    
-  }
 }

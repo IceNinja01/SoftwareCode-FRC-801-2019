@@ -8,18 +8,12 @@
 package frc.robot.commands.commandgroups;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import frc.robot.commands.Arm.PlayCMD;
-import frc.robot.commands.Elevator.ElevatorBottomCMD;
-import frc.robot.commands.Elevator.ElevatorLowerPortCMD;
 
-public class ElevatorLowerArmPlayCMD extends CommandGroup {
+public class ManualArm extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public ElevatorLowerArmPlayCMD() {
-
-    addParallel(new PlayCMD());
-    addSequential(new ElevatorLowerPortCMD());
+  public ManualArm() {
     
   }
 }
