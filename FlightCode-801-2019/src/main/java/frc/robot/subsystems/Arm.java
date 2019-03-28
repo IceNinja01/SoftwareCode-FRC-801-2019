@@ -68,6 +68,8 @@ public class Arm extends Subsystem
 
   //How much smoothing [0,8] to use during MotionMagic
   int _smoothing = 0;
+
+  private int targetPosition;
   
   public enum Position
   {
@@ -169,7 +171,7 @@ public class Arm extends Subsystem
   {
         armMotor.setNeutralMode(NeutralMode.Coast);
 
-    int targetPosition = 0;
+    targetPosition = 0;
 
     switch (pos)
     {
@@ -238,7 +240,7 @@ public class Arm extends Subsystem
   public double getCurrentError()
   {
     double positionDegrees = getCurrentPosition();
-    double error = kDiskPlacePos - positionDegrees;
+    double error = targetPosition- positionDegrees;
 
     return error;
   }
