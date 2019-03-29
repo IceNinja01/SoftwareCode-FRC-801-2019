@@ -179,18 +179,18 @@ public class Chassis extends PIDSubsystem {
 			chassisSwerveDrive.setMaxRPM(0.5);
 		}
 		else{
-			chassisSwerveDrive.setMaxRPM(1.0);
+			chassisSwerveDrive.setMaxRPM(0.8);
 		}
 		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, maxLimit);
 		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, maxLimit);
-		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, maxLimit);
+		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, maxLimit/2);
 		
 		
 		if(robotOrient){ //Field oriented
 			chassisSwerveDrive.drive(x,y,z,getGyroAngle());
 		}
 		else{//Robot oriented
-			chassisSwerveDrive.drive(x,y,z,0.0);
+			chassisSwerveDrive.drive(x,y,z, 0.0);
 		}
 	 }
 
@@ -218,7 +218,11 @@ public class Chassis extends PIDSubsystem {
 	}
 	
 	public void toggleRobotOrient() {
-		robotOrient = false;
+		if(robotOrient){
+			robotOrient = false;
+		} else {
+			robotOrient = true;
+		}
 	}
 
 	public void getDriveVoltage(){

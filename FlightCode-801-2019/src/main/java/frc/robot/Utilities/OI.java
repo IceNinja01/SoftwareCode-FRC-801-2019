@@ -35,11 +35,11 @@ public class OI {
     //	      5	    _                            _    6
     //	       _.-'` `-._                    _,-' `'-._
     //	    ,-'          `-.,____________,.-'    .-.   `-.
-    //	   /   .---.             ___            ( 4 )     \
+    //	   /   .---.             ___            ( 1 )     \
     //	  /  ,' ,-. `.     __   / X \   __   .-. `-` .-.   \
     //	 /   | | 9 | |    (_7) | / \ | (_8) ( 3 )   ( 2 )   \
     //	/    `. `-' ,'    __    \___/        `-` ,-. `-`     \
-    //	|      `---`   ,-`  `-.       .---.     ( 1 )        |
+    //	|      `---`   ,-`  `-.       .---.     ( 4 )        |
     //	|             / -'  `- \    ,'  .  `.    `-`         |
     //	|            |          |   | -10 - |                |
     //	!             \ -.  ,- /    `.  '  ,'                |
@@ -52,15 +52,15 @@ public class OI {
     //
    
     // Elevator mapping
-    Button elevatorBottomButton = new JoystickButton(manipulator, 1);     // 'A' button
+    //Button elevatorBottomButton = new JoystickButton(manipulator, 0);     // 'A' button
     Button elevatorLowerPortButton = new JoystickButton(manipulator, 3);  // 'X' button
     Button elevatorMiddlePortButton = new JoystickButton(manipulator, 2); // 'B' button
-    Button elevatorUpperPortButton = new JoystickButton(manipulator, 4);  // 'Y' button
-    Button elevatorGatherButton = new JoystickButton(manipulator, 6);     // Right Top Bumper
+    Button elevatorUpperPortButton = new JoystickButton(manipulator, 1);  // 'Y' button
+    // Button elevatorGatherButton = new JoystickButton(manipulator, 6);     // Right Top Bumper
 
     // Lift Mapping
-    Button liftTopPlatformButton = new JoystickButton(driver, 10);       // Right Bottom bumper
-    Button retractAndDriveButton = new JoystickButton(driver, 9);   // Left Bottom bumper
+    Button liftTopPlatformButton = new JoystickButton(driver, /*10*/0);       // Right Bottom bumper
+    Button retractAndDriveButton = new JoystickButton(driver, /*9*/0);   // Left Bottom bumper
 
     // Gather Mapping
     Button gatherButton = new JoystickButton(driver, 7);    // Left bumper
@@ -71,7 +71,7 @@ public class OI {
     // Arm mapping
     Button playButton = new JoystickButton(driver, 2);      // 'A' button
     Button diskPickButton = new JoystickButton(driver, 4);  // 'Y' button
-    Button stowButton = new JoystickButton(driver, 0);      // 'X' button
+    Button stowButton = new JoystickButton(driver, 10);      // 'X' button
     Button ballButton = new JoystickButton(driver, 3);      // 'B' button
 
     Button toggleRobotDrive = new JoystickButton(driver, 1);
@@ -82,11 +82,11 @@ public class OI {
     toggleRobotDrive.whileHeld(new ToggleFieldDrive());
 
     // elevator mapping
-    elevatorBottomButton.whenPressed( new ElevatorBottomArmPlayCMD() );
+    //elevatorBottomButton.whileHeld( new ElevatorBottomCMD() );
     elevatorLowerPortButton.whileHeld( new ElevatorLowerPortCMD() );
-    elevatorMiddlePortButton.whileHeld( new ElevatorUpperArmPlayCMD() );
+    elevatorMiddlePortButton.whileHeld( new ElevatorMiddlePortCMD() );
     elevatorUpperPortButton.whileHeld( new ElevatorUpperPortCMD() );
-    elevatorGatherButton.whenPressed( new ElevatorGatherCMD() );
+    // elevatorGatherButton.whenPressed( new ElevatorGatherCMD() );
     
     // Lift Mapping
     liftTopPlatformButton.whenPressed( new LiftTopPlatformCMD() );

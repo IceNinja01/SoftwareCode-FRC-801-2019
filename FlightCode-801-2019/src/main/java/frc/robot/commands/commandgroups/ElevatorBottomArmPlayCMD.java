@@ -17,7 +17,7 @@ public class ElevatorBottomArmPlayCMD extends CommandGroup {
    */
   public ElevatorBottomArmPlayCMD() {
 
-    addSequential(new PlayCMD());
+    // addSequential(new PlayCMD());
     addSequential(new ElevatorBottomCMD());
     
   }

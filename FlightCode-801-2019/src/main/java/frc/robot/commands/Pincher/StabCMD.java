@@ -12,17 +12,14 @@ import frc.robot.Robot;
 
 public class StabCMD extends Command {
   public StabCMD() {
-
-          // Use requires() here to declare subsystem dependencies
-          requires(Robot.pincher);
-        }
+    // Use requires() here to declare subsystem dependencies
+    requires(Robot.pincher);
+  }
     
-        // Called once when the command executes
-        protected void initialize() {
-          
-          Robot.pincher.openPinchers();
-          
-        }
+  // Called once when the command executes
+  protected void initialize() {  
+    Robot.pincher.openPinchers();
+  }
 
   @Override
   protected boolean isFinished() {

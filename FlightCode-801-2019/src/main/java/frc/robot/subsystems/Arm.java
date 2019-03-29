@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Utilities.Utils;
+import frc.robot.commands.Arm.ArmHoldCMD;
 import frc.robot.commands.Arm.ArmManualPositionCMD;
 import frc.robot.commands.Arm.ArmStopCMD;
 
@@ -31,8 +32,8 @@ public class Arm extends Subsystem
 
   private TalonSRX armMotor;
   
-  private  double kFF = 0.001;
-  private  double kP = 0.002;
+  private  double kFF = 0.5;
+  private  double kP = 1.0;
   private  double kI = 0;
   private  double kD = 0.0;
 
@@ -45,10 +46,10 @@ public class Arm extends Subsystem
   public static final double kMaxVelocity = 1;      // One rotation per second
   public static final double kMaxAcceleration = 1;  // One rotation per second per second
   
-  public static final int kPlayPos = 310;       // Degrees. A Button
-  public static final int kDiskPlacePos = 225;  // Degrees. Y Button
-  public static final int kStowPos = 167;     // Degrees. X Button
-  public static final int kBallPos = 245;       // Degrees. B Button TODO: What?
+  public static final int kPlayPos = 2820;       // Degrees. A Button
+  public static final int kDiskPlacePos = 2090;  // Degrees. Y Button
+  public static final int kStowPos = 1413;     // Degrees. X Button
+  public static final int kBallPos = 2280;       // Degrees. B Button TODO: What?
 
   public static final int kDebugMotorTurn = 48/42; // The test stand has a 6 times gear ratio
 
@@ -89,7 +90,7 @@ public class Arm extends Subsystem
 
     // FIXME: Test if this is the correct thing for how it should work
 		armMotor.setSensorPhase(false);
-		armMotor.setInverted(true);
+		armMotor.setInverted(false);
 
 		armMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
 		armMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
@@ -104,7 +105,7 @@ public class Arm extends Subsystem
 		armMotor.config_kP(0, kP, kTimeoutMs);
 		armMotor.config_kI(0, kI, kTimeoutMs);
 		armMotor.config_kD(0, kD, kTimeoutMs);
-
+    armMotor.configAllowableClosedloopError(0, 10, kTimeoutMs);
 		armMotor.configMotionCruiseVelocity((int)(kEncoderTicks*kDebugMotorTurn*kMotorToOutput*(kMaxVelocity/10)), kTimeoutMs); // FIXME debug
     armMotor.configMotionAcceleration((int)(kEncoderTicks*kDebugMotorTurn*kMotorToOutput*(kMaxAcceleration/10)), kTimeoutMs); // FIXME debug
     
@@ -176,37 +177,43 @@ public class Arm extends Subsystem
     switch (pos)
     {
       case PLAY:
-      targetPosition =(int) (Utils.wrapAngle0To360Deg(kPlayPos - Constants.ArmAngleBias));
-      targetPosition *= kEncoderTicks*kDebugMotorTurn;
-      targetPosition /= 360;
+      // targetPosition =(int) (Utils.wrapAngle0To360Deg(kPlayPos - Constants.ArmAngleBias));
+      // targetPosition *= kEncoderTicks*kDebugMotorTurn;
+      // targetPosition /= 360;
+      targetPosition = kPlayPos;
         break;
       case DISKPICK:
-      targetPosition =(int) (Utils.wrapAngle0To360Deg(kDiskPlacePos - Constants.ArmAngleBias));
-      targetPosition *= kEncoderTicks*kDebugMotorTurn;
-      targetPosition /= 360;
+      // targetPosition =(int) (Utils.wrapAngle0To360Deg(kDiskPlacePos - Constants.ArmAngleBias));
+      // targetPosition *= kEncoderTicks*kDebugMotorTurn;
+      // targetPosition /= 360;
+      targetPosition = kDiskPlacePos;
         break;
       case STOW:
-      targetPosition =(int) (Utils.wrapAngle0To360Deg(kStowPos - Constants.ArmAngleBias));
-      targetPosition *= kEncoderTicks*kDebugMotorTurn;
-      targetPosition /= 360;
+      // targetPosition =(int) (Utils.wrapAngle0To360Deg(kStowPos - Constants.ArmAngleBias));
+      // targetPosition *= kEncoderTicks*kDebugMotorTurn;
+      // targetPosition /= 360;
+      targetPosition = kStowPos;
         break;
       case BALL:
-      targetPosition =(int) (Utils.wrapAngle0To360Deg(kBallPos - Constants.ArmAngleBias));
-      targetPosition *= kEncoderTicks*kDebugMotorTurn;
-      targetPosition /= 360;
+      // targetPosition =(int) (Utils.wrapAngle0To360Deg(kBallPos - Constants.ArmAngleBias));
+      // targetPosition *= kEncoderTicks*kDebugMotorTurn;
+      // targetPosition /= 360;
+      targetPosition = kBallPos;
         break;
     }
 
     armMotor.set(ControlMode.MotionMagic, targetPosition);
   }
 
-  public void goTo(double degrees)
+  public void goTo(double ticks)
   {
     armMotor.setNeutralMode(NeutralMode.Coast);
-    int setPoint = (int) (Utils.wrapAngle0To360Deg(degrees - Constants.ArmAngleBias));
-    setPoint *= kEncoderTicks*kDebugMotorTurn;
-    setPoint /= 360;
+    // int setPoint = (int) Utils.wrapAngle0To360Deg(degrees - Constants.ArmAngleBias);
+    // setPoint *= kEncoderTicks*kDebugMotorTurn;
+    // setPoint /= 360;
+    int setPoint = (int) ticks;
     targetPosition = setPoint;
+    SmartDashboard.putNumber("Target Postion", targetPosition);
 
     SmartDashboard.putNumber("armCMDSetpoint", setPoint);
     armMotor.set(ControlMode.MotionMagic, setPoint);
@@ -226,19 +233,19 @@ public class Arm extends Subsystem
     // double positionDegrees = Utils.wrapAngle0To360Deg(position);
     SmartDashboard.putNumber("ArmRelativePos", position);
     double positionDegrees = (position)*(360.0/4096.0);
-    positionDegrees = positionDegrees - Constants.ArmAngleBias;
+    //positionDegrees = positionDegrees - Constants.ArmAngleBias;
     positionDegrees = Utils.wrapAngle0To360Deg(positionDegrees);
     armEncoderPos.setNumber(positionDegrees);
     SmartDashboard.putNumber("ArmEncoderAbs", absolutePosition);
-    return positionDegrees;
+    return absolutePosition;
   }
 
   public double getCurrentError()
   {
-    double positionDegrees = getCurrentPosition();
-    double error = targetPosition- positionDegrees;
+    double position = getCurrentPosition();
+    double error = targetPosition - position;
 
-    return error;
+    return Math.abs(error);
   }
 
   public boolean isCloseEnough()

@@ -31,13 +31,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Elevator extends Subsystem 
 {
-  public static CANSparkMax rightInsideElevatorMotor;
+  public static CANSparkMax ElevatorMotor;
   public static CANPIDController rightInsideElevatorMotorPID;
-  public static CANEncoder rightInsideElevatorMotorEncoder;
+  public static CANEncoder ElevatorMotorEncoder;
 
-  public static CANSparkMax leftElevatorCarriageMotor;
+  public static CANSparkMax CarriageMotor;
   public static CANPIDController leftElevatorCarriageMotorPID;
-  public static CANEncoder leftElevatorCarriageMotorEncoder;
+  public static CANEncoder CarriageMotorEncoder;
 
   private String ElevatorTitle = "Elevator";
   private ShuffleboardTab elevatorTab = Shuffleboard.getTab(ElevatorTitle);
@@ -80,32 +80,32 @@ public class Elevator extends Subsystem
   public void init()
   {
     // initialize motor
-    rightInsideElevatorMotor = new CANSparkMax(Constants.rightInsideElevatorMotorID, MotorType.kBrushless);
-    leftElevatorCarriageMotor = new CANSparkMax(Constants.leftElevatorCarriageMotorID, MotorType.kBrushless);
+    ElevatorMotor = new CANSparkMax(Constants.rightInsideElevatorMotorID, MotorType.kBrushless);
+    CarriageMotor = new CANSparkMax(Constants.CarriageMotorID, MotorType.kBrushless);
     // rightInsideElevatorMotor.restoreFactoryDefaults();
     // leftElevatorCarriageMotor.restoreFactoryDefaults();
 
-    rightInsideElevatorMotor.setSmartCurrentLimit(50, 50);
-    leftElevatorCarriageMotor.setSmartCurrentLimit(50, 50);
+    ElevatorMotor.setSmartCurrentLimit(60, 65);
+    CarriageMotor.setSmartCurrentLimit(50, 50);
 
-    rightInsideElevatorMotor.setIdleMode(IdleMode.kCoast);
-    leftElevatorCarriageMotor.setIdleMode(IdleMode.kCoast);
+    ElevatorMotor.setIdleMode(IdleMode.kCoast);
+    CarriageMotor.setIdleMode(IdleMode.kCoast);
+
+    ElevatorMotor.setInverted(true);
     
     // initialze PID controller and encoder objects
-    rightInsideElevatorMotorPID = rightInsideElevatorMotor.getPIDController();
-    rightInsideElevatorMotorEncoder = rightInsideElevatorMotor.getEncoder();
+    rightInsideElevatorMotorPID = ElevatorMotor.getPIDController();
+    ElevatorMotorEncoder = ElevatorMotor.getEncoder();
 
-    leftElevatorCarriageMotorPID = leftElevatorCarriageMotor.getPIDController();
-    leftElevatorCarriageMotorEncoder = leftElevatorCarriageMotor.getEncoder();
-
-    rightInsideElevatorMotor.setInverted(true);
+    leftElevatorCarriageMotorPID = CarriageMotor.getPIDController();
+    CarriageMotorEncoder = CarriageMotor.getEncoder();
 
      //it is assumed that the elevator and carriage start in the fully lowered position
-    rightInsideElevatorMotorEncoder.setPosition(0.0); 
-    leftElevatorCarriageMotorEncoder.setPosition(0.0);
+    ElevatorMotorEncoder.setPosition(0.0); 
+    CarriageMotorEncoder.setPosition(0.0);
 
-    rightInsideElevatorMotorEncoder.setPositionConversionFactor(1.416);
-    leftElevatorCarriageMotorEncoder.setPositionConversionFactor(1.416);
+    ElevatorMotorEncoder.setPositionConversionFactor(1.416);
+    CarriageMotorEncoder.setPositionConversionFactor(1.416);
 
     //ElevatorMotor
     ShuffleboardLayout ElevatorMotorPID = elevatorTab
@@ -213,7 +213,7 @@ public class Elevator extends Subsystem
     leftElevatorCarriageMotorPID.setSmartMotionMaxAccel( Constants.ElevatorMotorMotionMaxAccel, smartMotionSlot );
     leftElevatorCarriageMotorPID.setSmartMotionAllowedClosedLoopError( Constants.CarriageMotorMotionAllowedClosedLoopError, smartMotionSlot);
     leftElevatorCarriageMotorPID.setReference(Constants.CarriageInitPosition, ControlType.kPosition);
-
+    updatePID();
   }
   /**
    * Smart Motion coefficients are set on a CANPIDController object
@@ -243,19 +243,19 @@ public class Elevator extends Subsystem
 
   public void updatePID()
   {
-    rightInsideElevatorMotorPID.setP(kP_Elevator.getDouble(0.0));
-    rightInsideElevatorMotorPID.setI(kI_Elevator.getDouble(0.0));
-    rightInsideElevatorMotorPID.setD(kD_Elevator.getDouble(0.0));
-    rightInsideElevatorMotorPID.setIZone(kIz_Elevator.getDouble(0.0));
-    rightInsideElevatorMotorPID.setFF(kFF_Elevator.getDouble(0.0));
-    rightInsideElevatorMotorPID.setOutputRange(kMinOutput_Elevator.getDouble(0.0), kMaxOutput_Elevator.getDouble(0.0));
+    rightInsideElevatorMotorPID.setP(kP_Elevator.getDouble(Constants.ElevatorMotorPID_kP));
+    rightInsideElevatorMotorPID.setI(kI_Elevator.getDouble(Constants.ElevatorMotorPID_kI));
+    rightInsideElevatorMotorPID.setD(kD_Elevator.getDouble(Constants.ElevatorMotorPID_kD));
+    rightInsideElevatorMotorPID.setIZone(kIz_Elevator.getDouble(Constants.ElevatorMotorPID_kIZone));
+    rightInsideElevatorMotorPID.setFF(kFF_Elevator.getDouble(Constants.ElevatorMotorPID_kFF));
+    rightInsideElevatorMotorPID.setOutputRange(kMinOutput_Elevator.getDouble(-1.0), kMaxOutput_Elevator.getDouble(1.0));
   
-    leftElevatorCarriageMotorPID.setP(kP_Carriage.getDouble(0.0));
-    leftElevatorCarriageMotorPID.setI(kI_Carriage.getDouble(0.0));
-    leftElevatorCarriageMotorPID.setD(kD_Carriage.getDouble(0.0));
-    leftElevatorCarriageMotorPID.setIZone(kIz_Carriage.getDouble(0.0));
-    leftElevatorCarriageMotorPID.setFF(kFF_Carriage.getDouble(0.0));
-    leftElevatorCarriageMotorPID.setOutputRange(kMinOutput_Carriage.getDouble(0.0), kMaxOutput_Carriage.getDouble(0.0));
+    leftElevatorCarriageMotorPID.setP(kP_Carriage.getDouble(Constants.CarriageMotorPID_kP));
+    leftElevatorCarriageMotorPID.setI(kI_Carriage.getDouble(Constants.CarriageMotorPID_kI));
+    leftElevatorCarriageMotorPID.setD(kD_Carriage.getDouble(Constants.CarriageMotorPID_kD));
+    leftElevatorCarriageMotorPID.setIZone(kIz_Carriage.getDouble(Constants.CarriageMotorPID_kIZone));
+    leftElevatorCarriageMotorPID.setFF(kFF_Carriage.getDouble(Constants.CarriageMotorPID_kFF));
+    leftElevatorCarriageMotorPID.setOutputRange(kMinOutput_Carriage.getDouble(-1.0), kMaxOutput_Carriage.getDouble(1.0));
   }
   
   
@@ -282,7 +282,7 @@ public class Elevator extends Subsystem
   {
       setPoint_Carriage = newSetPoint_Carriage.getDouble(0.0);
       elevatorEncoderPos();
-            leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
+      leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
 
       // leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
   } 
@@ -293,52 +293,55 @@ public class Elevator extends Subsystem
       newSetPoint_Carriage.setDouble(setPoint_Carriage);
       elevatorEncoderPos();
       leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
-  } 
+  }
 
+  public void elevatorBottomRun() {
+    elevatorEncoderPos();
+    rightInsideElevatorMotorPID.setReference(0.15, ControlType.kVoltage);
+  }
+
+  public void carriageBottomRun()
+  {
+      elevatorEncoderPos();
+      leftElevatorCarriageMotorPID.setReference(-0.05, ControlType.kVoltage);
+  }
 
   public void elevatorEncoderPos()
   {
-    elevatorEncoderPos.setNumber(rightInsideElevatorMotorEncoder.getPosition());
-    carriageEncoderPos.setNumber(leftElevatorCarriageMotorEncoder.getPosition());
+    elevatorEncoderPos.setNumber(ElevatorMotorEncoder.getPosition());
+    carriageEncoderPos.setNumber(CarriageMotorEncoder.getPosition());
   }
 
   public boolean elevatorIsMoving()
   {
-    return Math.abs(rightInsideElevatorMotorEncoder.getPosition() - newSetPoint_Elevator.getDouble(0.0) ) > closeEnough; 
+    return Math.abs(ElevatorMotorEncoder.getPosition() - newSetPoint_Elevator.getDouble(0.0) ) > closeEnough; 
   }
 
 
   public boolean carriageIsMoving()
   {
-    return Math.abs(leftElevatorCarriageMotorEncoder.getPosition() - newSetPoint_Carriage.getDouble(0.0) ) > closeEnough;
+    return Math.abs(CarriageMotorEncoder.getPosition() - newSetPoint_Carriage.getDouble(0.0) ) > closeEnough;
   }
 
   public boolean elevatorIsUp()
   {
     // true if elevator is higher than the 'UP Limit'. Used to slow the max speed of the bot
     // when the elevator is raised. 
-    return rightInsideElevatorMotorEncoder.getPosition() > Constants.ElevatorUpLimit;
+    return ElevatorMotorEncoder.getPosition() > Constants.ElevatorUpLimit;
 
   }
-
-
-  public void hold() {
-    rightInsideElevatorMotorPID.setReference(setPoint_Elevator, ControlType.kPosition);
-    leftElevatorCarriageMotorPID.setReference(setPoint_Carriage, ControlType.kPosition);
-  } 
-
   
   public void stop() {
-    rightInsideElevatorMotor.stopMotor();
-    leftElevatorCarriageMotor.stopMotor();;
+    ElevatorMotor.stopMotor();
+    CarriageMotor.stopMotor();
   } 
 
   public void updateSmartDashboard(){
     
-    SmartDashboard.putNumber("ElevatorCurrent", rightInsideElevatorMotor.getOutputCurrent());
-    SmartDashboard.putNumber("CarriageCurrent", leftElevatorCarriageMotor.getOutputCurrent());
-    SmartDashboard.putNumber("ElevatorTemp", rightInsideElevatorMotor.getMotorTemperature());
-    SmartDashboard.putNumber("CarriageTemp", leftElevatorCarriageMotor.getMotorTemperature());
+    SmartDashboard.putNumber("ElevatorCurrent", ElevatorMotor.getOutputCurrent());
+    SmartDashboard.putNumber("CarriageCurrent", CarriageMotor.getOutputCurrent());
+    SmartDashboard.putNumber("ElevatorTemp", ElevatorMotor.getMotorTemperature());
+    SmartDashboard.putNumber("CarriageTemp", CarriageMotor.getMotorTemperature());
 
   }
 }

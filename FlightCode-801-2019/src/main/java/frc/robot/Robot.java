@@ -20,6 +20,8 @@ import frc.robot.Utilities.OI;
 import frc.robot.commands.BlueLightOn;
 import frc.robot.commands.RedLightOn;
 import frc.robot.commands.UpdateSD;
+import frc.robot.commands.Pincher.RetractCMD;
+import frc.robot.commands.Pincher.StabCMD;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Pincher;
@@ -92,6 +94,8 @@ public class Robot extends TimedRobot {
     //chassis.chassisSwerveDrive.getUpdate();
     SmartDashboard.putNumber("GyroAngle", chassis.getGyroAngle());
     SmartDashboard.putNumber("ArmEncoder", arm.getCurrentPosition());
+
+    Robot.elevator.elevatorEncoderPos();
   }
 
   /**
@@ -135,6 +139,8 @@ public class Robot extends TimedRobot {
     if (lightsCommand != null){
       lightsCommand.start();
     }
+    Command pinchersCMD = new RetractCMD(); 
+    pinchersCMD.start();
     chassis.setGyroBias();
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",

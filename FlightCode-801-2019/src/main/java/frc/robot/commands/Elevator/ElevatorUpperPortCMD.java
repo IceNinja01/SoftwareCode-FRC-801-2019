@@ -21,6 +21,7 @@ public class ElevatorUpperPortCMD extends Command {
   @Override
   protected void initialize() {
 
+    // Robot.elevator.elevatorRun(Constants.ElevatorUpperPosition);
     Robot.elevator.elevatorRun(Constants.ElevatorUpperPosition);
     Robot.elevator.carriageRun(Constants.CarriageUpperPosition);
   }

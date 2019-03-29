@@ -20,7 +20,7 @@ public class ElevatorUpperArmPlayCMD extends CommandGroup {
    */
   public ElevatorUpperArmPlayCMD() {
 
-    addParallel(new PlayCMD());
+    // addParallel(new PlayCMD());
     addSequential(new ElevatorUpperPortCMD());
     
   }

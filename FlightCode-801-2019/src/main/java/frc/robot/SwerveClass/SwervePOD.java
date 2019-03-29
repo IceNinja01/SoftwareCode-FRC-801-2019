@@ -325,7 +325,7 @@ public class SwervePOD {
 	
 	public void brakeOff() {
 		driveMotor.setIdleMode(IdleMode.kCoast);
-		drivePID.setReference(0 , ControlType.kVelocity);
+		drivePID.setReference(0 , ControlType.kDutyCycle);
 		turnMotor.setNeutralMode(NeutralMode.Coast);	
 	}
 

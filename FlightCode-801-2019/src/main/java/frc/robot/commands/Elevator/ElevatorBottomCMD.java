@@ -22,8 +22,8 @@ public class ElevatorBottomCMD extends Command {
   @Override
   protected void initialize() {
 
-    Robot.elevator.elevatorRun(Constants.ElevatorBottomPosition);
-    Robot.elevator.carriageRun(Constants.CarriageBottomPosition);
+    Robot.elevator.elevatorBottomRun();
+    Robot.elevator.carriageBottomRun();
 
   }
 
@@ -50,6 +50,6 @@ public class ElevatorBottomCMD extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    Robot.elevator.stop();;
+    Robot.elevator.stop();
   }
 }

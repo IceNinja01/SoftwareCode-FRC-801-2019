@@ -31,19 +31,19 @@ public class ElevatorManualPositionCMD extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return !Robot.elevator.elevatorIsMoving();
+    return false;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.elevator.hold();
+    Robot.elevator.stop();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    Robot.elevator.stop();;
+    Robot.elevator.stop();
   }
 }

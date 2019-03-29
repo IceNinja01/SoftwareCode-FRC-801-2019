@@ -28,7 +28,7 @@ public class Constants {
 	public static final int leftLiftMotorID = 9;
 	
 	public static final int rightInsideElevatorMotorID = 10;
-	public static final int leftElevatorCarriageMotorID = 11;
+	public static final int CarriageMotorID = 11;
 	
 	public static final int ArmPositionMotorID = 12;
 	public static final int GatherMotorUpperID = 0;  // depricated
@@ -90,32 +90,32 @@ public class Constants {
 	public static double ElevatorBottomPosition = 0.0;
 	public static double ElevatorGatherPosition = 0.0;
 	public static double ElevatorLowerPosition = 0.0;
-	public static double ElevatorMiddlePosition = 4.0;
-	public static double ElevatorUpperPosition = 32.0;
+	public static double ElevatorMiddlePosition = 6.0;
+	public static double ElevatorUpperPosition = 34.0;
 
 	public static double ElevatorUpLimit = 15.0;  // This is the height where the robot drive speed limits to 50%
 
 	public static double CarriageInitPosition = 0.0;
 	public static double CarriageBottomPosition = 0.0;
 	public static double CarriageGatherPosition = 0.0;
-	public static double CarriageLowerPosition = 6.0;
-	public static double CarriageMiddlePosition = 30.0;
-	public static double CarriageUpperPosition = 30.0;
+	public static double CarriageLowerPosition = 3.0;
+	public static double CarriageMiddlePosition = 28.0;
+	public static double CarriageUpperPosition = 28.0;
 	
 	// Elevator Motor Settings.
-	public static double ElevatorMotorPID_kP = 0.0002;
+	public static double ElevatorMotorPID_kP = 1.25;
 	public static double ElevatorMotorPID_kI = 0.0000;
-	public static double ElevatorMotorPID_kD = 0.0000;
+	public static double ElevatorMotorPID_kD = 0.001;
 	public static double ElevatorMotorPID_kIZone = 0.0;
-	public static double ElevatorMotorPID_kFF = 0.0;
+	public static double ElevatorMotorPID_kFF = 0.01;
 	public static double ElevatorMotorPID_kOutputRangeMax = 1.0 ;
 	public static double ElevatorMotorPID_kOutputRangeMin = -1.0;
   
-	public static double CarriageMotorPID_kP = 0.0002;
+	public static double CarriageMotorPID_kP = 1.25;
 	public static double CarriageMotorPID_kI = 0.0000;
-	public static double CarriageMotorPID_kD = 0.0;
+	public static double CarriageMotorPID_kD = 0.001;
 	public static double CarriageMotorPID_kIZone = 0.0;
-	public static double CarriageMotorPID_kFF = 0.0;
+	public static double CarriageMotorPID_kFF = 0.01;
 	public static double CarriageMotorPID_kOutputRangeMax = 1.0; 
 	public static double CarriageMotorPID_kOutputRangeMmin = -1.0; 
 

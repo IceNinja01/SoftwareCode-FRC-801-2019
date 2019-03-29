@@ -21,9 +21,8 @@ public class ElevatorMiddlePortCMD extends Command {
   @Override
   protected void initialize() {
 
-    Robot.elevator.elevatorRun(Constants.ElevatorLowerPosition);
+    Robot.elevator.elevatorRun(Constants.ElevatorMiddlePosition);
     Robot.elevator.carriageRun(Constants.CarriageMiddlePosition);
-    System.out.println("sent run command init from command");
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -49,6 +48,6 @@ public class ElevatorMiddlePortCMD extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    Robot.elevator.stop();;
+    Robot.elevator.stop();
   }
 }

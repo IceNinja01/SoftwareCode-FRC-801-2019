@@ -5,29 +5,33 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.Elevator;
+package frc.robot.commands.Arm;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.Constants;
 
-public class ElevatorLowerPortCMD extends Command {
-  public ElevatorLowerPortCMD() {
-    // Use requires() here to declare subsystem dependencies
-    requires(Robot.elevator);
+public class ArmHoldCMD extends Command {
+
+  private double holdPosition;
+
+  public ArmHoldCMD() {
+
+    requires(Robot.arm);
+
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.elevator.carriageRun(Constants.CarriageLowerPosition);
+    holdPosition = Robot.arm.getCurrentPosition();
+    SmartDashboard.putNumber("Current Postion", holdPosition);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    // updates both elevator and carriage dashboard readings
-    Robot.elevator.elevatorEncoderPos();  
+    Robot.arm.goTo(holdPosition);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -39,7 +43,7 @@ public class ElevatorLowerPortCMD extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.elevator.stop();
+    Robot.arm.stop();
   }
 
   // Called when another command which requires one or more of the same
