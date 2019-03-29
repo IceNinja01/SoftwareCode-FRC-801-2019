@@ -13,6 +13,7 @@ import java.util.Map;
 import com.analog.adis16448.frc.ADIS16448_IMU;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -179,11 +180,11 @@ public class Chassis extends PIDSubsystem {
 			chassisSwerveDrive.setMaxRPM(0.5);
 		}
 		else{
-			chassisSwerveDrive.setMaxRPM(0.8);
+			chassisSwerveDrive.setMaxRPM(1.0);
 		}
 		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, maxLimit);
 		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, maxLimit);
-		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, maxLimit/2);
+		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, maxLimit*0.35);
 		
 		
 		if(robotOrient){ //Field oriented
@@ -286,6 +287,12 @@ public class Chassis extends PIDSubsystem {
 	public void updateSD() {
 
 		  SmartDashboard.putNumber("GyroAngle", getGyroAngle());
+	}
+
+	public void rumble() {
+		if(!robotOrient) {
+			Robot.oi.driver.setRumble(RumbleType.kLeftRumble, 1.0);
+		}
 	}
 
 }

@@ -26,7 +26,7 @@ public class Pincher extends Subsystem {
 	}
 	
 	protected void initDefaultCommand() {
-		setDefaultCommand(new StabCMD());
+		setDefaultCommand(new RetractCMD());
 	}
 	////Pinchers code below
 	public void closePinchers() {

@@ -43,7 +43,7 @@ public class Lift extends Subsystem {
 
   public static double rightLiftEncoderInitCount, leftLiftEncoderInitCount;
 
-  private final double motorIsMovingThreshold = 1.0;
+  private final double motorIsMovingThreshold = 1.5;
   private String LiftTitle = "Lift Motor";
   private NetworkTableEntry rightEncoderPos,leftEncoderPos,setPoint_lift; 
   private NetworkTableEntry kP_lift, kI_lift, kD_lift, kIz_lift, kFF_lift, kMaxOutput_lift;

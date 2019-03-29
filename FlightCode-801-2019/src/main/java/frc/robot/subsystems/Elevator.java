@@ -85,7 +85,7 @@ public class Elevator extends Subsystem
     // rightInsideElevatorMotor.restoreFactoryDefaults();
     // leftElevatorCarriageMotor.restoreFactoryDefaults();
 
-    ElevatorMotor.setSmartCurrentLimit(60, 65);
+    ElevatorMotor.setSmartCurrentLimit(70, 60);
     CarriageMotor.setSmartCurrentLimit(50, 50);
 
     ElevatorMotor.setIdleMode(IdleMode.kCoast);

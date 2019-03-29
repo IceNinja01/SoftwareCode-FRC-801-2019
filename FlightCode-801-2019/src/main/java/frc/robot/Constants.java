@@ -74,7 +74,7 @@ public class Constants {
 	// Lift Motor Settings.
 	public static double LiftMotorPID_kP = 0.001;
 	public static double LiftMotorPID_kI = 0.0;
-	public static double LiftMotorPID_kD = 0.0;
+	public static double LiftMotorPID_kD = 0.001;
 	public static double LiftMotorPID_kIZone = 0.0;
 	public static double LiftMotorPID_kFF = 0.0;
 	public static double LiftMotorPID_kOutputRangeMax = 1.0 ;
@@ -98,7 +98,7 @@ public class Constants {
 	public static double CarriageInitPosition = 0.0;
 	public static double CarriageBottomPosition = 0.0;
 	public static double CarriageGatherPosition = 0.0;
-	public static double CarriageLowerPosition = 3.0;
+	public static double CarriageLowerPosition = 4.0;
 	public static double CarriageMiddlePosition = 28.0;
 	public static double CarriageUpperPosition = 28.0;
 	
@@ -111,11 +111,11 @@ public class Constants {
 	public static double ElevatorMotorPID_kOutputRangeMax = 1.0 ;
 	public static double ElevatorMotorPID_kOutputRangeMin = -1.0;
   
-	public static double CarriageMotorPID_kP = 1.25;
+	public static double CarriageMotorPID_kP = 3.0;
 	public static double CarriageMotorPID_kI = 0.0000;
-	public static double CarriageMotorPID_kD = 0.001;
+	public static double CarriageMotorPID_kD = 0.0001;
 	public static double CarriageMotorPID_kIZone = 0.0;
-	public static double CarriageMotorPID_kFF = 0.01;
+	public static double CarriageMotorPID_kFF = 1.0;
 	public static double CarriageMotorPID_kOutputRangeMax = 1.0; 
 	public static double CarriageMotorPID_kOutputRangeMmin = -1.0; 
 

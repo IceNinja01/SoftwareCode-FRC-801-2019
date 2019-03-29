@@ -96,6 +96,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("ArmEncoder", arm.getCurrentPosition());
 
     Robot.elevator.elevatorEncoderPos();
+    Robot.lift.encoderPos();
   }
 
   /**
@@ -139,8 +140,8 @@ public class Robot extends TimedRobot {
     if (lightsCommand != null){
       lightsCommand.start();
     }
-    Command pinchersCMD = new RetractCMD(); 
-    pinchersCMD.start();
+    // Command pinchersCMD = new RetractCMD(); 
+    //pinchersCMD.start();
     chassis.setGyroBias();
     /*
      * String autoSelected = SmartDashboard.getString("Auto Selector",

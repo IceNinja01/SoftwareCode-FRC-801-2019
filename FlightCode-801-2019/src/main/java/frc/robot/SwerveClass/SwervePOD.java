@@ -313,7 +313,7 @@ public class SwervePOD {
 	}
 
 	public void stop() {
-		drivePID.setReference(0 , ControlType.kVelocity);
+		driveMotor.set(0.0);
 		turnMotor.set(ControlMode.PercentOutput, 0.0);
 	}
 	

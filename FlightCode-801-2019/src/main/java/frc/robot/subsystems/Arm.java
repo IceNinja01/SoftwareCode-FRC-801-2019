@@ -46,10 +46,10 @@ public class Arm extends Subsystem
   public static final double kMaxVelocity = 1;      // One rotation per second
   public static final double kMaxAcceleration = 1;  // One rotation per second per second
   
-  public static final int kPlayPos = 2820;       // Degrees. A Button
-  public static final int kDiskPlacePos = 2090;  // Degrees. Y Button
-  public static final int kStowPos = 1413;     // Degrees. X Button
-  public static final int kBallPos = 2280;       // Degrees. B Button TODO: What?
+  public static final int kPlayPos = 2820;       // Ticks. A Button
+  public static final int kDiskPlacePos = 2090;  // Ticks. Y Button
+  public static final int kStowPos = 1513;     // Ticks. X Button
+  public static final int kBallPos = 2280;       // Ticks. B Button
 
   public static final int kDebugMotorTurn = 48/42; // The test stand has a 6 times gear ratio
 

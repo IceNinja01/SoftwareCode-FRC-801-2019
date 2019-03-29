@@ -59,8 +59,8 @@ public class OI {
     // Button elevatorGatherButton = new JoystickButton(manipulator, 6);     // Right Top Bumper
 
     // Lift Mapping
-    Button liftTopPlatformButton = new JoystickButton(driver, /*10*/0);       // Right Bottom bumper
-    Button retractAndDriveButton = new JoystickButton(driver, /*9*/0);   // Left Bottom bumper
+    Button liftTopPlatformButton = new JoystickButton(manipulator, 10);       // Right Bottom bumper
+    Button retractAndDriveButton = new JoystickButton(manipulator, 9);   // Left Bottom bumper
 
     // Gather Mapping
     Button gatherButton = new JoystickButton(driver, 7);    // Left bumper
@@ -79,7 +79,7 @@ public class OI {
   public OI() {
 
     //Chassis driving
-    toggleRobotDrive.whileHeld(new ToggleFieldDrive());
+    toggleRobotDrive.whenPressed(new ToggleFieldDrive());
 
     // elevator mapping
     //elevatorBottomButton.whileHeld( new ElevatorBottomCMD() );
