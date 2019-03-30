@@ -71,8 +71,8 @@ public class Gather extends Subsystem {
   }
 
   public void gatherBall(){
-    gatherMotorLower.set(ControlMode.PercentOutput, 1.0);
-    gatherMotorUpper.set(ControlMode.PercentOutput, 1.0);
+    gatherMotorLower.set(ControlMode.PercentOutput, 0.5);
+    gatherMotorUpper.set(ControlMode.PercentOutput, 0.5);
 
   }
 

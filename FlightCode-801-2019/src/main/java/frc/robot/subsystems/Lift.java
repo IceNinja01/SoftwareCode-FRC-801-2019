@@ -13,6 +13,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANPIDController.AccelStrategy;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.commands.Lift.LiftStopCMD;
 import frc.robot.commands.Lift.LiftUpDownToggleCMD;
+import frc.robot.commands.Lift.LiftRetractUpDownToggleCMD;
 
 
 /**
@@ -58,8 +60,8 @@ public class Lift extends Subsystem {
       rightLiftMotor.restoreFactoryDefaults();
       leftLiftMotor.restoreFactoryDefaults();
 
-      rightLiftMotor.setSmartCurrentLimit(50, 50);
-      leftLiftMotor.setSmartCurrentLimit(50, 50);
+      rightLiftMotor.setSmartCurrentLimit(40, 40);
+      leftLiftMotor.setSmartCurrentLimit(40, 40);
 
       rightLiftEncoder = rightLiftMotor.getEncoder();
       leftLiftEncoder = leftLiftMotor.getEncoder();
@@ -79,6 +81,7 @@ public class Lift extends Subsystem {
 
       //Set PID and Motion Constants
       updatePID();
+      updatePID1();
       updateSmartMotion();
   }
 
@@ -111,6 +114,7 @@ public class Lift extends Subsystem {
     encoderError = LiftMotorMotion.add("LRencoderDelta", 0).withPosition(0, 5).getEntry();
     setPoint_lift = LiftMotorMotion.add("SetPoint", 0.0).getEntry(); //input is in Inches
     LiftMotorMotion.add("SendNewPosition", new LiftUpDownToggleCMD()).withPosition(0, 8).withSize(2, 1);
+    LiftMotorMotion.add("SendRetractPosition", new LiftRetractUpDownToggleCMD()).withPosition(0, 9).withSize(2, 1);
     
   }
       /**
@@ -126,31 +130,52 @@ public class Lift extends Subsystem {
        * error for the pid controller in Smart Motion mode
        */
   public void updateSmartMotion(){
-    rightLiftPID.setSmartMotionMaxVelocity(maxVel_lift.getDouble(2000), smartMotionSlot);
+    rightLiftPID.setSmartMotionMaxVelocity(maxVel_lift.getDouble(Constants.LiftMotorMotionMaxVelocity), smartMotionSlot);
     rightLiftPID.setSmartMotionMinOutputVelocity(minVel_lift.getDouble(10), smartMotionSlot);
     rightLiftPID.setSmartMotionMaxAccel(maxAcc_lift.getDouble(1500), smartMotionSlot);
     rightLiftPID.setSmartMotionAllowedClosedLoopError(Constants.LiftMotorMotionAllowedClosedLoopError, smartMotionSlot);
+    rightLiftPID.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, smartMotionSlot);
 
-    leftLiftPID.setSmartMotionMaxVelocity(maxVel_lift.getDouble(2000), smartMotionSlot);
+    leftLiftPID.setSmartMotionMaxVelocity(maxVel_lift.getDouble(Constants.LiftMotorMotionMaxVelocity), smartMotionSlot);
     leftLiftPID.setSmartMotionMinOutputVelocity(minVel_lift.getDouble(0), smartMotionSlot);
     leftLiftPID.setSmartMotionMaxAccel(maxAcc_lift.getDouble(1500), smartMotionSlot);
     leftLiftPID.setSmartMotionAllowedClosedLoopError(Constants.LiftMotorMotionAllowedClosedLoopError, smartMotionSlot);
+    leftLiftPID.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, smartMotionSlot);
   }
 
   public void updatePID(){
-    rightLiftPID.setP(kP_lift.getDouble(Constants.LiftMotorPID_kP));
-    rightLiftPID.setI(kI_lift.getDouble(Constants.LiftMotorPID_kI));
-    rightLiftPID.setD(kD_lift.getDouble(Constants.LiftMotorPID_kD));
-    rightLiftPID.setIZone(kIz_lift.getDouble(Constants.LiftMotorPID_kIZone));
-    rightLiftPID.setFF(kFF_lift.getDouble(Constants.LiftMotorPID_kFF));
-    rightLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax), kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax));
+    rightLiftPID.setP(kP_lift.getDouble(Constants.LiftMotorPID_kP), 0);
+    rightLiftPID.setI(kI_lift.getDouble(Constants.LiftMotorPID_kI), 0);
+    rightLiftPID.setD(kD_lift.getDouble(Constants.LiftMotorPID_kD), 0);
+    rightLiftPID.setIZone(kIz_lift.getDouble(Constants.LiftMotorPID_kIZone), 0);
+    rightLiftPID.setFF(kFF_lift.getDouble(Constants.LiftMotorPID_kFF), 0);
+    rightLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax), kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax), 0);
  
-    leftLiftPID.setP(kP_lift.getDouble(Constants.LiftMotorPID_kP));
-    leftLiftPID.setI(kI_lift.getDouble(Constants.LiftMotorPID_kI));
-    leftLiftPID.setD(kD_lift.getDouble(Constants.LiftMotorPID_kD));
-    leftLiftPID.setIZone(kIz_lift.getDouble(Constants.LiftMotorPID_kIZone));
-    leftLiftPID.setFF(kFF_lift.getDouble(Constants.LiftMotorPID_kFF));
-    leftLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax), kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax));
+    leftLiftPID.setP(kP_lift.getDouble(Constants.LiftMotorPID_kP), 0);
+    leftLiftPID.setI(kI_lift.getDouble(Constants.LiftMotorPID_kI), 0);
+    leftLiftPID.setD(kD_lift.getDouble(Constants.LiftMotorPID_kD), 0);
+    leftLiftPID.setIZone(kIz_lift.getDouble(Constants.LiftMotorPID_kIZone), 0);
+    leftLiftPID.setFF(kFF_lift.getDouble(Constants.LiftMotorPID_kFF), 0);
+    leftLiftPID.setOutputRange(-kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax), kMaxOutput_lift.getDouble(Constants.LiftMotorPID_kOutputRangeMax), 0);
+  }
+
+  public void updatePID1(){
+
+    rightLiftPID.setP(1, 1);
+    rightLiftPID.setI(0.0, 1);
+    rightLiftPID.setD(0.0, 1);
+    rightLiftPID.setIZone(0.0, 1);
+    rightLiftPID.setFF(0.0, 1);
+    rightLiftPID.setOutputRange(-1.0, 1.0, 1);
+
+    leftLiftPID.setP(1, 1);
+    leftLiftPID.setI(0.0, 1);
+    leftLiftPID.setD(0.0, 1);
+    leftLiftPID.setIZone(0.0, 1);
+    leftLiftPID.setFF(0.0, 1);
+    leftLiftPID.setOutputRange(-1.0, 1.0, 1);
+
+    
   }
 
   @Override
@@ -162,8 +187,13 @@ public class Lift extends Subsystem {
   {
       double val = setPoint_lift.getDouble(0.0);
       encoderPos();
-      rightLiftPID.setReference(val, ControlType.kSmartMotion);
-      leftLiftPID.setReference(val, ControlType.kSmartMotion);
+      lift(val);
+  }
+
+  public void liftRetractToggle() {
+    double val = setPoint_lift.getDouble(0.0);
+    encoderPos();
+    liftRetract(val);
   }
 
   public boolean isDeltaPosition()
@@ -186,8 +216,10 @@ public class Lift extends Subsystem {
 
   //used to lift to a specified setPoint
   public void lift(double setPoint) {
-    rightLiftPID.setReference(setPoint, ControlType.kSmartMotion);
-    leftLiftPID.setReference(setPoint, ControlType.kSmartMotion);
+    // rightLiftPID.setReference(setPoint, ControlType.kPosition, 0);
+    // leftLiftPID.setReference(setPoint, ControlType.kPosition, 0);
+    rightLiftMotor.set(1.0);
+    leftLiftMotor.set(1.0);
   }
  
   public void getSmartDashboard(){
@@ -196,5 +228,13 @@ public class Lift extends Subsystem {
     SmartDashboard.putNumber("LiftCurrent_RMotor", rightLiftMotor.getOutputCurrent());
 
   }
+
+public void liftRetract(double setPoint) {
+  rightLiftMotor.set(-1.0);
+  leftLiftMotor.set(-1.0);
+  // rightLiftPID.setReference(setPoint, ControlType.kPosition, 1);
+  // leftLiftPID.setReference(setPoint, ControlType.kPosition, 1);
+
+}
   
 }

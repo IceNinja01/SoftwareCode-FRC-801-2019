@@ -27,6 +27,8 @@ public class LiftTopPlatformCMD extends Command {
   @Override
   protected void execute() {
     Robot.lift.encoderPos();
+    Robot.lift.lift(Constants.LiftTopPlatformPosition); //go to 25"
+
 
   }
 

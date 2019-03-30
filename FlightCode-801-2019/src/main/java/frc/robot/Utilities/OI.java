@@ -89,8 +89,8 @@ public class OI {
     // elevatorGatherButton.whenPressed( new ElevatorGatherCMD() );
     
     // Lift Mapping
-    liftTopPlatformButton.whenPressed( new LiftTopPlatformCMD() );
-    retractAndDriveButton.whenPressed( new RetractTopPlatformAndDriveFwd() );
+    liftTopPlatformButton.whileHeld( new LiftTopPlatformCMD() );
+    retractAndDriveButton.whileHeld( new RetractTopPlatformAndDriveFwd() );
     
     // Gather Mapping
     gatherButton.whileHeld( new GatherCMD() );

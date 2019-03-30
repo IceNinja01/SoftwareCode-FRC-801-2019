@@ -208,8 +208,8 @@ public class SwervePOD {
 	
 	public void setSpeed(double speed) {
 		// SmartDashboard.putNumber("TargetSpeed " + motorName, speed);	
-		driveMotor.set(speed);
-		// drivePID.setReference(speed, ControlType.kVelocity);
+		// driveMotor.set(speed);
+		drivePID.setReference(speed, ControlType.kVelocity);
 		// SmartDashboard.putNumber("OutPut PWM " + motorName, driveMotor.getAppliedOutput());	
 		// SmartDashboard.putNumber("Motor PID Error" + motorName, driveMotorEnc.getVelocity()-speed);
 

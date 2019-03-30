@@ -179,18 +179,19 @@ public class SwerveDrive extends MotorSafety {
 				}
 
 				//Turn Motors
-			    if(wheelSpeeds[i] > 0.1){
+			    if(wheelSpeeds[i] > 0.01){
 					// brakeOff();
 					SwervePOD[i].setAngle( Utils.wrapAngle0To360Deg( angleError[i] + degs[i]));
 					oldAngle[i] =  Utils.wrapAngle0To360Deg(angleError[i] + degs[i]);
-					SwervePOD[i].setSpeed(shouldInvert ? maxRPM*wheelSpeeds[i] : -maxRPM*wheelSpeeds[i]);
 				}
 				else{
 					SwervePOD[i].disablePIDTurn();
-					SwervePOD[i].stop();
+					// SwervePOD[i].stop();
 					// brakeOn();
+
 				}
-				
+				SwervePOD[i].setSpeed(shouldInvert ? maxRPM*wheelSpeeds[i] : -maxRPM*wheelSpeeds[i]);
+
 
 			SmartDashboard.putNumber("Angle", wheelAngles[i]);
 			SmartDashboard.putNumber("Int", i);

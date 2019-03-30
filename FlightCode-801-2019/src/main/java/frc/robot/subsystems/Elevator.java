@@ -330,6 +330,10 @@ public class Elevator extends Subsystem
     return ElevatorMotorEncoder.getPosition() > Constants.ElevatorUpLimit;
 
   }
+
+  public boolean carriageIsUp() {
+    return CarriageMotorEncoder.getPosition() > Constants.CarriageUpLimit;
+  }
   
   public void stop() {
     ElevatorMotor.stopMotor();

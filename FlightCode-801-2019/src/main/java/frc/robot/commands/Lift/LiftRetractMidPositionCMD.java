@@ -29,6 +29,8 @@ public LiftRetractMidPositionCMD() {
   @Override
   protected void execute() {
     Robot.lift.encoderPos();
+    Robot.lift.lift(Constants.LiftRetractMidPosition); //25" - 3" = 22.0"
+
   }
 
   // Make this return true when this Command no longer needs to run execute()

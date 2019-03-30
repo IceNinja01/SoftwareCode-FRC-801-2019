@@ -46,10 +46,11 @@ public class Arm extends Subsystem
   public static final double kMaxVelocity = 1;      // One rotation per second
   public static final double kMaxAcceleration = 1;  // One rotation per second per second
   
-  public static final int kPlayPos = 2820;       // Ticks. A Button
-  public static final int kDiskPlacePos = 2090;  // Ticks. Y Button
-  public static final int kStowPos = 1513;     // Ticks. X Button
-  public static final int kBallPos = 2280;       // Ticks. B Button
+  public static final int kPlayPos = 3000;       // Ticks. A Button
+  public static final int kDiskPlacePos = 2250;  // Ticks. Y Button
+  public static final int kStowPos = 1813;     // Ticks. X Button
+  public static final int kBallPos = 2350;       // Ticks. B Button
+  public static final int kGather = 3030;
 
   public static final int kDebugMotorTurn = 48/42; // The test stand has a 6 times gear ratio
 
@@ -74,7 +75,7 @@ public class Arm extends Subsystem
   
   public enum Position
   {
-    PLAY, DISKPICK, STOW, BALL
+    PLAY, DISKPICK, STOW, BALL, GATHER
   }
 
   public void init()
@@ -177,29 +178,20 @@ public class Arm extends Subsystem
     switch (pos)
     {
       case PLAY:
-      // targetPosition =(int) (Utils.wrapAngle0To360Deg(kPlayPos - Constants.ArmAngleBias));
-      // targetPosition *= kEncoderTicks*kDebugMotorTurn;
-      // targetPosition /= 360;
       targetPosition = kPlayPos;
         break;
       case DISKPICK:
-      // targetPosition =(int) (Utils.wrapAngle0To360Deg(kDiskPlacePos - Constants.ArmAngleBias));
-      // targetPosition *= kEncoderTicks*kDebugMotorTurn;
-      // targetPosition /= 360;
       targetPosition = kDiskPlacePos;
         break;
       case STOW:
-      // targetPosition =(int) (Utils.wrapAngle0To360Deg(kStowPos - Constants.ArmAngleBias));
-      // targetPosition *= kEncoderTicks*kDebugMotorTurn;
-      // targetPosition /= 360;
       targetPosition = kStowPos;
         break;
       case BALL:
-      // targetPosition =(int) (Utils.wrapAngle0To360Deg(kBallPos - Constants.ArmAngleBias));
-      // targetPosition *= kEncoderTicks*kDebugMotorTurn;
-      // targetPosition /= 360;
       targetPosition = kBallPos;
         break;
+      case GATHER:
+      targetPosition = kGather;
+      break;
     }
 
     armMotor.set(ControlMode.MotionMagic, targetPosition);

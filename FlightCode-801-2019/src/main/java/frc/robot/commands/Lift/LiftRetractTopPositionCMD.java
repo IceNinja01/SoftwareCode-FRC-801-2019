@@ -23,13 +23,15 @@ public LiftRetractTopPositionCMD() {
   @Override
   protected void initialize() {
 
-    Robot.lift.lift(Constants.LiftRetractTopPosition); //25" - 3" = 22.0"
+    Robot.lift.liftRetract(Constants.LiftRetractTopPosition); //25" - 3" = 22.0"
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
     Robot.lift.encoderPos();
+    Robot.lift.liftRetract(Constants.LiftRetractTopPosition); //25" - 3" = 22.0"
+
   }
 
   // Make this return true when this Command no longer needs to run execute()

@@ -90,7 +90,7 @@ public class Chassis extends PIDSubsystem {
 		leftBackPod = new SwervePOD(Constants.LeftRearDriveMotorID, Constants.LeftRearSteerMotorID, MotorName.LeftBack);
 		rightBackPod = new SwervePOD(Constants.RightRearDriveMotorID, Constants.RightRearSteerMotorID, MotorName.RightBack);
 
-		
+		leftFrontPod.invertDriveMotor(true);
 		leftBackPod.invertDriveMotor(true);
 		rightBackPod.invertDriveMotor(true);
 
@@ -177,14 +177,14 @@ public class Chassis extends PIDSubsystem {
 	public void motorDrive(double x, double y, double z) {
 			
 		if(Robot.elevator.elevatorIsUp()){
-			chassisSwerveDrive.setMaxRPM(0.5);
+			chassisSwerveDrive.setMaxRPM(5700*0.5);
 		}
 		else{
-			chassisSwerveDrive.setMaxRPM(1.0);
+			chassisSwerveDrive.setMaxRPM(5700*0.75);
 		}
 		x = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getX(),1.5), 0.05, maxLimit);
 		y = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getY(),1.5), 0.05, maxLimit);
-		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, maxLimit*0.35);
+		z = Utils.limitMagnitude(Utils.joyExpo(Robot.oi.driver.getRawAxis(4),1.5), 0.05, maxLimit*0.50);
 		
 		
 		if(robotOrient){ //Field oriented
@@ -292,6 +292,8 @@ public class Chassis extends PIDSubsystem {
 	public void rumble() {
 		if(!robotOrient) {
 			Robot.oi.driver.setRumble(RumbleType.kLeftRumble, 1.0);
+		} else {
+			Robot.oi.driver.setRumble(RumbleType.kLeftRumble, 0.0);
 		}
 	}
 

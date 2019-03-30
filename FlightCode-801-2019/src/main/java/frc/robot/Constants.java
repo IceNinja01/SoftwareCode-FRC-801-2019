@@ -45,7 +45,7 @@ public class Constants {
 	public static final int RightRearDriveMotorID = 7;
 
 	//Swerve Pod PID constants
-	public static final double kP_DriveMotors = 0.0001;
+	public static final double kP_DriveMotors = 0.0005;
 	public static final double kI_DriveMotors = 0.0;
 	public static final double kD_DriveMotors = 0.0;
 	public static final double kIz_DriveMotors = 0.0;
@@ -72,9 +72,9 @@ public class Constants {
 	public static double LiftRetractMidPosition = 9.0;
 
 	// Lift Motor Settings.
-	public static double LiftMotorPID_kP = 0.001;
+	public static double LiftMotorPID_kP = 5;
 	public static double LiftMotorPID_kI = 0.0;
-	public static double LiftMotorPID_kD = 0.001;
+	public static double LiftMotorPID_kD = 0.0;
 	public static double LiftMotorPID_kIZone = 0.0;
 	public static double LiftMotorPID_kFF = 0.0;
 	public static double LiftMotorPID_kOutputRangeMax = 1.0 ;
@@ -101,6 +101,8 @@ public class Constants {
 	public static double CarriageLowerPosition = 4.0;
 	public static double CarriageMiddlePosition = 28.0;
 	public static double CarriageUpperPosition = 28.0;
+	
+	public static final double CarriageUpLimit = 3;
 	
 	// Elevator Motor Settings.
 	public static double ElevatorMotorPID_kP = 1.25;
