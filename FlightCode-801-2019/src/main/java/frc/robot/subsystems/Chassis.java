@@ -92,7 +92,8 @@ public class Chassis extends PIDSubsystem {
 
 		leftFrontPod.invertDriveMotor(true);
 		leftBackPod.invertDriveMotor(true);
-		rightBackPod.invertDriveMotor(true);
+		rightBackPod.invertDriveMotor(false);
+		rightFrontPod.invertDriveMotor(false);
 
 		chassisSwerveDrive = new SwerveDrive(rightFrontPod, leftFrontPod, leftBackPod, rightBackPod, 1);
 
@@ -108,7 +109,7 @@ public class Chassis extends PIDSubsystem {
 				Constants.kOutputRangeMmin_TurnMotors, Constants.kOutputRangeMax_TurnMotors, 
 				Constants.deadBand_TurnMotors );
 
-		chassisSwerveDrive.currentDriveLimit(50, 50);
+		chassisSwerveDrive.currentDriveLimit(40, 30);
 
 		chassisSwerveDrive.brakeOff();
 		rightFrontPod.setBias();

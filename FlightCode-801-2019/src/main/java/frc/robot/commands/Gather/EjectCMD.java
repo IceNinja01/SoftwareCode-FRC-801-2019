@@ -41,7 +41,7 @@ public class EjectCMD extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.arm.stop();
+    Robot.arm.goTo(Position.PLAY);
   }
 
   // Called when another command which requires one or more of the same
