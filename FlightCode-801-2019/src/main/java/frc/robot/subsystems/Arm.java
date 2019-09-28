@@ -25,6 +25,7 @@ import frc.robot.Robot;
 import frc.robot.Utilities.Utils;
 import frc.robot.commands.Arm.ArmHoldCMD;
 import frc.robot.commands.Arm.ArmManualPositionCMD;
+import frc.robot.commands.Arm.ArmSetFudger;
 import frc.robot.commands.Arm.ArmStopCMD;
 
 public class Arm extends Subsystem
@@ -64,6 +65,10 @@ public class Arm extends Subsystem
 
   private NetworkTableEntry armEncoderPos;
   private NetworkTableEntry setPoint_Arm;
+
+  // FIXME: Need to actually fix the arm
+  private NetworkTableEntry setPoint_Fudger;
+  private int fudgeValue_Arm;
 
   private String ArmTabTitle = "Arm";
   private ShuffleboardTab tab = Shuffleboard.getTab(ArmTabTitle);
@@ -141,7 +146,16 @@ public class Arm extends Subsystem
     setPoint_Arm = ArmMotorMP.add("ArmSetPos", 0).withPosition(0, 2).getEntry();
     armEncoderPos = ArmMotorMP.add("ArmGetPos", 0).withPosition(0, 3).getEntry();
 
-    ArmMotorMP.add("SendNewPosition", new ArmManualPositionCMD()).withPosition(0, 5);
+    ArmMotorMP.add("SendNewPosition", new ArmManualPositionCMD()).withPosition(0, 4);
+
+    setPoint_Fudger = ArmMotorMP.add("ArmPosFudger", 0).withPosition(0, 5).getEntry();
+
+    ArmMotorMP.add("SendNewFudger", new ArmSetFudger()).withPosition(0, 6);
+  }
+
+  public void updateFudger()
+  {
+    fudgeValue_Arm = setPoint_Fudger.getNumber(0).intValue();
   }
 
   public void updatePID()
@@ -193,6 +207,8 @@ public class Arm extends Subsystem
       targetPosition = kGather;
       break;
     }
+
+    targetPosition += fudgeValue_Arm;
 
     armMotor.set(ControlMode.MotionMagic, targetPosition);
   }
