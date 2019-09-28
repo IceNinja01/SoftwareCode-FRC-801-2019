@@ -53,7 +53,13 @@ public class Arm extends Subsystem
   public static final int kStowPos = 1370;     // Ticks. X Button
   public static final int kBallPos = 1975;       // Ticks. B Button
   public static final int kGather = 2915;
-
+=======
+  public static final int kPlayPos = 1800;       // Ticks. B Button
+  public static final int kDiskPlacePos = 1575;  // Ticks. X Button
+  public static final int kStowPos = 900;     // Ticks. Start Button
+  public static final int kBallPos = 1500;       // Ticks. A Button
+  public static final int kGather = 2100;        // Ticks. Right Trigger
+>>>>>>> 59d691fa9b13cb7dad377fed1ad83d096abf51b9
 
   public static final int kDebugMotorTurn = 48/42; // The test stand has a 6 times gear ratio
 
