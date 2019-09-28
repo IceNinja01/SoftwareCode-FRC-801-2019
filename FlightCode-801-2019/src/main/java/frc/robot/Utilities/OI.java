@@ -37,11 +37,11 @@ public class OI {
     //	    ,-'          `-.,____________,.-'    .-.   `-.
     //	   /   .---.             ___            ( 1 )     \
     //	  /  ,' ,-. `.     __   / X \   __   .-. `-` .-.   \
-    //	 /   | | 9 | |    (_7) | / \ | (_8) ( 3 )   ( 2 )   \
+    //	 /   | | 9 | |    (_7) | / \ | (10) ( 3 )   ( 2 )   \
     //	/    `. `-' ,'    __    \___/        `-` ,-. `-`     \
     //	|      `---`   ,-`  `-.       .---.     ( 4 )        |
     //	|             / -'  `- \    ,'  .  `.    `-`         |
-    //	|            |          |   | -10 - |                |
+    //	|            |          |   | -   - |                |
     //	!             \ -.  ,- /    `.  '  ,'                |
     //	|              `-.__,-'       `---`                  |
     //	|                  ________________                  |
@@ -69,10 +69,10 @@ public class OI {
     Button retractButton = new JoystickButton(driver, 5);      // POV Down
 
     // Arm mapping
-    Button playButton = new JoystickButton(driver, 2);      // 'A' button
-    Button diskPickButton = new JoystickButton(driver, 4);  // 'Y' button
-    Button stowButton = new JoystickButton(driver, 10);      // 'X' button
-    Button ballButton = new JoystickButton(driver, 3);      // 'B' button
+    Button playButton = new JoystickButton(driver, 2);      // 'B' button
+    Button diskPickButton = new JoystickButton(driver, 4);  // 'A' button
+    Button stowButton = new JoystickButton(driver, 10);      // 'Start' button
+    Button ballButton = new JoystickButton(driver, 3);      // 'X' button
 
     Button toggleRobotDrive = new JoystickButton(driver, 1);
     
