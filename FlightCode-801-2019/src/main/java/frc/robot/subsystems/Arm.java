@@ -47,19 +47,13 @@ public class Arm extends Subsystem
   public static final double kMaxVelocity = 1;      // One rotation per second
   public static final double kMaxAcceleration = 1;  // One rotation per second per second
   
-<<<<<<< HEAD
-  public static final int kPlayPos = 2600;       // Ticks. A Button
+
+  public static final int kPlayPos = 3048;       // Ticks. A Button
   public static final int kDiskPlacePos = 2700;  // Ticks. Y Button
-  public static final int kStowPos = 1370;     // Ticks. X Button
-  public static final int kBallPos = 1975;       // Ticks. B Button
-  public static final int kGather = 2915;
-=======
-  public static final int kPlayPos = 1800;       // Ticks. B Button
-  public static final int kDiskPlacePos = 1575;  // Ticks. X Button
-  public static final int kStowPos = 900;     // Ticks. Start Button
-  public static final int kBallPos = 1500;       // Ticks. A Button
-  public static final int kGather = 2100;        // Ticks. Right Trigger
->>>>>>> 59d691fa9b13cb7dad377fed1ad83d096abf51b9
+  public static final int kStowPos = 1900;     // Ticks. X Button
+  public static final int kBallPos = 2590;       // Ticks. B Button
+  public static final int kGather = 3400;
+
 
   public static final int kDebugMotorTurn = 48/42; // The test stand has a 6 times gear ratio
 
@@ -97,9 +91,9 @@ public class Arm extends Subsystem
 
     armMotor.configFactoryDefault();
 
-    armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, kTimeoutMs);
-    armMotor.configReverseSoftLimitThreshold((int) (kEncoderTicks*kDebugMotorTurn*(kStowPos/360)), kTimeoutMs);
-    armMotor.configForwardSoftLimitThreshold((int)( kEncoderTicks*kDebugMotorTurn ), kTimeoutMs); // FIXME debug
+    armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, kTimeoutMs);
+    armMotor.configReverseSoftLimitThreshold((int) (0), kTimeoutMs);
+    armMotor.configForwardSoftLimitThreshold((int)( 4096), kTimeoutMs); // FIXME debug
 
 
     // FIXME: Test if this is the correct thing for how it should work
@@ -111,8 +105,8 @@ public class Arm extends Subsystem
 		
 		armMotor.configNominalOutputForward(0, kTimeoutMs);
 		armMotor.configNominalOutputReverse(0, kTimeoutMs);
-		armMotor.configPeakOutputForward(0.3, kTimeoutMs);
-		armMotor.configPeakOutputReverse(-0.3, kTimeoutMs);
+		armMotor.configPeakOutputForward(0.4, kTimeoutMs);
+		armMotor.configPeakOutputReverse(-0.4, kTimeoutMs);
 
 		armMotor.selectProfileSlot(0, 0);
 		armMotor.config_kF(0, kFF, kTimeoutMs);
@@ -120,10 +114,10 @@ public class Arm extends Subsystem
 		armMotor.config_kI(0, kI, kTimeoutMs);
 		armMotor.config_kD(0, kD, kTimeoutMs);
     armMotor.configAllowableClosedloopError(0, 10, kTimeoutMs);
-		armMotor.configMotionCruiseVelocity((int)(kEncoderTicks*kDebugMotorTurn*kMotorToOutput*(kMaxVelocity/10)), kTimeoutMs); // FIXME debug
-    armMotor.configMotionAcceleration((int)(kEncoderTicks*kDebugMotorTurn*kMotorToOutput*(kMaxAcceleration/10)), kTimeoutMs); // FIXME debug
+		armMotor.configMotionCruiseVelocity((int)(200), kTimeoutMs); // FIXME debug
+    armMotor.configMotionAcceleration((int)(200), kTimeoutMs); // FIXME debug
     
-    armMotor.setSelectedSensorPosition(armMotor.getSensorCollection().getPulseWidthPosition(), 0, kTimeoutMs);
+    //armMotor.setSelectedSensorPosition(armMotor.getSensorCollection().getPulseWidthPosition(), 0, kTimeoutMs);
     
     goTo(Position.DISKPICK);
 
@@ -216,7 +210,7 @@ public class Arm extends Subsystem
       break;
     }
 
-    targetPosition += fudgeValue_Arm;
+   // targetPosition += fudgeValue_Arm;
 
     armMotor.set(ControlMode.MotionMagic, targetPosition);
   }
