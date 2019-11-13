@@ -47,11 +47,11 @@ public class Arm extends Subsystem
   public static final double kMaxVelocity = 1;      // One rotation per second
   public static final double kMaxAcceleration = 1;  // One rotation per second per second
   
-  public static final int kPlayPos = 4592;       // Ticks. A Button
-  public static final int kDiskPlacePos = 4140;  // Ticks. Y Button
-  public static final int kStowPos = 3600;     // Ticks. X Button
-  public static final int kBallPos = 4077;       // Ticks. B Button
-  public static final int kGather = 4923;
+  public static final int kPlayPos = 2600;       // Ticks. A Button
+  public static final int kDiskPlacePos = 2700;  // Ticks. Y Button
+  public static final int kStowPos = 1370;     // Ticks. X Button
+  public static final int kBallPos = 1975;       // Ticks. B Button
+  public static final int kGather = 2915;
 
   public static final int kDebugMotorTurn = 48/42; // The test stand has a 6 times gear ratio
 
@@ -74,7 +74,7 @@ public class Arm extends Subsystem
   private ShuffleboardTab tab = Shuffleboard.getTab(ArmTabTitle);
 
   //How much smoothing [0,8] to use during MotionMagic
-  int _smoothing = 0;
+  int _smoothing = 2;
 
   private int targetPosition;
   
@@ -103,8 +103,8 @@ public class Arm extends Subsystem
 		
 		armMotor.configNominalOutputForward(0, kTimeoutMs);
 		armMotor.configNominalOutputReverse(0, kTimeoutMs);
-		armMotor.configPeakOutputForward(1.0, kTimeoutMs);
-		armMotor.configPeakOutputReverse(-1.0, kTimeoutMs);
+		armMotor.configPeakOutputForward(0.3, kTimeoutMs);
+		armMotor.configPeakOutputReverse(-0.3, kTimeoutMs);
 
 		armMotor.selectProfileSlot(0, 0);
 		armMotor.config_kF(0, kFF, kTimeoutMs);
